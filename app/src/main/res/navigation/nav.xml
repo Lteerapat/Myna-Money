@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav"
+    app:startDestination="@id/addNameListFragment">
+    <fragment
+        android:id="@+id/addNameListFragment"
+        android:name="com.teerapat.moneydivider.addnamelist.AddNameListFragment"
+        android:label="fragment_add_name_list"
+        tools:layout="@layout/fragment_add_name_list">
+        <action
+            android:id="@+id/action_addNameListFragment_to_addListFragment"
+            app:destination="@id/addListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addListFragment"
+        android:name="com.teerapat.moneydivider.addlist.AddListFragment"
+        android:label="fragment_add_list"
+        tools:layout="@layout/fragment_add_list">
+        <action
+            android:id="@+id/action_addListFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/confirmFragment"
+        android:name="com.teerapat.moneydivider.confirm.ConfirmFragment"
+        android:label="fragment_confirm"
+        tools:layout="@layout/fragment_confirm">
+        <action
+            android:id="@+id/action_confirmFragment_to_summaryFragment"
+            app:destination="@id/summaryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/summaryFragment"
+        android:name="com.teerapat.moneydivider.summary.SummaryFragment"
+        android:label="fragment_summary"
+        tools:layout="@layout/fragment_summary" />
+
+</navigation>
