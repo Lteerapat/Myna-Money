@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -9,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.teerapat.moneydivider"
-        minSdk = 26
+        minSdk = 34
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -52,7 +53,7 @@ android {
 }
 
 dependencies {
-
+    implementation ("androidx.core:core-ktx:1.13.1")
     implementation("com.github.hadilq:live-event:1.3.0")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")

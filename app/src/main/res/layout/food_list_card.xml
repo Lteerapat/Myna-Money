@@ -7,42 +7,79 @@
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/large_padding"
         android:background="@drawable/rounded_corner_white_bg"
         android:elevation="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="12dp">
 
         <EditText
-            android:inputType="textVisiblePassword|textNoSuggestions"
             android:id="@+id/etFoodList"
             android:layout_width="wrap_content"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/teal_700"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:hint="@string/food_name"
+            android:inputType="textVisiblePassword|textNoSuggestions"
             android:labelFor="@id/etFoodList"
             android:maxLength="15"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="Autofill,LabelFor" />
 
-        <EditText
+        <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
+            app:isSeparateByCommas="true"
+            app:noOfDecimals="2"
             android:id="@+id/etFoodPrice"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/teal_700"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:hint="@string/zero_amount"
             android:inputType="numberDecimal"
             android:labelFor="@id/etFoodPrice"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/etFoodList"
             tools:ignore="Autofill,LabelFor" />
+
+        <ImageView
+            android:id="@+id/ivAddNameList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/large_padding"
+            android:layout_marginVertical="@dimen/large_padding"
+            android:background="@drawable/circle_background"
+            android:elevation="3dp"
+            android:padding="@dimen/space_03dp"
+            android:src="@drawable/baseline_person_add_alt_1_20"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etFoodList"
+            tools:ignore="ContentDescription" />
+
+        <HorizontalScrollView
+            android:id="@+id/nameChipScrollContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/large_padding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ivAddNameList"
+            app:layout_constraintTop_toBottomOf="@id/etFoodList">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/nameChipContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true">
+
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

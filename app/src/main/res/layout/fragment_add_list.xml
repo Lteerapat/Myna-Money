@@ -75,7 +75,7 @@
             app:layout_constraintTop_toTopOf="@id/tvServiceCharge"
             tools:ignore="ContentDescription" />
 
-        <EditText
+        <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
             android:id="@+id/etServiceChargeAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -83,15 +83,17 @@
             android:hint="@string/zero_amount"
             android:inputType="numberDecimal"
             android:textSize="@dimen/text_size_20sp"
+            app:isSeparateByCommas="true"
             app:layout_constraintEnd_toStartOf="@id/tvServiceChargePercentage"
             app:layout_constraintTop_toTopOf="parent"
+            app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
         <TextView
             android:id="@+id/tvServiceChargePercentage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/percentage"
+            android:text="@string/percentage_sign"
             android:textSize="@dimen/text_size_20sp"
             app:layout_constraintBottom_toBottomOf="@id/etServiceChargeAmount"
             app:layout_constraintEnd_toEndOf="parent"
@@ -117,7 +119,7 @@
             app:layout_constraintTop_toTopOf="@id/tvVat"
             tools:ignore="ContentDescription" />
 
-        <EditText
+        <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
             android:id="@+id/etVatAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -125,15 +127,17 @@
             android:hint="@string/zero_amount"
             android:inputType="numberDecimal"
             android:textSize="@dimen/text_size_20sp"
+            app:isSeparateByCommas="true"
             app:layout_constraintEnd_toStartOf="@id/tvVatPercentage"
             app:layout_constraintTop_toBottomOf="@id/etServiceChargeAmount"
+            app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
         <TextView
             android:id="@+id/tvVatPercentage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/percentage"
+            android:text="@string/percentage_sign"
             android:textSize="@dimen/text_size_20sp"
             app:layout_constraintBottom_toBottomOf="@id/etVatAmount"
             app:layout_constraintEnd_toEndOf="parent"
@@ -159,7 +163,7 @@
             app:layout_constraintTop_toTopOf="@id/tvDiscount"
             tools:ignore="ContentDescription" />
 
-        <EditText
+        <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
             android:id="@+id/etDiscountAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -167,15 +171,17 @@
             android:hint="@string/zero_amount"
             android:inputType="numberDecimal"
             android:textSize="@dimen/text_size_20sp"
+            app:isSeparateByCommas="true"
             app:layout_constraintEnd_toStartOf="@id/tvDiscountPercentage"
             app:layout_constraintTop_toBottomOf="@id/etVatAmount"
+            app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
         <TextView
             android:id="@+id/tvDiscountPercentage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/percentage"
+            android:text="@string/percentage_sign"
             android:textSize="@dimen/text_size_20sp"
             app:layout_constraintBottom_toBottomOf="@id/etDiscountAmount"
             app:layout_constraintEnd_toEndOf="parent"

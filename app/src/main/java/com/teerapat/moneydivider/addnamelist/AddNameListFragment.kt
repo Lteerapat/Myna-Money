@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.teerapat.moneydivider.R
+import com.teerapat.moneydivider.addlist.AddNameModal
 import com.teerapat.moneydivider.databinding.FragmentAddNameListBinding
 import com.teerapat.moneydivider.databinding.NameListCardBinding
 
@@ -34,9 +35,6 @@ class AddNameListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddNameListBinding.inflate(inflater, container, false)
-        val args = this.arguments
-        val inputDatas = args?.getString("scAmount")
-        binding.tvMock.text = inputDatas
         return binding.root
     }
 
@@ -90,41 +88,104 @@ class AddNameListFragment : Fragment() {
         binding.btnNext.setOnClickListener {
             val incompleteCard = findFirstIncompleteCard()
 
-            if (binding.nameListContainer.childCount <= 0) {
-                showAlertEmptyNameList()
-            } else if (incompleteCard != null) {
-                showAlertOnIncompleteCard(incompleteCard)
-            } else {
-                AlertDialog.Builder(requireContext())
-                    .setTitle("Are you sure you want to continue?")
-                    .setPositiveButton("Yes") { _, _ ->
-                        findNavController().navigate(
-                            R.id.action_addNameListFragment_to_addListFragment,
-                            buildBundle()
-                        )
-                    }
-                    .setNegativeButton("No", null)
-                    .show()
+            when {
+                binding.nameListContainer.childCount <= 0 -> {
+                    showAlertEmptyNameList()
+                }
+                incompleteCard != null -> {
+                    showAlertOnIncompleteCard(incompleteCard)
+                }
+                hasDuplicateNames() -> {
+                    showAlertDuplicateNames()
+                }
+                else -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Are you sure you want to continue?")
+                        .setPositiveButton("Yes") { _, _ ->
+                            findNavController().navigate(
+                                R.id.action_addNameListFragment_to_addListFragment,
+                                buildBundle()
+                            )
+                        }
+                        .setNegativeButton("No", null)
+                        .show()
+                }
             }
         }
     }
 
     private fun buildBundle(): Bundle {
-        return Bundle().apply {
-            //sc vat dc data
+        val nameList = getNameList()
 
+        return Bundle().apply {
+            putParcelableArrayList("nameList", ArrayList(nameList))
         }
+    }
+
+    private fun showAlertDuplicateNames() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Duplicate Name")
+            .setMessage("Please ensure all names are unique before continuing.")
+            .setPositiveButton("OK", null)
+            .show()
+    }
+
+    private fun hasDuplicateNames(): Boolean {
+        val nameSet = mutableSetOf<String>()
+
+        for (i in 0 until binding.nameListContainer.childCount) {
+            val nameListCard = binding.nameListContainer.getChildAt(i)
+            val nameListCardBinding = NameListCardBinding.bind(nameListCard)
+            val name = nameListCardBinding.etNameList.text.toString().trim()
+
+            if (name in nameSet) {
+                return true
+            } else {
+                nameSet.add(name)
+            }
+        }
+
+        return false
+    }
+
+    private fun getNameList(): List<AddNameModal> {
+        val nameList = mutableListOf<AddNameModal>()
+
+        for (i in 0 until binding.nameListContainer.childCount) {
+            val nameListCard = binding.nameListContainer.getChildAt(i)
+            val nameListCardBinding = NameListCardBinding.bind(nameListCard)
+            val name = nameListCardBinding.etNameList.text.toString().trim()
+
+            if (name.isNotBlank()) {
+                nameList.add(AddNameModal(name, false))
+            }
+        }
+
+        return nameList
     }
 
     private fun showAlertOnIncompleteCard(nameListCard: View) {
         val nameListCardBinding = NameListCardBinding.bind(nameListCard)
         val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+        val etNameList = nameListCardBinding.etNameList
+        val message = when {
+            !etNameList.text.toString().matches(Regex("^[A-Za-z0-9ก-๏ ]*$")) -> {
+                "Please use only letters or numbers for the name."
+            }
+
+            etNameList.text.isBlank() -> {
+                "Please fill in the name"
+            }
+
+            else -> {
+                getString(R.string.incomplete_item)
+            }
+        }
 
         AlertDialog.Builder(requireContext())
             .setTitle("Incomplete Item")
-            .setMessage("Please fill in the name")
+            .setMessage(message)
             .setPositiveButton("OK") { _, _ ->
-                val etNameList = nameListCardBinding.etNameList
 
                 etNameList.requestFocus()
                 etNameList.text.clear()
@@ -165,6 +226,7 @@ class AddNameListFragment : Fragment() {
             val name = nameListCardBinding.etNameList.text.toString()
 
             if (name.isBlank()) return nameListCard
+            if (!name.matches(Regex("^[A-Za-z0-9ก-๏ ]*$"))) return nameListCard
         }
         return null
     }

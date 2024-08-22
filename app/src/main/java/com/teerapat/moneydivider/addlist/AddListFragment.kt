@@ -3,8 +3,6 @@ package com.teerapat.moneydivider.addlist
 import android.app.AlertDialog
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,13 +14,15 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.databinding.FragmentAddListBinding
-import com.teerapat.moneydivider.utils.DecimalDigitsInputFilter
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
+
 
 class AddListFragment : Fragment() {
     private lateinit var viewModel: AddListViewModel
@@ -41,17 +41,12 @@ class AddListFragment : Fragment() {
 
     private fun observe() {
         viewModel.foodListItems.observe(viewLifecycleOwner) { items ->
-            // Update UI with food list items
-            // This method should refresh your food list cards
         }
         viewModel.serviceChargeAmount.observe(viewLifecycleOwner) { amount ->
-            // Update UI with service charge amount
         }
         viewModel.vatAmount.observe(viewLifecycleOwner) { amount ->
-            // Update UI with VAT amount
         }
         viewModel.discountAmount.observe(viewLifecycleOwner) { amount ->
-            // Update UI with discount amount
         }
     }
 
@@ -83,9 +78,6 @@ class AddListFragment : Fragment() {
             )
             foodListCard.layoutParams = layoutParams
 
-            foodListCardBinding.etFoodPrice.filters = arrayOf(DecimalDigitsInputFilter(7, 2))
-            thousandSeparatorForEt(foodListCardBinding.etFoodPrice)
-
             foodListCardBinding.ivDeleteFoodList.setOnClickListener {
                 val foodListText = foodListCardBinding.etFoodList.text.toString()
                 val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
@@ -97,6 +89,35 @@ class AddListFragment : Fragment() {
                 }
             }
 
+            foodListCardBinding.ivAddNameList.setOnClickListener {
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setTitle(getString(R.string.add_name_for_food_list_cardtitle))
+
+                val nameList = arguments?.getParcelableArrayList<AddNameModal>("nameList")
+                val onlyNameList = nameList?.map { it.name }?.toTypedArray()
+                val onlyIsCheckedList = nameList?.map { it.isChecked }?.toBooleanArray()
+
+                builder.setMultiChoiceItems(
+                    onlyNameList,
+                    onlyIsCheckedList
+                ) { _, position, isChecked ->
+                    nameList?.get(position)?.isChecked = isChecked
+                }
+
+                builder.setPositiveButton(getString(R.string.ok_btn)) { dialog, which ->
+                    val unCheckedNameList = nameList?.filter { !it.isChecked }?.map { it.name }
+                    val checkedNameList = nameList?.filter { it.isChecked }?.map { it.name }
+                    if (checkedNameList != null) {
+                        addNameChip(checkedNameList)
+                    }
+                }
+
+                builder.setNegativeButton(getString(R.string.cancel), null)
+
+                val dialog = builder.create()
+                dialog.show()
+            }
+
             foodListCardBinding.etFoodList.addTextChangedListener { calculateTotalAmount() }
             foodListCardBinding.etFoodPrice.addTextChangedListener { calculateTotalAmount() }
 
@@ -106,9 +127,9 @@ class AddListFragment : Fragment() {
 
     private fun setUpToggleListeners() {
         val toggleMap = mapOf(
-            binding.ivServiceChargeToggle to "sc",
-            binding.ivDiscountToggle to "dc",
-            binding.ivVatToggle to "vat"
+            binding.ivServiceChargeToggle to SERVICE_CHARGE,
+            binding.ivDiscountToggle to DISCOUNT,
+            binding.ivVatToggle to VAT
         )
 
         toggleMap.forEach { (toggleView, type) ->
@@ -120,39 +141,39 @@ class AddListFragment : Fragment() {
 
     private fun showTogglePercentageAmountDialog(type: String) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Percentage or Amount")
-            .setPositiveButton("Percentage") { _, _ ->
-                updateTextViewOfVScDis(type, "%")
-                isServiceChargePercentage = "%"
+            .setTitle(getString(R.string.percentage_or_amount_toggle_title))
+            .setPositiveButton(getString(R.string.percentage_message)) { _, _ ->
+                updateTextViewOfVScDis(type, getString(R.string.percentage_sign))
+                isServiceChargePercentage = getString(R.string.percentage_sign)
             }
-            .setNegativeButton("Amount") { _, _ ->
+            .setNegativeButton(getString(R.string.amount_message)) { _, _ ->
                 updateTextViewOfVScDis(
                     type,
-                    "฿"
+                    getString(R.string.baht_sign)
                 )
-                isServiceChargePercentage = "฿"
+                isServiceChargePercentage = getString(R.string.baht_sign)
             }
             .show()
     }
 
     private fun updateTextViewOfVScDis(type: String, symbol: String) {
         when (type) {
-            "sc" -> {
+            SERVICE_CHARGE -> {
                 binding.tvServiceChargePercentage.text = symbol
                 isServiceChargePercentage = symbol
-                binding.etServiceChargeAmount.text.clear()
+                binding.etServiceChargeAmount.text?.clear()
             }
 
-            "dc" -> {
+            DISCOUNT -> {
                 binding.tvDiscountPercentage.text = symbol
                 isDiscountPercentage = symbol
-                binding.etDiscountAmount.text.clear()
+                binding.etDiscountAmount.text?.clear()
             }
 
-            "vat" -> {
+            VAT -> {
                 binding.tvVatPercentage.text = symbol
                 isVatPercentage = symbol
-                binding.etVatAmount.text.clear()
+                binding.etVatAmount.text?.clear()
             }
         }
     }
@@ -165,8 +186,6 @@ class AddListFragment : Fragment() {
         )
 
         editTexts.forEach { editText ->
-            editText.filters = arrayOf(DecimalDigitsInputFilter(7, 2))
-            thousandSeparatorForEt(editText)
             editText.addTextChangedListener { calculateTotalAmount() }
         }
 
@@ -179,7 +198,7 @@ class AddListFragment : Fragment() {
             val foodListCard = binding.foodListContainer.getChildAt(i)
             val foodListCardBinding = FoodListCardBinding.bind(foodListCard)
             val priceText = foodListCardBinding.etFoodPrice.text.toString()
-            totalAmount += removeCommas(priceText)
+            totalAmount += removeCommasAndReturnDouble(priceText)
         }
 
         totalAmount = calculateServiceCharge(totalAmount)
@@ -191,10 +210,13 @@ class AddListFragment : Fragment() {
 
     private fun calculateServiceCharge(total: Double): Double {
         val serviceChargeText = binding.etServiceChargeAmount.text.toString()
-        val serviceCharge = removeCommas(serviceChargeText)
-        return if (isServiceChargePercentage == "%") {
+        val serviceCharge = removeCommasAndReturnDouble(serviceChargeText)
+        return if (isServiceChargePercentage == getString(R.string.percentage_sign)) {
             if (serviceCharge > 100) {
-                showAlertOnVScDis("Service Charge", "Percentage cannot exceed 100%")
+                showAlertOnVScDis(
+                    getString(R.string.service_charge),
+                    getString(R.string.percentage_exceeded_alert_message)
+                )
                 total
             } else {
                 total + (total * serviceCharge / 100)
@@ -206,10 +228,13 @@ class AddListFragment : Fragment() {
 
     private fun calculateVat(total: Double): Double {
         val vatText = binding.etVatAmount.text.toString()
-        val vat = removeCommas(vatText)
-        return if (isVatPercentage == "%") {
+        val vat = removeCommasAndReturnDouble(vatText)
+        return if (isVatPercentage == getString(R.string.percentage_sign)) {
             if (vat > 100) {
-                showAlertOnVScDis("VAT", "Percentage cannot exceed 100%")
+                showAlertOnVScDis(
+                    getString(R.string.vat),
+                    getString(R.string.percentage_exceeded_alert_message)
+                )
                 total
             } else {
                 total + (total * vat / 100)
@@ -221,17 +246,23 @@ class AddListFragment : Fragment() {
 
     private fun calculateDiscount(total: Double): Double {
         val discountText = binding.etDiscountAmount.text.toString()
-        val discount = removeCommas(discountText)
-        return if (isDiscountPercentage == "%") {
+        val discount = removeCommasAndReturnDouble(discountText)
+        return if (isDiscountPercentage == getString(R.string.percentage_sign)) {
             if (discount > 100) {
-                showAlertOnVScDis("Discount", "Percentage cannot exceed 100%")
+                showAlertOnVScDis(
+                    getString(R.string.discount),
+                    getString(R.string.percentage_exceeded_alert_message)
+                )
                 total
             } else {
                 total - (total * discount / 100)
             }
         } else {
             if (discount > total) {
-                showAlertOnVScDis("Discount", "Discount cannot exceed total amount")
+                showAlertOnVScDis(
+                    getString(R.string.discount),
+                    getString(R.string.discount_exceeded_alert_message)
+                )
                 total
             } else {
                 total - discount
@@ -240,18 +271,18 @@ class AddListFragment : Fragment() {
     }
 
     private fun showAlertOnVScDis(title: String, message: String) {
+        when (title) {
+            getString(R.string.service_charge) -> binding.etServiceChargeAmount.text?.clear()
+            getString(R.string.vat) -> binding.etVatAmount.text?.clear()
+            getString(R.string.discount) -> binding.etDiscountAmount.text?.clear()
+        }
+
         AlertDialog.Builder(requireContext())
             .setTitle(title)
             .setMessage(message)
-            .setPositiveButton("OK") { _, _ ->
-                when (title) {
-                    "Service Charge" -> binding.etServiceChargeAmount.text.clear()
-                    "VAT" -> binding.etVatAmount.text.clear()
-                    "Discount" -> binding.etDiscountAmount.text.clear()
-                }
-            }
-            .setCancelable(false)
+            .setPositiveButton(getString(R.string.ok_btn), null)
             .show()
+
     }
 
     private fun setUpNextButton() {
@@ -264,15 +295,34 @@ class AddListFragment : Fragment() {
                 showAlertOnIncompleteCard(incompleteCard)
             } else {
                 AlertDialog.Builder(requireContext())
-                    .setTitle("Are you sure you want to continue?")
-                    .setPositiveButton("Yes") { _, _ ->
+                    .setTitle(getString(R.string.next_btn_alert_title))
+                    .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
                         findNavController().navigate(
                             R.id.action_addListFragment_to_summaryFragment,
                             buildBundle()
                         )
                     }
-                    .setNegativeButton("No", null)
+                    .setNegativeButton(getString(R.string.no_btn), null)
                     .show()
+            }
+        }
+    }
+
+    private fun addNameChip(checkedNameList: List<String>) {
+        val chipGroup = binding.foodListContainer.findViewById<ChipGroup>(R.id.nameChipContainer)
+
+        checkedNameList.forEach { name ->
+            val existingChip = chipGroup.findViewWithTag<Chip>(name)
+
+            if (existingChip == null) {
+                val chip = Chip(context).apply {
+                    text = name
+                    isCloseIconVisible = true
+                    setOnCloseIconClickListener {
+                        chipGroup.removeView(this)
+                    }
+                }
+                chipGroup.addView(chip)
             }
         }
     }
@@ -308,15 +358,18 @@ class AddListFragment : Fragment() {
         val etFoodPrice = foodListCardBinding.etFoodPrice
 
         val message = when {
-            !etFoodList.text.toString().matches(Regex("^[A-Za-z]*$")) -> {
-                "Please use only letters for the food name."
+            !etFoodList.text.toString().matches(REGEX) -> {
+                getString(R.string.incomplete_card_letter_or_num_message)
             }
-            etFoodList.text.isBlank() || etFoodPrice.text.isBlank() -> {
-                "Please fill in both name and price for all items."
+
+            etFoodList.text.isBlank() || etFoodPrice.text!!.isBlank() -> {
+                getString(R.string.incomplete_card_empty_message)
             }
+
             etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> {
-                "Price cannot be zero."
+                getString(R.string.incomplete_card_zero_message)
             }
+
             else -> {
                 getString(R.string.incomplete_item)
             }
@@ -327,11 +380,11 @@ class AddListFragment : Fragment() {
             .setMessage(message)
             .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
                 val targetEditText = when {
-                    !etFoodList.text.toString().matches(Regex("^[A-Za-z]*$")) -> etFoodList
+                    !etFoodList.text.toString().matches(REGEX) -> etFoodList
                     etFoodList.text.isBlank() -> etFoodList
-                    etFoodPrice.text.isBlank() -> etFoodPrice
+                    etFoodPrice.text!!.isBlank() -> etFoodPrice
                     etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> etFoodPrice
-                    else -> etFoodList // default case
+                    else -> etFoodList
                 }
 
                 targetEditText.requestFocus()
@@ -352,9 +405,9 @@ class AddListFragment : Fragment() {
 
     private fun showAlertEmptyFoodList() {
         AlertDialog.Builder(requireContext())
-            .setTitle("Incomplete Item")
-            .setMessage("Please have at least 1 item to continue!")
-            .setPositiveButton("OK", null)
+            .setTitle(getString(R.string.incomplete_item))
+            .setMessage(getString(R.string.incomplette_card_at_least_1_message))
+            .setPositiveButton(getString(R.string.ok_btn), null)
             .show()
     }
 
@@ -366,15 +419,13 @@ class AddListFragment : Fragment() {
     }
 
     private fun findFirstIncompleteCard(): View? {
-        val regex = Regex("^[A-Za-z]*$")
-
         for (i in 0 until binding.foodListContainer.childCount) {
             val foodListCard = binding.foodListContainer.getChildAt(i)
             val foodListCardBinding = FoodListCardBinding.bind(foodListCard)
             val foodName = foodListCardBinding.etFoodList.text.toString()
             val foodPrice = foodListCardBinding.etFoodPrice.text.toString()
 
-            if (!foodName.matches(regex)) return foodListCard
+            if (!foodName.matches(REGEX)) return foodListCard
 
             if (foodName.isNotBlank() && foodPrice.isBlank()) {
                 return foodListCard
@@ -382,7 +433,7 @@ class AddListFragment : Fragment() {
                 return foodListCard
             } else if (foodName.isBlank() && foodPrice.isBlank()) {
                 return foodListCard
-            } else if (foodName.isNotBlank() && foodPrice.toDouble() == 0.0) {
+            } else if (foodName.isNotBlank() && removeCommasAndReturnDouble(foodPrice) == 0.0) {
                 return foodListCard
             }
         }
@@ -392,40 +443,27 @@ class AddListFragment : Fragment() {
 
     private fun showDeleteItemConfirmationDialog(view: View) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Delete Item")
-            .setMessage("Are you sure you want to delete this item?")
-            .setPositiveButton("Yes") { _, _ ->
+            .setTitle(getString(R.string.confirm_delete_title))
+            .setMessage(getString(R.string.confirm_delete_message))
+            .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
                 (view.parent as? LinearLayout)?.removeView(view)
                 calculateTotalAmount()
             }
-            .setNegativeButton("No", null)
+            .setNegativeButton(getString(R.string.no_btn), null)
             .show()
     }
 
-    private fun thousandSeparatorForEt(editText: EditText) {
-        val decimalFormat = DecimalFormat("#,###.##", DecimalFormatSymbols(Locale.US))
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Do nothing
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Do nothing
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-        })
-    }
-
     private fun thousandSeparator(amount: Double): String {
-        val decimalFormat = DecimalFormat("#,###.##", DecimalFormatSymbols(Locale.US))
-
+        val decimalFormat = DecimalFormat(DECIMAL_PATTERN, DecimalFormatSymbols(Locale.US))
         return "${decimalFormat.format(amount)} ฿"
     }
 
-    private fun removeCommas(amount: String): Double {
-        return amount.replace(",", "").toDoubleOrNull() ?: 0.0
+    private fun removeCommasAndReturnDouble(amount: String): Double {
+        return if (amount.isBlank()) {
+            0.0
+        } else {
+            amount.replace(",", "").toDoubleOrNull() ?: 0.0
+        }
     }
 
     override fun onDestroyView() {
@@ -435,5 +473,13 @@ class AddListFragment : Fragment() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+    }
+
+    companion object {
+        private const val SERVICE_CHARGE = "sc"
+        private const val DISCOUNT = "dis"
+        private const val VAT = "vat"
+        private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
+        private const val DECIMAL_PATTERN = "#,###.##"
     }
 }
