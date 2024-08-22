@@ -90,32 +90,27 @@ class AddListFragment : Fragment() {
             }
 
             foodListCardBinding.ivAddNameList.setOnClickListener {
-                val builder = AlertDialog.Builder(requireContext())
-                builder.setTitle(getString(R.string.add_name_for_food_list_card_title))
-
                 val nameList = arguments?.getParcelableArrayList<AddNameModal>("nameList")
                 val onlyNameList = nameList?.map { it.name }?.toTypedArray()
                 val onlyIsCheckedList = nameList?.map { it.isChecked }?.toBooleanArray()
 
-                builder.setMultiChoiceItems(
-                    onlyNameList,
-                    onlyIsCheckedList
-                ) { _, position, isChecked ->
-                    nameList?.get(position)?.isChecked = isChecked
-                }
-
-                builder.setPositiveButton(getString(R.string.ok_btn)) { dialog, which ->
-                    val unCheckedNameList = nameList?.filter { !it.isChecked }?.map { it.name }
-                    val checkedNameList = nameList?.filter { it.isChecked }?.map { it.name }
-                    if (checkedNameList != null) {
-                        addNameChip(checkedNameList)
+                AlertDialog.Builder(requireContext())
+                    .setTitle(getString(R.string.add_name_for_food_list_card_title))
+                    .setMultiChoiceItems(
+                        onlyNameList,
+                        onlyIsCheckedList
+                    ) { _, position, isChecked ->
+                        nameList?.get(position)?.isChecked = isChecked
                     }
-                }
-
-                builder.setNegativeButton(getString(R.string.cancel), null)
-
-                val dialog = builder.create()
-                dialog.show()
+                    .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
+                        val unCheckedNameList = nameList?.filter { !it.isChecked }?.map { it.name }
+                        val checkedNameList = nameList?.filter { it.isChecked }?.map { it.name }
+                        if (checkedNameList != null) {
+                            addNameChip(checkedNameList)
+                        }
+                    }
+                    .setNegativeButton(getString(R.string.cancel), null)
+                    .show()
             }
 
             foodListCardBinding.etFoodList.addTextChangedListener { calculateTotalAmount() }
