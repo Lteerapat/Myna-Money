@@ -91,7 +91,7 @@ class AddListFragment : Fragment() {
 
             foodListCardBinding.ivAddNameList.setOnClickListener {
                 val builder = AlertDialog.Builder(requireContext())
-                builder.setTitle(getString(R.string.add_name_for_food_list_cardtitle))
+                builder.setTitle(getString(R.string.add_name_for_food_list_card_title))
 
                 val nameList = arguments?.getParcelableArrayList<AddNameModal>("nameList")
                 val onlyNameList = nameList?.map { it.name }?.toTypedArray()
@@ -406,7 +406,7 @@ class AddListFragment : Fragment() {
     private fun showAlertEmptyFoodList() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.incomplete_item))
-            .setMessage(getString(R.string.incomplette_card_at_least_1_message))
+            .setMessage(getString(R.string.incomplete_card_zero_message))
             .setPositiveButton(getString(R.string.ok_btn), null)
             .show()
     }

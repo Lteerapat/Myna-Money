@@ -75,12 +75,12 @@ class AddNameListFragment : Fragment() {
 
     private fun showDeleteItemConfirmationDialog(view: View) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Delete Item")
-            .setMessage("Are you sure you want to delete this item?")
-            .setPositiveButton("Yes") { _, _ ->
+            .setTitle(getString(R.string.confirm_delete_title))
+            .setMessage(getString(R.string.confirm_delete_message))
+            .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
                 (view.parent as? LinearLayout)?.removeView(view)
             }
-            .setNegativeButton("No", null)
+            .setNegativeButton(getString(R.string.no_btn), null)
             .show()
     }
 
@@ -92,22 +92,25 @@ class AddNameListFragment : Fragment() {
                 binding.nameListContainer.childCount <= 0 -> {
                     showAlertEmptyNameList()
                 }
+
                 incompleteCard != null -> {
                     showAlertOnIncompleteCard(incompleteCard)
                 }
+
                 hasDuplicateNames() -> {
                     showAlertDuplicateNames()
                 }
+
                 else -> {
                     AlertDialog.Builder(requireContext())
-                        .setTitle("Are you sure you want to continue?")
-                        .setPositiveButton("Yes") { _, _ ->
+                        .setTitle(getString(R.string.next_btn_alert_title))
+                        .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
                             findNavController().navigate(
                                 R.id.action_addNameListFragment_to_addListFragment,
                                 buildBundle()
                             )
                         }
-                        .setNegativeButton("No", null)
+                        .setNegativeButton(getString(R.string.no_btn), null)
                         .show()
                 }
             }
@@ -124,9 +127,9 @@ class AddNameListFragment : Fragment() {
 
     private fun showAlertDuplicateNames() {
         AlertDialog.Builder(requireContext())
-            .setTitle("Duplicate Name")
-            .setMessage("Please ensure all names are unique before continuing.")
-            .setPositiveButton("OK", null)
+            .setTitle(getString(R.string.duplicate_name_alert_title))
+            .setMessage(getString(R.string.duplicate_name_alert_message))
+            .setPositiveButton(getString(R.string.ok_btn), null)
             .show()
     }
 
@@ -169,12 +172,12 @@ class AddNameListFragment : Fragment() {
         val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
         val etNameList = nameListCardBinding.etNameList
         val message = when {
-            !etNameList.text.toString().matches(Regex("^[A-Za-z0-9ก-๏ ]*$")) -> {
-                "Please use only letters or numbers for the name."
+            !etNameList.text.toString().matches(REGEX) -> {
+                getString(R.string.incomplete_letter_or_num_message_2)
             }
 
             etNameList.text.isBlank() -> {
-                "Please fill in the name"
+                getString(R.string.incomplete_empty_card_message_2)
             }
 
             else -> {
@@ -183,9 +186,9 @@ class AddNameListFragment : Fragment() {
         }
 
         AlertDialog.Builder(requireContext())
-            .setTitle("Incomplete Item")
+            .setTitle(getString(R.string.incomplete_item))
             .setMessage(message)
-            .setPositiveButton("OK") { _, _ ->
+            .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
 
                 etNameList.requestFocus()
                 etNameList.text.clear()
@@ -212,9 +215,9 @@ class AddNameListFragment : Fragment() {
 
     private fun showAlertEmptyNameList() {
         AlertDialog.Builder(requireContext())
-            .setTitle("Incomplete Item")
-            .setMessage("Please have at least 1 item to continue!")
-            .setPositiveButton("OK", null)
+            .setTitle(getString(R.string.incomplete_item))
+            .setMessage(getString(R.string.incomplete_card_at_least_1_message))
+            .setPositiveButton(getString(R.string.ok_btn), null)
             .show()
     }
 
@@ -226,9 +229,12 @@ class AddNameListFragment : Fragment() {
             val name = nameListCardBinding.etNameList.text.toString()
 
             if (name.isBlank()) return nameListCard
-            if (!name.matches(Regex("^[A-Za-z0-9ก-๏ ]*$"))) return nameListCard
+            if (!name.matches(REGEX)) return nameListCard
         }
         return null
     }
 
+    companion object {
+        private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
+    }
 }
