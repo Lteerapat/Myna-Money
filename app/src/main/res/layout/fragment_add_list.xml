@@ -13,7 +13,6 @@
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@id/addFoodListBtnContainer"
-        app:layout_constraintHeight_percent="0.5"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -232,6 +231,7 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/large_padding"
             android:background="@drawable/rounded_corner_teal_700_bg"
+            android:drawableEnd="@drawable/baseline_double_arrow_24"
             android:text="@string/next"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_20sp"

@@ -116,7 +116,11 @@ class AddListFragment : Fragment() {
             foodListCardBinding.etFoodList.addTextChangedListener { calculateTotalAmount() }
             foodListCardBinding.etFoodPrice.addTextChangedListener { calculateTotalAmount() }
 
-            binding.foodListContainer.addView(foodListCard)
+            if (binding.foodListContainer.childCount == MAX_FOOD_CARD) {
+                showAlertOverLimitItemCard()
+            } else {
+                binding.foodListContainer.addView(foodListCard)
+            }
         }
     }
 
@@ -461,6 +465,19 @@ class AddListFragment : Fragment() {
         }
     }
 
+    private fun showAlertOverLimitItemCard() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.item_limit_exceeded_title))
+            .setMessage(
+                getString(
+                    R.string.item_limit_exceeded_message,
+                    MAX_FOOD_CARD
+                )
+            )
+            .setPositiveButton(getString(R.string.ok_btn), null)
+            .show()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -476,5 +493,6 @@ class AddListFragment : Fragment() {
         private const val VAT = "vat"
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
         private const val DECIMAL_PATTERN = "#,###.##"
+        private const val MAX_FOOD_CARD = 50
     }
 }

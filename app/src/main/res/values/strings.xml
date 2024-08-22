@@ -9,7 +9,7 @@
     <string name="discount">Discount</string>
     <string name="zero_amount">0.00</string>
     <string name="percentage_sign">%</string>
-    <string name="next">Next -></string>
+    <string name="next">Next</string>
     <string name="total_amount_format">฿%1$.2f</string>
     <string name="name">Name</string>
     <string name="add_name_title">Please add name 💰</string>
@@ -41,4 +41,6 @@
     <string name="duplicate_name_alert_message">Please ensure all names are unique before continuing.</string>
     <string name="incomplete_empty_card_message_2">Please fill in the name</string>
     <string name="incomplete_letter_or_num_message_2">Please use only letters or numbers for the name.</string>
+    <string name="item_limit_exceeded_title">Item Limit Exceeded</string>
+    <string name="item_limit_exceeded_message">Item cannot exceed %1$d items</string>
 </resources>

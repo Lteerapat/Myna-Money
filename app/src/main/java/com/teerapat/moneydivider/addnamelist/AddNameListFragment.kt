@@ -69,7 +69,11 @@ class AddNameListFragment : Fragment() {
                 }
             }
 
-            binding.nameListContainer.addView(nameListCard)
+            if (binding.nameListContainer.childCount == MAX_NAME_CARD) {
+                showAlertOverLimitItemCard()
+            } else {
+                binding.nameListContainer.addView(nameListCard)
+            }
         }
     }
 
@@ -234,7 +238,21 @@ class AddNameListFragment : Fragment() {
         return null
     }
 
+    private fun showAlertOverLimitItemCard() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.item_limit_exceeded_title))
+            .setMessage(getString(R.string.item_limit_exceeded_message, MAX_NAME_CARD))
+            .setPositiveButton(getString(R.string.ok_btn), null)
+            .show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     companion object {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
+        private const val MAX_NAME_CARD = 30
     }
 }
