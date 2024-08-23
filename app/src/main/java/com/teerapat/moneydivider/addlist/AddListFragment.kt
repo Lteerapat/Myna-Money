@@ -398,7 +398,6 @@ class AddListFragment : Fragment() {
             .show()
     }
 
-
     private fun showAlertEmptyFoodList() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.incomplete_item))

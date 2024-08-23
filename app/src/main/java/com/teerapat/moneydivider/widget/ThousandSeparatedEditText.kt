@@ -104,7 +104,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
         AlertDialog.Builder(context)
             .setTitle(context.getString(R.string.input_limit_exceeded_title))
             .setMessage(context.getString(R.string.input_limit_exceeded_message))
-            .setPositiveButton("OK", null)
+            .setPositiveButton(context.getString(R.string.ok_btn), null)
             .show()
     }
 
