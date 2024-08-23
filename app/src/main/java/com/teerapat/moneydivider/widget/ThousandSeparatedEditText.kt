@@ -1,6 +1,5 @@
 package com.teerapat.moneydivider.widget
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.res.TypedArray
 import android.text.Editable
@@ -19,6 +18,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
     private var attr = attributeSet
     private var isSeparatedByCommas: Boolean = false
     private var noOdfDecimals: Int = 2
+    private var previousText: String = ""
 
     init {
         parseAttributes(context.obtainStyledAttributes(attr, R.styleable.ThousandSeparatedEditText))
@@ -49,6 +49,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
     }
 
     override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        previousText = p0.toString()
     }
 
     override fun onTextChanged(
@@ -67,22 +68,30 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
 
             try {
                 this@ThousandSeparatedEditText.removeTextChangedListener(this)
-                val value: String = this@ThousandSeparatedEditText.text.toString()
+                var value: String = this@ThousandSeparatedEditText.text.toString()
                 val integerPart = value.replace(",", "").split(".")[0]
 
-                if (value != "") {
+                if (value.isNotEmpty()) {
                     if (integerPart.length > maxDigitsBeforeDecimal) {
-                        this@ThousandSeparatedEditText.text?.clear()
-                        showAlertOverLimitDigits()
-                        this@ThousandSeparatedEditText.setSelection(0)
+                        this@ThousandSeparatedEditText.setText(previousText)
+                        this@ThousandSeparatedEditText.setSelection(previousText.length)
                     }
+
+                    if (value.startsWith("0") && !value.startsWith("0.") && value.length > 1) {
+                        value = value.replaceFirst("0", "")
+                        this@ThousandSeparatedEditText.setText(value)
+                        this@ThousandSeparatedEditText.setSelection(cursorPosition - 1)
+                    }
+
                     if (value.startsWith(".")) {
                         this@ThousandSeparatedEditText.setText("0.")
                     }
+
                     val str: String = this@ThousandSeparatedEditText.text.toString().replace(
                         ",".toRegex(),
                         ""
                     )
+
                     if (value.isNotEmpty()) this@ThousandSeparatedEditText.setText(
                         String().getDecimalFormattedString(
                             str
@@ -98,14 +107,6 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
                 this@ThousandSeparatedEditText.addTextChangedListener(this)
             }
         }
-    }
-
-    private fun showAlertOverLimitDigits() {
-        AlertDialog.Builder(context)
-            .setTitle(context.getString(R.string.input_limit_exceeded_title))
-            .setMessage(context.getString(R.string.input_limit_exceeded_message))
-            .setPositiveButton(context.getString(R.string.ok_btn), null)
-            .show()
     }
 
     companion object {
