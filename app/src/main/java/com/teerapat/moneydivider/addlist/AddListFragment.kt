@@ -60,68 +60,78 @@ class AddListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addFoodListCard()
+        setUpFoodListCard()
         setUpToggleListeners()
         setUpAmountOfVScDis()
         setUpNextButton()
     }
 
-    private fun addFoodListCard() {
+    private fun setUpFoodListCard() {
+//        for (nameModal in viewModel.nameList) {
+        addFoodListCard()
+//        }
+
         binding.btnAddFoodList.setOnClickListener {
-            val inflater = LayoutInflater.from(requireContext())
-            val foodListCardBinding = FoodListCardBinding.inflate(inflater)
-            val foodListCard = foodListCardBinding.root
+            addFoodListCard()
+        }
+    }
 
-            val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            foodListCard.layoutParams = layoutParams
+    private fun addFoodListCard(foodName: String = "", foodPrice: Double = 0.0): View {
+        val inflater = LayoutInflater.from(requireContext())
+        val foodListCardBinding = FoodListCardBinding.inflate(inflater)
+        val foodListCard = foodListCardBinding.root
 
-            foodListCardBinding.ivDeleteFoodList.setOnClickListener {
-                val foodListText = foodListCardBinding.etFoodList.text.toString()
-                val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
-                if (foodListText.isNotBlank() || foodPriceText.isNotBlank()) {
-                    showDeleteItemConfirmationDialog(foodListCard)
-                } else {
-                    (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
-                    calculateTotalAmount()
-                }
-            }
+        val layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        foodListCard.layoutParams = layoutParams
 
-            foodListCardBinding.ivAddNameList.setOnClickListener {
-                val nameList = arguments?.getParcelableArrayList<AddNameModal>("nameList")
-                val onlyNameList = nameList?.map { it.name }?.toTypedArray()
-                val onlyIsCheckedList = nameList?.map { it.isChecked }?.toBooleanArray()
-
-                AlertDialog.Builder(requireContext())
-                    .setTitle(getString(R.string.add_name_for_food_list_card_title))
-                    .setMultiChoiceItems(
-                        onlyNameList,
-                        onlyIsCheckedList
-                    ) { _, position, isChecked ->
-                        nameList?.get(position)?.isChecked = isChecked
-                    }
-                    .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
-                        val unCheckedNameList = nameList?.filter { !it.isChecked }?.map { it.name }
-                        val checkedNameList = nameList?.filter { it.isChecked }?.map { it.name }
-                        if (checkedNameList != null) {
-                            addNameChip(checkedNameList)
-                        }
-                    }
-                    .setNegativeButton(getString(R.string.cancel), null)
-                    .show()
-            }
-
-            foodListCardBinding.etFoodList.addTextChangedListener { calculateTotalAmount() }
-            foodListCardBinding.etFoodPrice.addTextChangedListener { calculateTotalAmount() }
-
-            if (binding.foodListContainer.childCount == MAX_FOOD_CARD) {
-                showAlertOverLimitItemCard()
+        foodListCardBinding.ivDeleteFoodList.setOnClickListener {
+            val foodListText = foodListCardBinding.etFoodList.text.toString()
+            val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
+            if (foodListText.isNotBlank() || foodPriceText.isNotBlank()) {
+                showDeleteItemConfirmationDialog(foodListCard)
             } else {
-                binding.foodListContainer.addView(foodListCard)
+                (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
+                calculateTotalAmount()
             }
         }
+
+        foodListCardBinding.ivAddNameList.setOnClickListener {
+            val nameList = arguments?.getParcelableArrayList<AddNameModal>("nameList")
+            val onlyNameList = nameList?.map { it.name }?.toTypedArray()
+            val onlyIsCheckedList = nameList?.map { it.isChecked }?.toBooleanArray()
+
+            AlertDialog.Builder(requireContext())
+                .setTitle(getString(R.string.add_name_for_food_list_card_title))
+                .setMultiChoiceItems(
+                    onlyNameList,
+                    onlyIsCheckedList
+                ) { _, position, isChecked ->
+                    nameList?.get(position)?.isChecked = isChecked
+                }
+                .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
+                    val unCheckedNameList = nameList?.filter { !it.isChecked }?.map { it.name }
+                    val checkedNameList = nameList?.filter { it.isChecked }?.map { it.name }
+                    if (checkedNameList != null) {
+                        addNameChip(checkedNameList)
+                    }
+                }
+                .setNegativeButton(getString(R.string.cancel), null)
+                .show()
+        }
+
+        foodListCardBinding.etFoodList.addTextChangedListener { calculateTotalAmount() }
+        foodListCardBinding.etFoodPrice.addTextChangedListener { calculateTotalAmount() }
+
+        if (binding.foodListContainer.childCount == MAX_FOOD_CARD) {
+            showAlertOverLimitItemCard()
+        } else {
+            binding.foodListContainer.addView(foodListCard)
+        }
+
+        return foodListCard
     }
 
     private fun setUpToggleListeners() {
@@ -288,21 +298,27 @@ class AddListFragment : Fragment() {
         binding.btnNext.setOnClickListener {
             val incompleteCard = findFirstIncompleteCard()
 
-            if (binding.foodListContainer.childCount <= 0) {
-                showAlertEmptyFoodList()
-            } else if (incompleteCard != null) {
-                showAlertOnIncompleteCard(incompleteCard)
-            } else {
-                AlertDialog.Builder(requireContext())
-                    .setTitle(getString(R.string.next_btn_alert_title))
-                    .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
-                        findNavController().navigate(
-                            R.id.action_addListFragment_to_summaryFragment,
-                            buildBundle()
-                        )
-                    }
-                    .setNegativeButton(getString(R.string.no_btn), null)
-                    .show()
+            when {
+                binding.foodListContainer.childCount <= 0 -> {
+                    showAlertEmptyFoodList()
+                }
+
+                incompleteCard != null -> {
+                    showAlertOnIncompleteCard(incompleteCard)
+                }
+
+                else -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(getString(R.string.next_btn_alert_title))
+                        .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
+                            findNavController().navigate(
+                                R.id.action_addListFragment_to_summaryFragment,
+                                buildBundle()
+                            )
+                        }
+                        .setNegativeButton(getString(R.string.no_btn), null)
+                        .show()
+                }
             }
         }
     }
@@ -351,8 +367,6 @@ class AddListFragment : Fragment() {
 
     private fun showAlertOnIncompleteCard(foodListCard: View) {
         val foodListCardBinding = FoodListCardBinding.bind(foodListCard)
-        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
-
         val etFoodList = foodListCardBinding.etFoodList
         val etFoodPrice = foodListCardBinding.etFoodPrice
 
@@ -377,27 +391,10 @@ class AddListFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.incomplete_item))
             .setMessage(message)
-            .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
-                val targetEditText = when {
-                    !etFoodList.text.toString().matches(REGEX) -> etFoodList
-                    etFoodList.text.isBlank() -> etFoodList
-                    etFoodPrice.text!!.isBlank() -> etFoodPrice
-                    etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> etFoodPrice
-                    else -> etFoodList
-                }
-
-                targetEditText.requestFocus()
-                targetEditText.text.clear()
-                targetEditText.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(requireContext(), R.color.red)
-                )
-                targetEditText.postDelayed({
-                    imm?.showSoftInput(targetEditText, InputMethodManager.SHOW_IMPLICIT)
-                }, 100)
-
-                setTextWatcherForEditText(targetEditText)
+            .setPositiveButton(getString(R.string.ok_btn), null)
+            .setOnDismissListener {
+                focusOnCard(foodListCard)
             }
-            .setCancelable(false)
             .show()
     }
 
@@ -405,9 +402,37 @@ class AddListFragment : Fragment() {
     private fun showAlertEmptyFoodList() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.incomplete_item))
-            .setMessage(getString(R.string.incomplete_card_zero_message))
+            .setMessage(getString(R.string.incomplete_card_at_least_1_message))
             .setPositiveButton(getString(R.string.ok_btn), null)
+            .setOnDismissListener { focusOnCard(addFoodListCard()) }
             .show()
+    }
+
+    private fun focusOnCard(foodListCard: View) {
+        val foodListCardBinding = FoodListCardBinding.bind(foodListCard)
+        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+
+        val etFoodList = foodListCardBinding.etFoodList
+        val etFoodPrice = foodListCardBinding.etFoodPrice
+
+        val targetEditText = when {
+            !etFoodList.text.toString().matches(REGEX) -> etFoodList
+            etFoodList.text.isBlank() -> etFoodList
+            etFoodPrice.text!!.isBlank() -> etFoodPrice
+            etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> etFoodPrice
+            else -> etFoodList
+        }
+
+        targetEditText.requestFocus()
+        targetEditText.text.clear()
+        targetEditText.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(requireContext(), R.color.red)
+        )
+        targetEditText.postDelayed({
+            imm?.showSoftInput(targetEditText, InputMethodManager.SHOW_IMPLICIT)
+        }, 100)
+
+        setTextWatcherForEditText(targetEditText)
     }
 
     private fun setTextWatcherForEditText(editText: EditText) {

@@ -40,41 +40,54 @@ class AddNameListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addNameListCard()
+        setUpNameListCard()
         setUpNextButton()
     }
 
     private fun observe() {
     }
 
-    private fun addNameListCard() {
+
+    private fun setUpNameListCard() {
+//        for (nameModal in viewModel.nameList) {
+        addNameListCard()
+//        }
+
         binding.btnAddNameList.setOnClickListener {
-            val inflater = LayoutInflater.from(requireContext())
-            val nameListCardBinding = NameListCardBinding.inflate(inflater)
-            val nameListCard = nameListCardBinding.root
+            addNameListCard()
+        }
+    }
 
-            val layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
+    private fun addNameListCard(name: String = ""): View {
+        val inflater = LayoutInflater.from(requireContext())
+        val nameListCardBinding = NameListCardBinding.inflate(inflater)
+        val nameListCard = nameListCardBinding.root
 
-            nameListCard.layoutParams = layoutParams
+        val layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
 
-            nameListCardBinding.ivDeleteNameList.setOnClickListener {
-                val nameListText = nameListCardBinding.etNameList.text.toString()
-                if (nameListText.isNotBlank()) {
-                    showDeleteItemConfirmationDialog(nameListCard)
-                } else {
-                    (nameListCard.parent as? LinearLayout)?.removeView(nameListCard)
-                }
-            }
+        nameListCard.layoutParams = layoutParams
 
-            if (binding.nameListContainer.childCount == MAX_NAME_CARD) {
-                showAlertOverLimitItemCard()
+        nameListCardBinding.ivDeleteNameList.setOnClickListener {
+            val nameListText = nameListCardBinding.etNameList.text.toString()
+            if (nameListText.isNotBlank()) {
+                showDeleteItemConfirmationDialog(nameListCard)
             } else {
-                binding.nameListContainer.addView(nameListCard)
+                (nameListCard.parent as? LinearLayout)?.removeView(nameListCard)
             }
         }
+
+        if (binding.nameListContainer.childCount == MAX_NAME_CARD) {
+            showAlertOverLimitItemCard()
+        } else {
+            binding.nameListContainer.addView(nameListCard)
+//            nameListCardBinding.etNameList.setText(name)
+
+        }
+
+        return nameListCard
     }
 
     private fun showDeleteItemConfirmationDialog(view: View) {
@@ -109,6 +122,7 @@ class AddNameListFragment : Fragment() {
                     AlertDialog.Builder(requireContext())
                         .setTitle(getString(R.string.next_btn_alert_title))
                         .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
+                            viewModel.saveNameList(getNameList())
                             findNavController().navigate(
                                 R.id.action_addNameListFragment_to_addListFragment,
                                 buildBundle()
@@ -173,7 +187,6 @@ class AddNameListFragment : Fragment() {
 
     private fun showAlertOnIncompleteCard(nameListCard: View) {
         val nameListCardBinding = NameListCardBinding.bind(nameListCard)
-        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
         val etNameList = nameListCardBinding.etNameList
         val message = when {
             !etNameList.text.toString().matches(REGEX) -> {
@@ -192,21 +205,35 @@ class AddNameListFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.incomplete_item))
             .setMessage(message)
-            .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
-
-                etNameList.requestFocus()
-                etNameList.text.clear()
-                etNameList.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(requireContext(), R.color.red)
-                )
-                etNameList.postDelayed({
-                    imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
-                }, 100)
-
-                setTextWatcherForEditText(etNameList)
+            .setPositiveButton(getString(R.string.ok_btn), null)
+            .setOnDismissListener {
+                focusOnCard(nameListCard)
             }
-            .setCancelable(false)
             .show()
+    }
+
+    private fun showAlertEmptyNameList() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.incomplete_item))
+            .setMessage(getString(R.string.incomplete_card_at_least_1_message))
+            .setPositiveButton(getString(R.string.ok_btn), null)
+            .setOnDismissListener { focusOnCard(addNameListCard()) }
+            .show()
+    }
+
+    private fun focusOnCard(nameListCard: View) {
+        val nameListCardBinding = NameListCardBinding.bind(nameListCard)
+        val etNameList = nameListCardBinding.etNameList
+        etNameList.requestFocus()
+        etNameList.text.clear()
+        etNameList.backgroundTintList = ColorStateList.valueOf(
+            ContextCompat.getColor(requireContext(), R.color.red)
+        )
+        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+        etNameList.postDelayed({
+            imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
+        }, 100)
+        setTextWatcherForEditText(etNameList)
     }
 
     private fun setTextWatcherForEditText(editText: EditText) {
@@ -214,15 +241,6 @@ class AddNameListFragment : Fragment() {
             editText.backgroundTintList =
                 ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.teal_700))
         }
-    }
-
-
-    private fun showAlertEmptyNameList() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.incomplete_item))
-            .setMessage(getString(R.string.incomplete_card_at_least_1_message))
-            .setPositiveButton(getString(R.string.ok_btn), null)
-            .show()
     }
 
 
