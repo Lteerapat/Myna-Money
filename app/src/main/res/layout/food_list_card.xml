@@ -33,8 +33,6 @@
             tools:ignore="Autofill,LabelFor" />
 
         <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
-            app:isSeparateByCommas="true"
-            app:noOfDecimals="2"
             android:id="@+id/etFoodPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -44,8 +42,10 @@
             android:hint="@string/zero_amount"
             android:inputType="numberDecimal"
             android:labelFor="@id/etFoodPrice"
+            app:isSeparateByCommas="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/etFoodList"
+            app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
         <ImageView
@@ -65,10 +65,12 @@
 
         <HorizontalScrollView
             android:id="@+id/nameChipScrollContainer"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/large_padding"
+            android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/vSpacing1"
             app:layout_constraintStart_toEndOf="@id/ivAddNameList"
             app:layout_constraintTop_toBottomOf="@id/etFoodList">
 
@@ -80,6 +82,15 @@
 
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
+
+        <View
+            android:id="@+id/vSpacing1"
+            android:layout_width="@dimen/space_12dp"
+            android:layout_height="0dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="@id/nameChipScrollContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/nameChipScrollContainer" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
