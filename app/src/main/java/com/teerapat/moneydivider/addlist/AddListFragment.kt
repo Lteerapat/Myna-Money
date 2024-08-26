@@ -1,15 +1,11 @@
 package com.teerapat.moneydivider.addlist
 
 import android.app.AlertDialog
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -17,8 +13,17 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.teerapat.moneydivider.R
+import com.teerapat.moneydivider.addnamelist.AddNameModal
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.databinding.FragmentAddListBinding
+import com.teerapat.moneydivider.utils.focusOnCard
+import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
+import com.teerapat.moneydivider.utils.showAlertOnVScDis
+import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
+import com.teerapat.moneydivider.utils.showAlertZeroCardList
+import com.teerapat.moneydivider.utils.showContinueDialog
+import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
+import com.teerapat.moneydivider.utils.showTogglePercentageAmountDialog
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
@@ -91,7 +96,10 @@ class AddListFragment : Fragment() {
             val foodListText = foodListCardBinding.etFoodList.text.toString()
             val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
             if (foodListText.isNotBlank() || foodPriceText.isNotBlank()) {
-                showDeleteItemConfirmationDialog(foodListCard)
+                showDeleteItemConfirmationDialog {
+                    (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
+                    calculateTotalAmount()
+                }
             } else {
                 (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
                 calculateTotalAmount()
@@ -126,7 +134,7 @@ class AddListFragment : Fragment() {
         foodListCardBinding.etFoodPrice.addTextChangedListener { calculateTotalAmount() }
 
         if (binding.foodListContainer.childCount == MAX_FOOD_CARD) {
-            showAlertOverLimitItemCard()
+            showAlertOverLimitItemCard(MAX_FOOD_CARD)
         } else {
             binding.foodListContainer.addView(foodListCard)
         }
@@ -143,26 +151,18 @@ class AddListFragment : Fragment() {
 
         toggleMap.forEach { (toggleView, type) ->
             toggleView.setOnClickListener {
-                showTogglePercentageAmountDialog(type)
+                showTogglePercentageAmountDialog(
+                    onPercentageSelected = {
+                        updateTextViewOfVScDis(type, getString(R.string.percentage_sign))
+                        isServiceChargePercentage = getString(R.string.percentage_sign)
+                    },
+                    onAmountSelected = {
+                        updateTextViewOfVScDis(type, getString(R.string.baht_sign))
+                        isServiceChargePercentage = getString(R.string.baht_sign)
+                    }
+                )
             }
         }
-    }
-
-    private fun showTogglePercentageAmountDialog(type: String) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.percentage_or_amount_toggle_title))
-            .setPositiveButton(getString(R.string.percentage_message)) { _, _ ->
-                updateTextViewOfVScDis(type, getString(R.string.percentage_sign))
-                isServiceChargePercentage = getString(R.string.percentage_sign)
-            }
-            .setNegativeButton(getString(R.string.amount_message)) { _, _ ->
-                updateTextViewOfVScDis(
-                    type,
-                    getString(R.string.baht_sign)
-                )
-                isServiceChargePercentage = getString(R.string.baht_sign)
-            }
-            .show()
     }
 
     private fun updateTextViewOfVScDis(type: String, symbol: String) {
@@ -224,7 +224,10 @@ class AddListFragment : Fragment() {
             if (serviceCharge > 100) {
                 showAlertOnVScDis(
                     getString(R.string.service_charge),
-                    getString(R.string.percentage_exceeded_alert_message)
+                    getString(R.string.percentage_exceeded_alert_message),
+                    binding.etServiceChargeAmount,
+                    null,
+                    null
                 )
                 total
             } else {
@@ -242,7 +245,10 @@ class AddListFragment : Fragment() {
             if (vat > 100) {
                 showAlertOnVScDis(
                     getString(R.string.vat),
-                    getString(R.string.percentage_exceeded_alert_message)
+                    getString(R.string.percentage_exceeded_alert_message),
+                    null,
+                    binding.etVatAmount,
+                    null
                 )
                 total
             } else {
@@ -260,7 +266,10 @@ class AddListFragment : Fragment() {
             if (discount > 100) {
                 showAlertOnVScDis(
                     getString(R.string.discount),
-                    getString(R.string.percentage_exceeded_alert_message)
+                    getString(R.string.percentage_exceeded_alert_message),
+                    null,
+                    null,
+                    binding.etDiscountAmount
                 )
                 total
             } else {
@@ -270,7 +279,10 @@ class AddListFragment : Fragment() {
             if (discount > total) {
                 showAlertOnVScDis(
                     getString(R.string.discount),
-                    getString(R.string.discount_exceeded_alert_message)
+                    getString(R.string.discount_exceeded_alert_message),
+                    null,
+                    null,
+                    binding.etDiscountAmount
                 )
                 total
             } else {
@@ -279,45 +291,61 @@ class AddListFragment : Fragment() {
         }
     }
 
-    private fun showAlertOnVScDis(title: String, message: String) {
-        when (title) {
-            getString(R.string.service_charge) -> binding.etServiceChargeAmount.text?.clear()
-            getString(R.string.vat) -> binding.etVatAmount.text?.clear()
-            getString(R.string.discount) -> binding.etDiscountAmount.text?.clear()
-        }
-
-        AlertDialog.Builder(requireContext())
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.ok_btn), null)
-            .show()
-
-    }
-
     private fun setUpNextButton() {
         binding.btnNext.setOnClickListener {
             val incompleteCard = findFirstIncompleteCard()
 
             when {
                 binding.foodListContainer.childCount <= 0 -> {
-                    showAlertEmptyFoodList()
+                    showAlertZeroCardList {
+                        focusOnCard(addFoodListCard()) { cardView ->
+                            FoodListCardBinding.bind(cardView).etFoodList
+                        }
+                    }
                 }
 
                 incompleteCard != null -> {
-                    showAlertOnIncompleteCard(incompleteCard)
+                    val foodListCardBinding = FoodListCardBinding.bind(incompleteCard)
+                    val etFoodList = foodListCardBinding.etFoodList
+                    val etFoodPrice = foodListCardBinding.etFoodPrice
+                    val message = when {
+                        !etFoodList.text.toString().matches(REGEX) -> {
+                            getString(R.string.incomplete_card_letter_or_num_message)
+                        }
+
+                        etFoodList.text.isBlank() || etFoodPrice.text!!.isBlank() -> {
+                            getString(R.string.incomplete_card_empty_message)
+                        }
+
+                        etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> {
+                            getString(R.string.incomplete_card_zero_message)
+                        }
+
+                        else -> {
+                            getString(R.string.incomplete_item)
+                        }
+                    }
+
+                    showAlertOnIncompleteCard(message) {
+                        focusOnCard(incompleteCard) { _ ->
+                            when {
+                                !etFoodList.text.toString().matches(REGEX) -> etFoodList
+                                etFoodList.text.isBlank() -> etFoodList
+                                etFoodPrice.text!!.isBlank() -> etFoodPrice
+                                etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> etFoodPrice
+                                else -> etFoodList
+                            }
+                        }
+                    }
                 }
 
                 else -> {
-                    AlertDialog.Builder(requireContext())
-                        .setTitle(getString(R.string.next_btn_alert_title))
-                        .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
-                            findNavController().navigate(
-                                R.id.action_addListFragment_to_summaryFragment,
-                                buildBundle()
-                            )
-                        }
-                        .setNegativeButton(getString(R.string.no_btn), null)
-                        .show()
+                    showContinueDialog {
+                        findNavController().navigate(
+                            R.id.action_addListFragment_to_summaryFragment,
+                            buildBundle()
+                        )
+                    }
                 }
             }
         }
@@ -365,82 +393,6 @@ class AddListFragment : Fragment() {
         }
     }
 
-    private fun showAlertOnIncompleteCard(foodListCard: View) {
-        val foodListCardBinding = FoodListCardBinding.bind(foodListCard)
-        val etFoodList = foodListCardBinding.etFoodList
-        val etFoodPrice = foodListCardBinding.etFoodPrice
-
-        val message = when {
-            !etFoodList.text.toString().matches(REGEX) -> {
-                getString(R.string.incomplete_card_letter_or_num_message)
-            }
-
-            etFoodList.text.isBlank() || etFoodPrice.text!!.isBlank() -> {
-                getString(R.string.incomplete_card_empty_message)
-            }
-
-            etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> {
-                getString(R.string.incomplete_card_zero_message)
-            }
-
-            else -> {
-                getString(R.string.incomplete_item)
-            }
-        }
-
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.incomplete_item))
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.ok_btn), null)
-            .setOnDismissListener {
-                focusOnCard(foodListCard)
-            }
-            .show()
-    }
-
-    private fun showAlertEmptyFoodList() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.incomplete_item))
-            .setMessage(getString(R.string.incomplete_card_at_least_1_message))
-            .setPositiveButton(getString(R.string.ok_btn), null)
-            .setOnDismissListener { focusOnCard(addFoodListCard()) }
-            .show()
-    }
-
-    private fun focusOnCard(foodListCard: View) {
-        val foodListCardBinding = FoodListCardBinding.bind(foodListCard)
-        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
-
-        val etFoodList = foodListCardBinding.etFoodList
-        val etFoodPrice = foodListCardBinding.etFoodPrice
-
-        val targetEditText = when {
-            !etFoodList.text.toString().matches(REGEX) -> etFoodList
-            etFoodList.text.isBlank() -> etFoodList
-            etFoodPrice.text!!.isBlank() -> etFoodPrice
-            etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> etFoodPrice
-            else -> etFoodList
-        }
-
-        targetEditText.requestFocus()
-        targetEditText.text.clear()
-        targetEditText.backgroundTintList = ColorStateList.valueOf(
-            ContextCompat.getColor(requireContext(), R.color.red)
-        )
-        targetEditText.postDelayed({
-            imm?.showSoftInput(targetEditText, InputMethodManager.SHOW_IMPLICIT)
-        }, 100)
-
-        setTextWatcherForEditText(targetEditText)
-    }
-
-    private fun setTextWatcherForEditText(editText: EditText) {
-        editText.addTextChangedListener {
-            editText.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.teal_700))
-        }
-    }
-
     private fun findFirstIncompleteCard(): View? {
         for (i in 0 until binding.foodListContainer.childCount) {
             val foodListCard = binding.foodListContainer.getChildAt(i)
@@ -464,18 +416,6 @@ class AddListFragment : Fragment() {
         return null
     }
 
-    private fun showDeleteItemConfirmationDialog(view: View) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.confirm_delete_title))
-            .setMessage(getString(R.string.confirm_delete_message))
-            .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
-                (view.parent as? LinearLayout)?.removeView(view)
-                calculateTotalAmount()
-            }
-            .setNegativeButton(getString(R.string.no_btn), null)
-            .show()
-    }
-
     private fun thousandSeparator(amount: Double): String {
         val decimalFormat = DecimalFormat(DECIMAL_PATTERN, DecimalFormatSymbols(Locale.US))
         return "${decimalFormat.format(amount)} ฿"
@@ -489,23 +429,10 @@ class AddListFragment : Fragment() {
         }
     }
 
-    private fun showAlertOverLimitItemCard() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.item_limit_exceeded_title))
-            .setMessage(
-                getString(
-                    R.string.item_limit_exceeded_message,
-                    MAX_FOOD_CARD
-                )
-            )
-            .setPositiveButton(getString(R.string.ok_btn), null)
-            .show()
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+//    override fun onDestroyView() {
+//        super.onDestroyView()
+//        _binding = null
+//    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
