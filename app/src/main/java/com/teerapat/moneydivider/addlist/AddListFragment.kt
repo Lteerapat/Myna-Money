@@ -360,6 +360,8 @@ class AddListFragment : Fragment() {
             if (existingChip == null) {
                 val chip = Chip(context).apply {
                     text = name
+                    tag = name
+                    isClickable=false
                     isCloseIconVisible = true
                     setOnCloseIconClickListener {
                         chipGroup.removeView(this)

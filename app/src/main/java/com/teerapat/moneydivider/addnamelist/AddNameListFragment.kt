@@ -199,6 +199,7 @@ class AddNameListFragment : Fragment() {
             if (name.isBlank()) return nameListCard
             if (!name.matches(REGEX)) return nameListCard
         }
+
         return null
     }
 
