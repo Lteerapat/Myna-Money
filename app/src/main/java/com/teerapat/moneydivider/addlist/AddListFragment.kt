@@ -225,9 +225,7 @@ class AddListFragment : Fragment() {
                 showAlertOnVScDis(
                     getString(R.string.service_charge),
                     getString(R.string.percentage_exceeded_alert_message),
-                    binding.etServiceChargeAmount,
-                    null,
-                    null
+                    serviceChargeField = binding.etServiceChargeAmount,
                 )
                 total
             } else {
@@ -246,9 +244,7 @@ class AddListFragment : Fragment() {
                 showAlertOnVScDis(
                     getString(R.string.vat),
                     getString(R.string.percentage_exceeded_alert_message),
-                    null,
-                    binding.etVatAmount,
-                    null
+                    vatField = binding.etVatAmount,
                 )
                 total
             } else {
@@ -267,9 +263,7 @@ class AddListFragment : Fragment() {
                 showAlertOnVScDis(
                     getString(R.string.discount),
                     getString(R.string.percentage_exceeded_alert_message),
-                    null,
-                    null,
-                    binding.etDiscountAmount
+                    discountField = binding.etDiscountAmount
                 )
                 total
             } else {
@@ -280,9 +274,7 @@ class AddListFragment : Fragment() {
                 showAlertOnVScDis(
                     getString(R.string.discount),
                     getString(R.string.discount_exceeded_alert_message),
-                    null,
-                    null,
-                    binding.etDiscountAmount
+                    discountField = binding.etDiscountAmount
                 )
                 total
             } else {

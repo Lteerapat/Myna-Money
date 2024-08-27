@@ -63,9 +63,9 @@ fun Fragment.showContinueDialog(onContinueConfirm: () -> Unit) {
 fun Fragment.showAlertOnVScDis(
     title: String,
     message: String,
-    serviceChargeField: EditText?,
-    vatField: EditText?,
-    discountField: EditText?
+    serviceChargeField: EditText? = null,
+    vatField: EditText? = null,
+    discountField: EditText? = null
 ) {
     when (title) {
         getString(R.string.service_charge) -> serviceChargeField?.text?.clear()
