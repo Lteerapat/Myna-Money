@@ -17,6 +17,7 @@ import com.teerapat.moneydivider.addnamelist.AddNameModal
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.databinding.FragmentAddListBinding
 import com.teerapat.moneydivider.utils.focusOnCard
+import com.teerapat.moneydivider.utils.showAlertDuplicateNames
 import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
 import com.teerapat.moneydivider.utils.showAlertOnVScDis
 import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
@@ -123,7 +124,7 @@ class AddListFragment : Fragment() {
                     val unCheckedNameList = nameList?.filter { !it.isChecked }?.map { it.name }
                     val checkedNameList = nameList?.filter { it.isChecked }?.map { it.name }
                     if (checkedNameList != null) {
-                        addNameChip(checkedNameList)
+                        addNameChip(foodListCardBinding.nameChipContainer, checkedNameList)
                     }
                 }
                 .setNegativeButton(getString(R.string.cancel), null)
@@ -305,6 +306,10 @@ class AddListFragment : Fragment() {
                             getString(R.string.incomplete_card_letter_or_num_message)
                         }
 
+                        etFoodList.text.toString().matches(NUM_REGEX) -> {
+                            getString(R.string.incomplete_card_num_only_message)
+                        }
+
                         etFoodList.text.isBlank() || etFoodPrice.text!!.isBlank() -> {
                             getString(R.string.incomplete_card_empty_message)
                         }
@@ -322,6 +327,7 @@ class AddListFragment : Fragment() {
                         focusOnCard(incompleteCard) { _ ->
                             when {
                                 !etFoodList.text.toString().matches(REGEX) -> etFoodList
+                                etFoodList.text.toString().matches(NUM_REGEX) -> etFoodList
                                 etFoodList.text.isBlank() -> etFoodList
                                 etFoodPrice.text!!.isBlank() -> etFoodPrice
                                 etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> etFoodPrice
@@ -329,6 +335,10 @@ class AddListFragment : Fragment() {
                             }
                         }
                     }
+                }
+
+                hasDuplicateNames() -> {
+                    showAlertDuplicateNames()
                 }
 
                 else -> {
@@ -343,9 +353,25 @@ class AddListFragment : Fragment() {
         }
     }
 
-    private fun addNameChip(checkedNameList: List<String>) {
-        val chipGroup = binding.foodListContainer.findViewById<ChipGroup>(R.id.nameChipContainer)
+    private fun hasDuplicateNames(): Boolean {
+        val nameSet = mutableSetOf<String>()
 
+        for (i in 0 until binding.foodListContainer.childCount) {
+            val foodListCard = binding.foodListContainer.getChildAt(i)
+            val foodListCardBinding = FoodListCardBinding.bind(foodListCard)
+            val name = foodListCardBinding.etFoodList.text.toString().trim()
+
+            if (name in nameSet) {
+                return true
+            } else {
+                nameSet.add(name)
+            }
+        }
+
+        return false
+    }
+
+    private fun addNameChip(chipGroup: ChipGroup, checkedNameList: List<String>) {
         checkedNameList.forEach { name ->
             val existingChip = chipGroup.findViewWithTag<Chip>(name)
 
@@ -353,7 +379,7 @@ class AddListFragment : Fragment() {
                 val chip = Chip(context).apply {
                     text = name
                     tag = name
-                    isClickable=false
+                    isClickable = false
                     isCloseIconVisible = true
                     setOnCloseIconClickListener {
                         chipGroup.removeView(this)
@@ -396,6 +422,8 @@ class AddListFragment : Fragment() {
 
             if (!foodName.matches(REGEX)) return foodListCard
 
+            if (foodName.matches(NUM_REGEX)) return foodListCard
+
             if (foodName.isNotBlank() && foodPrice.isBlank()) {
                 return foodListCard
             } else if (foodName.isBlank() && foodPrice.isNotBlank()) {
@@ -437,6 +465,7 @@ class AddListFragment : Fragment() {
         private const val DISCOUNT = "dis"
         private const val VAT = "vat"
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
+        private val NUM_REGEX = Regex("[0-9]*$")
         private const val DECIMAL_PATTERN = "#,###.##"
         private const val MAX_FOOD_CARD = 50
     }

@@ -115,6 +115,10 @@ class AddNameListFragment : Fragment() {
                             getString(R.string.incomplete_letter_or_num_message_2)
                         }
 
+                        etNameList.text.toString().matches(NUM_REGEX) -> {
+                            getString(R.string.incomplete_card_num_only_message_2)
+                        }
+
                         etNameList.text.isBlank() -> {
                             getString(R.string.incomplete_empty_card_message_2)
                         }
@@ -198,6 +202,7 @@ class AddNameListFragment : Fragment() {
 
             if (name.isBlank()) return nameListCard
             if (!name.matches(REGEX)) return nameListCard
+            if (name.matches(NUM_REGEX)) return nameListCard
         }
 
         return null
@@ -220,6 +225,7 @@ class AddNameListFragment : Fragment() {
 
     companion object {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
+        private val NUM_REGEX = Regex("[0-9]*$")
         private const val MAX_NAME_CARD = 30
     }
 }
