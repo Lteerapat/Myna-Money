@@ -101,6 +101,8 @@ class AddListFragment : Fragment() {
         )
         foodListCard.layoutParams = layoutParams
 
+        foodListCardBinding.nameChipContainer.tag = cardIndex
+
         foodListCardBinding.ivDeleteFoodList.setOnClickListener {
             val foodListText = foodListCardBinding.etFoodList.text.toString()
             val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
@@ -116,7 +118,7 @@ class AddListFragment : Fragment() {
         }
 
         foodListCardBinding.ivAddNameList.setOnClickListener {
-            it.isEnabled = false
+            foodListCardBinding.ivAddNameList.isEnabled = false
 
             val nameList = nameStateMap[cardIndex]?.toMutableList()
                 ?: arguments?.getParcelableArrayList<AddNameModal>("nameList")?.map {
@@ -126,7 +128,6 @@ class AddListFragment : Fragment() {
 
             val onlyNameList = nameList.map { it.name }.toTypedArray()
             val onlyIsCheckedList = nameList.map { it.isChecked }.toBooleanArray()
-
             showNameSelectionDialog(
                 onlyNameList,
                 onlyIsCheckedList,
@@ -419,6 +420,12 @@ class AddListFragment : Fragment() {
                     isCloseIconVisible = true
                     setOnCloseIconClickListener {
                         chipGroup.removeView(this)
+
+                        val cardIndex = chipGroup.tag as? Int
+                        cardIndex?.let {
+                            nameStateMap[it]?.find { addNameModal -> addNameModal.name == name }?.isChecked =
+                                false
+                        }
                     }
                 }
                 chipGroup.addView(chip)
