@@ -101,8 +101,6 @@ class AddListFragment : Fragment() {
         )
         foodListCard.layoutParams = layoutParams
 
-        foodListCardBinding.nameChipContainer.tag = cardIndex
-
         foodListCardBinding.ivDeleteFoodList.setOnClickListener {
             val foodListText = foodListCardBinding.etFoodList.text.toString()
             val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
@@ -135,7 +133,7 @@ class AddListFragment : Fragment() {
             ) { updatedList ->
                 val checkedNameList = updatedList.filter { it.isChecked }.map { it.name }
                 nameStateMap[cardIndex] = updatedList
-                addNameChip(foodListCardBinding.nameChipContainer, checkedNameList)
+                addNameChip(foodListCardBinding.nameChipContainer, checkedNameList, cardIndex)
             }
         }
 
@@ -407,7 +405,7 @@ class AddListFragment : Fragment() {
         return false
     }
 
-    private fun addNameChip(chipGroup: ChipGroup, checkedNameList: List<String>) {
+    private fun addNameChip(chipGroup: ChipGroup, checkedNameList: List<String>, cardIndex: Int) {
         chipGroup.removeAllViews()
         checkedNameList.forEach { name ->
             val existingChip = chipGroup.findViewWithTag<Chip>(name)
@@ -421,11 +419,8 @@ class AddListFragment : Fragment() {
                     setOnCloseIconClickListener {
                         chipGroup.removeView(this)
 
-                        val cardIndex = chipGroup.tag as? Int
-                        cardIndex?.let {
-                            nameStateMap[it]?.find { addNameModal -> addNameModal.name == name }?.isChecked =
-                                false
-                        }
+                        nameStateMap[cardIndex]?.find { addNameModal -> addNameModal.name == name }?.isChecked =
+                            false
                     }
                 }
                 chipGroup.addView(chip)
