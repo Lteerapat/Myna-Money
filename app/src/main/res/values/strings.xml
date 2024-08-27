@@ -10,6 +10,11 @@
     <string name="percentage_sign">%</string>
     <string name="next">Next</string>
     <string name="ok_btn">OK</string>
+    <string name="add_name_title">Please add name 💰</string>
+    <string name="add_name_btn">Add name</string>
+    <string name="add_food_list">Add food list</string>
+    <string name="add_name">Add name</string>
+    <string name="name">Name</string>
 
     // alert dialog
     <string name="incomplete_item">Incomplete Item</string>

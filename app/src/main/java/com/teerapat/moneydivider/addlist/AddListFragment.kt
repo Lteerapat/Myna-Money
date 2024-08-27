@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -38,6 +39,9 @@ class AddListFragment : Fragment() {
     private var isServiceChargePercentage = "%"
     private var isDiscountPercentage = "%"
     private var isVatPercentage = "%"
+
+    private val nameStateMap = mutableMapOf<Int, List<AddNameModal>>()
+    private var cardIndexCounter = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,15 +78,19 @@ class AddListFragment : Fragment() {
 
     private fun setUpFoodListCard() {
 //        for (nameModal in viewModel.nameList) {
-        addFoodListCard()
+        addFoodListCard(cardIndexCounter++)
 //        }
 
         binding.btnAddFoodList.setOnClickListener {
-            addFoodListCard()
+            addFoodListCard(cardIndexCounter++)
         }
     }
 
-    private fun addFoodListCard(foodName: String = "", foodPrice: Double = 0.0): View {
+    private fun addFoodListCard(
+        cardIndex: Int,
+        foodName: String = "",
+        foodPrice: Double = 0.0
+    ): View {
         val inflater = LayoutInflater.from(requireContext())
         val foodListCardBinding = FoodListCardBinding.inflate(inflater)
         val foodListCard = foodListCardBinding.root
@@ -108,27 +116,26 @@ class AddListFragment : Fragment() {
         }
 
         foodListCardBinding.ivAddNameList.setOnClickListener {
-            val nameList = arguments?.getParcelableArrayList<AddNameModal>("nameList")
-            val onlyNameList = nameList?.map { it.name }?.toTypedArray()
-            val onlyIsCheckedList = nameList?.map { it.isChecked }?.toBooleanArray()
+            it.isEnabled = false
 
-            AlertDialog.Builder(requireContext())
-                .setTitle(getString(R.string.add_name_for_food_list_card_title))
-                .setMultiChoiceItems(
-                    onlyNameList,
-                    onlyIsCheckedList
-                ) { _, position, isChecked ->
-                    nameList?.get(position)?.isChecked = isChecked
-                }
-                .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
-                    val unCheckedNameList = nameList?.filter { !it.isChecked }?.map { it.name }
-                    val checkedNameList = nameList?.filter { it.isChecked }?.map { it.name }
-                    if (checkedNameList != null) {
-                        addNameChip(foodListCardBinding.nameChipContainer, checkedNameList)
-                    }
-                }
-                .setNegativeButton(getString(R.string.cancel), null)
-                .show()
+            val nameList = nameStateMap[cardIndex]?.toMutableList()
+                ?: arguments?.getParcelableArrayList<AddNameModal>("nameList")?.map {
+                    AddNameModal(it.name, it.isChecked)
+                }?.toMutableList() ?: mutableListOf()
+            nameList.sortBy { it.name }
+
+            val onlyNameList = nameList.map { it.name }.toTypedArray()
+            val onlyIsCheckedList = nameList.map { it.isChecked }.toBooleanArray()
+
+            showNameSelectionDialog(
+                onlyNameList,
+                onlyIsCheckedList,
+                foodListCardBinding.ivAddNameList
+            ) { updatedList ->
+                val checkedNameList = updatedList.filter { it.isChecked }.map { it.name }
+                nameStateMap[cardIndex] = updatedList
+                addNameChip(foodListCardBinding.nameChipContainer, checkedNameList)
+            }
         }
 
         foodListCardBinding.etFoodList.addTextChangedListener { calculateTotalAmount() }
@@ -142,6 +149,34 @@ class AddListFragment : Fragment() {
 
         return foodListCard
     }
+
+    private fun showNameSelectionDialog(
+        names: Array<String>,
+        isCheckedArray: BooleanArray,
+        ivAddNameList: ImageView,
+        onPositiveClick: (List<AddNameModal>) -> Unit
+    ) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.add_name_for_food_list_card_title))
+            .setMultiChoiceItems(
+                names,
+                isCheckedArray
+            ) { _, position, isChecked ->
+                isCheckedArray[position] = isChecked
+            }
+            .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
+                val updatedNameList = names.mapIndexed { index, name ->
+                    AddNameModal(name, isCheckedArray[index])
+                }
+                onPositiveClick(updatedNameList)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .setOnDismissListener {
+                ivAddNameList.isEnabled = true
+            }
+            .show()
+    }
+
 
     private fun setUpToggleListeners() {
         val toggleMap = mapOf(
@@ -291,7 +326,7 @@ class AddListFragment : Fragment() {
             when {
                 binding.foodListContainer.childCount <= 0 -> {
                     showAlertZeroCardList {
-                        focusOnCard(addFoodListCard()) { cardView ->
+                        focusOnCard(addFoodListCard(cardIndexCounter++)) { cardView ->
                             FoodListCardBinding.bind(cardView).etFoodList
                         }
                     }
@@ -372,6 +407,7 @@ class AddListFragment : Fragment() {
     }
 
     private fun addNameChip(chipGroup: ChipGroup, checkedNameList: List<String>) {
+        chipGroup.removeAllViews()
         checkedNameList.forEach { name ->
             val existingChip = chipGroup.findViewWithTag<Chip>(name)
 
