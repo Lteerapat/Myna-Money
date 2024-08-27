@@ -2,6 +2,7 @@ package com.teerapat.moneydivider.addlist
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -414,7 +415,8 @@ class AddListFragment : Fragment() {
                 val chip = Chip(context).apply {
                     text = name
                     tag = name
-                    isClickable = false
+                    ellipsize = TextUtils.TruncateAt.END
+                    maxWidth = resources.getDimensionPixelSize(R.dimen.space_85dp)
                     isCloseIconVisible = true
                     setOnCloseIconClickListener {
                         chipGroup.removeView(this)
