@@ -1,23 +1,19 @@
 <resources>
+    // app name
     <string name="app_name">Myna Money</string>
+
+    // general
+    <string name="zero_amount">0.00</string>
     <string name="food_name">Food name</string>
     <string name="food_price">0</string>
     <string name="add">Add</string>
-    <string name="total_amount">Total Amount</string>
-    <string name="service_charge">Service Charge</string>
-    <string name="vat">VAT</string>
-    <string name="discount">Discount</string>
-    <string name="zero_amount">0.00</string>
     <string name="percentage_sign">%</string>
     <string name="next">Next</string>
-    <string name="total_amount_format">฿%1$.2f</string>
-    <string name="name">Name</string>
-    <string name="add_name_title">Please add name 💰</string>
-    <string name="add_name_btn">Add name</string>
-    <string name="add_food_list">Add food list</string>
-    <string name="add_name">Add name</string>
-    <string name="incomplete_item">Incomplete Item</string>
     <string name="ok_btn">OK</string>
+
+    // alert dialog
+    <string name="incomplete_item">Incomplete Item</string>
+    <string name="baht_sign">฿</string>
     <string name="input_limit_exceeded_message">The number exceeds the maximum allowed digits before the decimal point</string>
     <string name="input_limit_exceeded_title">Input Limit Exceeded</string>
     <string name="add_name_for_food_list_card_title">Please select the name</string>
@@ -25,7 +21,6 @@
     <string name="percentage_or_amount_toggle_title">Percentage or Amount</string>
     <string name="percentage_message">Percentage</string>
     <string name="amount_message">Amount</string>
-    <string name="baht_sign">฿</string>
     <string name="percentage_exceeded_alert_message">Percentage cannot exceed 100%</string>
     <string name="discount_exceeded_alert_message">Discount cannot exceed total amount</string>
     <string name="next_btn_alert_title">Are you sure you want to continue?</string>
@@ -45,4 +40,11 @@
     <string name="incomplete_card_num_only_message_2">Please use at least one letter for the name</string>
     <string name="item_limit_exceeded_title">Item Limit Exceeded</string>
     <string name="item_limit_exceeded_message">Item cannot exceed %1$d items</string>
+
+    // vat sc dis total field
+    <string name="total_amount">Total Amount</string>
+    <string name="service_charge">Service Charge</string>
+    <string name="vat">VAT</string>
+    <string name="discount">Discount</string>
+    <string name="total_amount_format">฿%1$.2f</string>
 </resources>
