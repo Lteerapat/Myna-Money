@@ -106,10 +106,11 @@ class AddListFragment : Fragment() {
         foodListCard.layoutParams = layoutParams
 
         foodListCardBinding.ivDeleteFoodList.setOnClickListener {
+            foodListCardBinding.ivDeleteFoodList.isEnabled = false
             val foodListText = foodListCardBinding.etFoodList.text.toString()
             val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
             if (foodListText.isNotBlank() || foodPriceText.isNotBlank()) {
-                showDeleteItemConfirmationDialog {
+                showDeleteItemConfirmationDialog(foodListCardBinding.ivDeleteFoodList) {
                     (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
                     calculateTotalAmount()
                 }
@@ -161,7 +162,9 @@ class AddListFragment : Fragment() {
 
         toggleMap.forEach { (toggleView, type) ->
             toggleView.setOnClickListener {
+                toggleView.isEnabled = false
                 showTogglePercentageAmountDialog(
+                    toggleView,
                     onPercentageSelected = {
                         updateTextViewOfVScDis(type, getString(R.string.percentage_sign))
                         isServiceChargePercentage = getString(R.string.percentage_sign)
@@ -361,7 +364,8 @@ class AddListFragment : Fragment() {
                 }
 
                 else -> {
-                    showContinueDialog {
+                    binding.btnNext.isEnabled = false
+                    showContinueDialog(binding.btnNext) {
                         findNavController().navigate(
                             R.id.action_addListFragment_to_summaryFragment,
                             buildBundle()

@@ -73,9 +73,10 @@ class AddNameListFragment : Fragment() {
         nameListCardBinding.etNameList.setText(name)
 
         nameListCardBinding.ivDeleteNameList.setOnClickListener {
+            nameListCardBinding.ivDeleteNameList.isEnabled = false
             val nameListText = nameListCardBinding.etNameList.text.toString()
             if (nameListText.isNotBlank()) {
-                showDeleteItemConfirmationDialog {
+                showDeleteItemConfirmationDialog(nameListCardBinding.ivDeleteNameList) {
                     (nameListCard.parent as? LinearLayout)?.removeView(nameListCard)
                 }
             } else {
@@ -139,7 +140,8 @@ class AddNameListFragment : Fragment() {
                 }
 
                 else -> {
-                    showContinueDialog {
+                    binding.btnNext.isEnabled = false
+                    showContinueDialog(binding.btnNext) {
                         viewModel.saveNameList(getNameList())
                         findNavController().navigate(
                             R.id.action_addNameListFragment_to_addListFragment,

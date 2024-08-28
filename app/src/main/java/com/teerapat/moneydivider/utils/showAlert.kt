@@ -1,13 +1,17 @@
 package com.teerapat.moneydivider.utils
 
 import android.app.AlertDialog
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.addnamelist.AddNameModal
 
-fun Fragment.showDeleteItemConfirmationDialog(onDeleteConfirmed: () -> Unit) {
+fun Fragment.showDeleteItemConfirmationDialog(
+    deleteIcon: ImageView,
+    onDeleteConfirmed: () -> Unit
+) {
     AlertDialog.Builder(requireContext())
         .setTitle(getString(R.string.confirm_delete_title))
         .setMessage(getString(R.string.confirm_delete_message))
@@ -15,6 +19,7 @@ fun Fragment.showDeleteItemConfirmationDialog(onDeleteConfirmed: () -> Unit) {
             onDeleteConfirmed()
         }
         .setNegativeButton(getString(R.string.no_btn), null)
+        .setOnDismissListener { deleteIcon.isEnabled = true }
         .show()
 }
 
@@ -52,13 +57,14 @@ fun Fragment.showAlertDuplicateNames() {
         .show()
 }
 
-fun Fragment.showContinueDialog(onContinueConfirm: () -> Unit) {
+fun Fragment.showContinueDialog(btnNext: Button, onContinueConfirm: () -> Unit) {
     AlertDialog.Builder(requireContext())
         .setTitle(getString(R.string.next_btn_alert_title))
         .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
             onContinueConfirm()
         }
         .setNegativeButton(getString(R.string.no_btn), null)
+        .setOnDismissListener { btnNext.isEnabled = true }
         .show()
 }
 
@@ -83,6 +89,7 @@ fun Fragment.showAlertOnVScDis(
 }
 
 fun Fragment.showTogglePercentageAmountDialog(
+    toggleButton: ImageView,
     onPercentageSelected: () -> Unit,
     onAmountSelected: () -> Unit
 ) {
@@ -94,6 +101,7 @@ fun Fragment.showTogglePercentageAmountDialog(
         .setNegativeButton(getString(R.string.amount_message)) { _, _ ->
             onAmountSelected()
         }
+        .setOnDismissListener { toggleButton.isEnabled = true }
         .show()
 }
 
