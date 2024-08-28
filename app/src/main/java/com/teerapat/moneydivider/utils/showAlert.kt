@@ -2,8 +2,10 @@ package com.teerapat.moneydivider.utils
 
 import android.app.AlertDialog
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.teerapat.moneydivider.R
+import com.teerapat.moneydivider.addnamelist.AddNameModal
 
 fun Fragment.showDeleteItemConfirmationDialog(onDeleteConfirmed: () -> Unit) {
     AlertDialog.Builder(requireContext())
@@ -91,6 +93,33 @@ fun Fragment.showTogglePercentageAmountDialog(
         }
         .setNegativeButton(getString(R.string.amount_message)) { _, _ ->
             onAmountSelected()
+        }
+        .show()
+}
+
+fun Fragment.showNameSelectionDialog(
+    names: Array<String>,
+    isCheckedArray: BooleanArray,
+    ivAddNameList: ImageView,
+    onPositiveClick: (List<AddNameModal>) -> Unit
+) {
+    AlertDialog.Builder(requireContext())
+        .setTitle(getString(R.string.add_name_for_food_list_card_title))
+        .setMultiChoiceItems(
+            names,
+            isCheckedArray
+        ) { _, position, isChecked ->
+            isCheckedArray[position] = isChecked
+        }
+        .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
+            val updatedNameList = names.mapIndexed { index, name ->
+                AddNameModal(name, isCheckedArray[index])
+            }
+            onPositiveClick(updatedNameList)
+        }
+        .setNegativeButton(getString(R.string.cancel), null)
+        .setOnDismissListener {
+            ivAddNameList.isEnabled = true
         }
         .show()
 }

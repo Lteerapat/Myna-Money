@@ -47,7 +47,6 @@ class AddNameListFragment : Fragment() {
     private fun observe() {
     }
 
-
     private fun setUpNameListCard() {
         addNameListCard()
 
@@ -56,7 +55,7 @@ class AddNameListFragment : Fragment() {
         }
 
         binding.btnAddNameList.setOnClickListener {
-            addNameListCard()
+            focusOnCard(addNameListCard().findViewById(R.id.etNameList), isIncompleteCard = false)
         }
     }
 
@@ -115,12 +114,12 @@ class AddNameListFragment : Fragment() {
                             getString(R.string.incomplete_letter_or_num_message_2)
                         }
 
-                        etNameList.text.toString().matches(NUM_REGEX) -> {
-                            getString(R.string.incomplete_card_num_only_message_2)
-                        }
-
                         etNameList.text.isBlank() -> {
                             getString(R.string.incomplete_empty_card_message_2)
+                        }
+
+                        etNameList.text.toString().matches(NUM_REGEX) -> {
+                            getString(R.string.incomplete_card_num_only_message_2)
                         }
 
                         else -> {

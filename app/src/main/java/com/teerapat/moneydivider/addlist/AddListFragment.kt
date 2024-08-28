@@ -1,13 +1,12 @@
 package com.teerapat.moneydivider.addlist
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -26,6 +25,7 @@ import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
 import com.teerapat.moneydivider.utils.showAlertZeroCardList
 import com.teerapat.moneydivider.utils.showContinueDialog
 import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
+import com.teerapat.moneydivider.utils.showNameSelectionDialog
 import com.teerapat.moneydivider.utils.showTogglePercentageAmountDialog
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -83,7 +83,10 @@ class AddListFragment : Fragment() {
 //        }
 
         binding.btnAddFoodList.setOnClickListener {
-            addFoodListCard(cardIndexCounter++)
+            focusOnCard(
+                addFoodListCard(cardIndexCounter++).findViewById(R.id.etFoodList),
+                isIncompleteCard = false
+            )
         }
     }
 
@@ -124,7 +127,6 @@ class AddListFragment : Fragment() {
                     AddNameModal(it.name, it.isChecked)
                 }?.toMutableList() ?: mutableListOf()
             nameList.sortBy { it.name }
-
             val onlyNameList = nameList.map { it.name }.toTypedArray()
             val onlyIsCheckedList = nameList.map { it.isChecked }.toBooleanArray()
             showNameSelectionDialog(
@@ -149,34 +151,6 @@ class AddListFragment : Fragment() {
 
         return foodListCard
     }
-
-    private fun showNameSelectionDialog(
-        names: Array<String>,
-        isCheckedArray: BooleanArray,
-        ivAddNameList: ImageView,
-        onPositiveClick: (List<AddNameModal>) -> Unit
-    ) {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.add_name_for_food_list_card_title))
-            .setMultiChoiceItems(
-                names,
-                isCheckedArray
-            ) { _, position, isChecked ->
-                isCheckedArray[position] = isChecked
-            }
-            .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
-                val updatedNameList = names.mapIndexed { index, name ->
-                    AddNameModal(name, isCheckedArray[index])
-                }
-                onPositiveClick(updatedNameList)
-            }
-            .setNegativeButton(getString(R.string.cancel), null)
-            .setOnDismissListener {
-                ivAddNameList.isEnabled = true
-            }
-            .show()
-    }
-
 
     private fun setUpToggleListeners() {
         val toggleMap = mapOf(
@@ -341,16 +315,20 @@ class AddListFragment : Fragment() {
                             getString(R.string.incomplete_card_letter_or_num_message)
                         }
 
-                        etFoodList.text.toString().matches(NUM_REGEX) -> {
-                            getString(R.string.incomplete_card_num_only_message)
-                        }
-
                         etFoodList.text.isBlank() || etFoodPrice.text!!.isBlank() -> {
                             getString(R.string.incomplete_card_empty_message)
                         }
 
+                        etFoodList.text.toString().matches(NUM_REGEX) -> {
+                            getString(R.string.incomplete_card_num_only_message)
+                        }
+
                         etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> {
                             getString(R.string.incomplete_card_zero_message)
+                        }
+
+                        foodListCardBinding.nameChipContainer.childCount <= 0 -> {
+                            getString(R.string.incomplete_card_zero_chip_message)
                         }
 
                         else -> {
@@ -362,10 +340,16 @@ class AddListFragment : Fragment() {
                         focusOnCard(incompleteCard) { _ ->
                             when {
                                 !etFoodList.text.toString().matches(REGEX) -> etFoodList
-                                etFoodList.text.toString().matches(NUM_REGEX) -> etFoodList
                                 etFoodList.text.isBlank() -> etFoodList
                                 etFoodPrice.text!!.isBlank() -> etFoodPrice
-                                etFoodPrice.text.toString().toDoubleOrNull() == 0.0 -> etFoodPrice
+                                etFoodList.text.toString().matches(NUM_REGEX) -> etFoodList
+                                etFoodPrice.text.toString()
+                                    .toDoubleOrNull() == 0.0 -> etFoodPrice
+
+                                foodListCardBinding.nameChipContainer.childCount <= 0 -> incompleteCard.findViewById(
+                                    R.id.foodCardContainer
+                                )
+
                                 else -> etFoodList
                             }
                         }
@@ -428,6 +412,17 @@ class AddListFragment : Fragment() {
                 chipGroup.addView(chip)
             }
         }
+
+        val horizontalScrollView = chipGroup.parent as? View
+        val foodCardContainer = horizontalScrollView?.parent as? View
+
+        foodCardContainer?.let {
+            val originalDrawable =
+                ContextCompat.getDrawable(requireContext(), R.drawable.rounded_corner_white_bg)
+            if (it.background != originalDrawable) {
+                it.background = originalDrawable
+            }
+        }
     }
 
     private fun buildBundle(): Bundle {
@@ -473,6 +468,8 @@ class AddListFragment : Fragment() {
             } else if (foodName.isNotBlank() && removeCommasAndReturnDouble(foodPrice) == 0.0) {
                 return foodListCard
             }
+
+            if (foodListCardBinding.nameChipContainer.childCount <= 0) return foodListCard
         }
 
         return null

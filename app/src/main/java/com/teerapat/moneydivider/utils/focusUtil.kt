@@ -9,23 +9,54 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import com.teerapat.moneydivider.R
 
-fun Fragment.focusOnCard(cardView: View, getTargetEditText: (View) -> EditText) {
+fun Fragment.focusOnCard(
+    cardView: View,
+    isIncompleteCard: Boolean = true,
+    getTargetView: (View) -> View = { it }
+) {
     val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
 
-    val targetEditText = getTargetEditText(cardView)
+    val targetView = getTargetView(cardView)
+    targetView.requestFocus()
 
-    targetEditText.requestFocus()
-    targetEditText.text.clear()
-    targetEditText.backgroundTintList = ColorStateList.valueOf(
-        ContextCompat.getColor(requireContext(), R.color.red)
-    )
+    if (targetView is EditText) {
+        targetView.text.clear()
+        targetView.postDelayed({
+            imm?.showSoftInput(targetView, InputMethodManager.SHOW_IMPLICIT)
+        }, 100)
 
-    targetEditText.postDelayed({
-        imm?.showSoftInput(targetEditText, InputMethodManager.SHOW_IMPLICIT)
-    }, 100)
+        if (isIncompleteCard) {
+            targetView.backgroundTintList = ColorStateList.valueOf(
+                ContextCompat.getColor(requireContext(), R.color.red)
+            )
+            targetView.addTextChangedListener {
+                targetView.backgroundTintList =
+                    ColorStateList.valueOf(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.teal_700
+                        )
+                    )
 
-    targetEditText.addTextChangedListener {
-        targetEditText.backgroundTintList =
-            ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.teal_700))
+                val targetViewParent = targetView.parent as? View
+                targetViewParent?.let {
+                    val originalDrawable =
+                        ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.rounded_corner_white_bg
+                        )
+                    if (it.background != originalDrawable) {
+                        it.background = originalDrawable
+                    }
+                }
+            }
+        }
+    } else {
+        focusChangeBorderColorOnCard(targetView)
     }
+}
+
+fun Fragment.focusChangeBorderColorOnCard(targetView: View) {
+    targetView.background =
+        ContextCompat.getDrawable(requireContext(), R.drawable.incomplete_card_border)
 }
