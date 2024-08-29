@@ -54,6 +54,15 @@
         android:paddingHorizontal="@dimen/large_padding"
         app:layout_constraintBottom_toTopOf="@id/totalAmountLayout">
 
+        <Button
+            android:id="@+id/btnPercentageToggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_teal_700_bg"
+            android:drawableEnd="@drawable/baseline_arrow_downward_24"
+            android:text="@string/percentage_baht_btn"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/tvServiceCharge"
             android:layout_width="wrap_content"
@@ -63,16 +72,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/etServiceChargeAmount"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/etServiceChargeAmount" />
-
-        <ImageView
-            android:id="@+id/ivServiceChargeToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_more_vert_24"
-            app:layout_constraintBottom_toBottomOf="@id/tvServiceCharge"
-            app:layout_constraintStart_toEndOf="@id/tvServiceCharge"
-            app:layout_constraintTop_toTopOf="@id/tvServiceCharge"
-            tools:ignore="ContentDescription" />
 
         <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
             android:id="@+id/etServiceChargeAmount"
@@ -84,7 +83,7 @@
             android:textSize="@dimen/text_size_20sp"
             app:isSeparateByCommas="true"
             app:layout_constraintEnd_toStartOf="@id/tvServiceChargePercentage"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnPercentageToggle"
             app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
@@ -107,16 +106,6 @@
             app:layout_constraintBottom_toBottomOf="@id/etVatAmount"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/etVatAmount" />
-
-        <ImageView
-            android:id="@+id/ivVatToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_more_vert_24"
-            app:layout_constraintBottom_toBottomOf="@id/tvVat"
-            app:layout_constraintStart_toEndOf="@id/tvVat"
-            app:layout_constraintTop_toTopOf="@id/tvVat"
-            tools:ignore="ContentDescription" />
 
         <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
             android:id="@+id/etVatAmount"
@@ -151,17 +140,7 @@
             app:layout_constraintBottom_toBottomOf="@id/etDiscountAmount"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/etDiscountAmount" />
-
-        <ImageView
-            android:id="@+id/ivDiscountToggle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/baseline_more_vert_24"
-            app:layout_constraintBottom_toBottomOf="@id/tvDiscount"
-            app:layout_constraintStart_toEndOf="@id/tvDiscount"
-            app:layout_constraintTop_toTopOf="@id/tvDiscount"
-            tools:ignore="ContentDescription" />
-
+        
         <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
             android:id="@+id/etDiscountAmount"
             android:layout_width="wrap_content"

@@ -37,9 +37,7 @@ class AddListFragment : Fragment() {
     private var _binding: FragmentAddListBinding? = null
     private val binding get() = _binding!!
 
-    private var isServiceChargePercentage = "%"
-    private var isDiscountPercentage = "%"
-    private var isVatPercentage = "%"
+    private var isPercentage = true
 
     private val nameStateMap = mutableMapOf<Int, List<AddNameModal>>()
     private var cardIndexCounter = 0
@@ -154,63 +152,43 @@ class AddListFragment : Fragment() {
     }
 
     private fun setUpToggleListeners() {
-        val toggleMap = mapOf(
-            binding.ivServiceChargeToggle to SERVICE_CHARGE,
-            binding.ivDiscountToggle to DISCOUNT,
-            binding.ivVatToggle to VAT
-        )
-
-        toggleMap.forEach { (toggleView, type) ->
-            toggleView.setOnClickListener {
-                toggleView.isEnabled = false
-                showTogglePercentageAmountDialog(
-                    toggleView,
-                    onPercentageSelected = {
-                        updateTextViewOfVScDis(type, getString(R.string.percentage_sign))
-                        isServiceChargePercentage = getString(R.string.percentage_sign)
-                    },
-                    onAmountSelected = {
-                        updateTextViewOfVScDis(type, getString(R.string.baht_sign))
-                        isServiceChargePercentage = getString(R.string.baht_sign)
+        binding.btnPercentageToggle.setOnClickListener {
+            binding.btnPercentageToggle.isEnabled = false
+            showTogglePercentageAmountDialog(
+                binding.btnPercentageToggle,
+                onPercentageSelected = {
+                    if (!isPercentage) {
+                        isPercentage = true
+                        updateTextViewOfVScDis()
                     }
-                )
-            }
+                },
+                onAmountSelected = {
+                    if (isPercentage) {
+                        isPercentage = false
+                        updateTextViewOfVScDis()
+                    }
+                }
+            )
         }
     }
 
-    private fun updateTextViewOfVScDis(type: String, symbol: String) {
-        when (type) {
-            SERVICE_CHARGE -> {
-                binding.tvServiceChargePercentage.text = symbol
-                isServiceChargePercentage = symbol
-                binding.etServiceChargeAmount.text?.clear()
-            }
+    private fun updateTextViewOfVScDis() {
+        val symbol =
+            if (isPercentage) getString(R.string.percentage_sign) else getString(R.string.baht_sign)
 
-            DISCOUNT -> {
-                binding.tvDiscountPercentage.text = symbol
-                isDiscountPercentage = symbol
-                binding.etDiscountAmount.text?.clear()
-            }
+        binding.tvServiceChargePercentage.text = symbol
+        binding.tvDiscountPercentage.text = symbol
+        binding.tvVatPercentage.text = symbol
 
-            VAT -> {
-                binding.tvVatPercentage.text = symbol
-                isVatPercentage = symbol
-                binding.etVatAmount.text?.clear()
-            }
-        }
+        binding.etServiceChargeAmount.text?.clear()
+        binding.etDiscountAmount.text?.clear()
+        binding.etVatAmount.text?.clear()
     }
 
     private fun setUpAmountOfVScDis() {
-        val editTexts = listOf(
-            binding.etDiscountAmount,
-            binding.etServiceChargeAmount,
-            binding.etVatAmount
-        )
-
-        editTexts.forEach { editText ->
-            editText.addTextChangedListener { calculateTotalAmount() }
-        }
-
+        binding.etDiscountAmount.addTextChangedListener { calculateTotalAmount() }
+        binding.etServiceChargeAmount.addTextChangedListener { calculateTotalAmount() }
+        binding.etVatAmount.addTextChangedListener { calculateTotalAmount() }
     }
 
     private fun calculateTotalAmount() {
@@ -233,7 +211,7 @@ class AddListFragment : Fragment() {
     private fun calculateServiceCharge(total: Double): Double {
         val serviceChargeText = binding.etServiceChargeAmount.text.toString()
         val serviceCharge = removeCommasAndReturnDouble(serviceChargeText)
-        return if (isServiceChargePercentage == getString(R.string.percentage_sign)) {
+        return if (isPercentage) {
             if (serviceCharge > 100) {
                 showAlertOnVScDis(
                     getString(R.string.service_charge),
@@ -252,7 +230,7 @@ class AddListFragment : Fragment() {
     private fun calculateVat(total: Double): Double {
         val vatText = binding.etVatAmount.text.toString()
         val vat = removeCommasAndReturnDouble(vatText)
-        return if (isVatPercentage == getString(R.string.percentage_sign)) {
+        return if (isPercentage) {
             if (vat > 100) {
                 showAlertOnVScDis(
                     getString(R.string.vat),
@@ -271,7 +249,7 @@ class AddListFragment : Fragment() {
     private fun calculateDiscount(total: Double): Double {
         val discountText = binding.etDiscountAmount.text.toString()
         val discount = removeCommasAndReturnDouble(discountText)
-        return if (isDiscountPercentage == getString(R.string.percentage_sign)) {
+        return if (isPercentage) {
             if (discount > 100) {
                 showAlertOnVScDis(
                     getString(R.string.discount),
@@ -394,7 +372,11 @@ class AddListFragment : Fragment() {
         return false
     }
 
-    private fun addNameChip(chipGroup: ChipGroup, checkedNameList: List<String>, cardIndex: Int) {
+    private fun addNameChip(
+        chipGroup: ChipGroup,
+        checkedNameList: List<String>,
+        cardIndex: Int
+    ) {
         chipGroup.removeAllViews()
         checkedNameList.forEach { name ->
             val existingChip = chipGroup.findViewWithTag<Chip>(name)
@@ -434,20 +416,11 @@ class AddListFragment : Fragment() {
         val vatAmount = binding.etVatAmount.text.toString()
         val dcAmount = binding.etDiscountAmount.text.toString()
 
-        val scPercentage = isServiceChargePercentage
-        val vatPercentage = isVatPercentage
-        val dcPercentage = isDiscountPercentage
-
         return Bundle().apply {
             //sc vat dc data
             putString("scAmount", scAmount)
             putString("vatAmount", vatAmount)
             putString("dcAmount", dcAmount)
-
-            //sc vat dc % or not
-            putString("scPercentage", scPercentage)
-            putString("vatPercentage", vatPercentage)
-            putString("dcPercentage", dcPercentage)
 
         }
     }

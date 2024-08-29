@@ -89,12 +89,13 @@ fun Fragment.showAlertOnVScDis(
 }
 
 fun Fragment.showTogglePercentageAmountDialog(
-    toggleButton: ImageView,
+    toggleButton: Button,
     onPercentageSelected: () -> Unit,
     onAmountSelected: () -> Unit
 ) {
     AlertDialog.Builder(requireContext())
         .setTitle(getString(R.string.percentage_or_amount_toggle_title))
+        .setMessage(getString(R.string.percentage_or_amount_toggle_message))
         .setPositiveButton(getString(R.string.percentage_message)) { _, _ ->
             onPercentageSelected()
         }
