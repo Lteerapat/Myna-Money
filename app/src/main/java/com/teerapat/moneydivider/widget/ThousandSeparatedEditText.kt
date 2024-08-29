@@ -7,6 +7,7 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
+import android.view.Gravity
 import com.google.android.material.textfield.TextInputEditText
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.utils.MoneyValueFormatter
@@ -24,6 +25,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
         parseAttributes(context.obtainStyledAttributes(attr, R.styleable.ThousandSeparatedEditText))
         this.addTextChangedListener(this)
         this.keyListener = DigitsKeyListener.getInstance("0123456789.")
+        gravity = Gravity.END
         initNoOfDecimals()
     }
 

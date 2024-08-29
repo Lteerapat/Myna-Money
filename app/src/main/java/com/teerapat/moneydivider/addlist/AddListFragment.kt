@@ -223,9 +223,9 @@ class AddListFragment : Fragment() {
             totalAmount += removeCommasAndReturnDouble(priceText)
         }
 
+        totalAmount = calculateDiscount(totalAmount)
         totalAmount = calculateServiceCharge(totalAmount)
         totalAmount = calculateVat(totalAmount)
-        totalAmount = calculateDiscount(totalAmount)
 
         binding.tvTotalAmount.text = thousandSeparator(totalAmount)
     }
@@ -450,6 +450,10 @@ class AddListFragment : Fragment() {
             putString("dcPercentage", dcPercentage)
 
         }
+    }
+
+    private fun convertAmountToPercentage() {
+
     }
 
     private fun findFirstIncompleteCard(): View? {
