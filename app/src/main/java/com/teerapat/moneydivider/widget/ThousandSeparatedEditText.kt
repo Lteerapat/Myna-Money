@@ -8,6 +8,7 @@ import android.text.TextWatcher
 import android.text.method.DigitsKeyListener
 import android.util.AttributeSet
 import android.view.Gravity
+import android.view.View
 import com.google.android.material.textfield.TextInputEditText
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.utils.MoneyValueFormatter
@@ -26,6 +27,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
         this.addTextChangedListener(this)
         this.keyListener = DigitsKeyListener.getInstance("0123456789.")
         gravity = Gravity.END
+        textDirection = View.TEXT_DIRECTION_RTL
         initNoOfDecimals()
     }
 
@@ -61,6 +63,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
         lengthAfter: Int
     ) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter)
+        textDirection = View.TEXT_DIRECTION_LTR
     }
 
     override fun afterTextChanged(p0: Editable?) {
@@ -102,6 +105,8 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
                     val diff: Int =
                         this@ThousandSeparatedEditText.text.toString().length - originalStr.length
                     this@ThousandSeparatedEditText.setSelection(cursorPosition + diff)
+                } else {
+                    textDirection = View.TEXT_DIRECTION_RTL
                 }
                 this@ThousandSeparatedEditText.addTextChangedListener(this)
             } catch (ex: Exception) {
