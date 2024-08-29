@@ -18,7 +18,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
 
     private var attr = attributeSet
     private var isSeparatedByCommas: Boolean = false
-    private var noOdfDecimals: Int = 2
+    private var noOdfDecimals: Int = maxDigitsAfterDecimal
     private var previousText: String = ""
 
     init {
@@ -36,7 +36,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
         )
         noOdfDecimals = a.getInteger(
             R.styleable.ThousandSeparatedEditText_noOfDecimals,
-            2
+            maxDigitsAfterDecimal
         )
     }
 
