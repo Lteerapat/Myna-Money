@@ -5,6 +5,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -20,7 +21,6 @@ import com.teerapat.moneydivider.databinding.FragmentAddListBinding
 import com.teerapat.moneydivider.utils.focusOnCard
 import com.teerapat.moneydivider.utils.showAlertDuplicateNames
 import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
-import com.teerapat.moneydivider.utils.showAlertOnVScDis
 import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
 import com.teerapat.moneydivider.utils.showAlertZeroCardList
 import com.teerapat.moneydivider.utils.showContinueDialog
@@ -69,6 +69,7 @@ class AddListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setUpFoodListCard()
         setUpToggleListeners()
         setUpAmountOfVScDis()
@@ -139,6 +140,8 @@ class AddListFragment : Fragment() {
             }
         }
 
+        addChipListener(foodListCardBinding)
+
         foodListCardBinding.etFoodList.addTextChangedListener { calculateTotalAmount() }
         foodListCardBinding.etFoodPrice.addTextChangedListener { calculateTotalAmount() }
 
@@ -149,6 +152,29 @@ class AddListFragment : Fragment() {
         }
 
         return foodListCard
+    }
+
+    private fun addChipListener(foodListCardBinding: FoodListCardBinding) {
+        val tvPersonPerFoodCard = foodListCardBinding.tvPersonPerFoodCard
+
+        foodListCardBinding.nameChipContainer.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            private var previousChipCount = foodListCardBinding.nameChipContainer.childCount
+
+            override fun onGlobalLayout() {
+                val currentChipCount = foodListCardBinding.nameChipContainer.childCount
+
+                if (currentChipCount > 0) {
+                    tvPersonPerFoodCard.visibility = View.VISIBLE
+                    tvPersonPerFoodCard.text =
+                        getString(R.string.person_count, currentChipCount)
+                } else {
+                    tvPersonPerFoodCard.visibility = View.GONE
+                }
+
+                previousChipCount = currentChipCount
+            }
+        })
     }
 
     private fun setUpToggleListeners() {
@@ -244,72 +270,6 @@ class AddListFragment : Fragment() {
             vat / 100
         } else {
             convertAmountToFraction(vat, totalAmountAfterDiscountAndServiceCharge)
-        }
-    }
-
-    private fun calculateDiscountForTotalAmount(total: Double): Double {
-        val discountText = binding.etDiscountAmount.text.toString()
-        val discount = removeCommasAndReturnDouble(discountText)
-        return if (isPercentage) {
-            if (discount > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.discount),
-                    getString(R.string.percentage_exceeded_alert_message),
-                    discountField = binding.etDiscountAmount
-                )
-                total
-            } else {
-                total - (total * discount / 100)
-            }
-        } else {
-            if (discount > total) {
-                showAlertOnVScDis(
-                    getString(R.string.discount),
-                    getString(R.string.discount_exceeded_alert_message),
-                    discountField = binding.etDiscountAmount
-                )
-                total
-            } else {
-                total - discount
-            }
-        }
-    }
-
-    private fun calculateServiceChargeForTotalAmount(total: Double): Double {
-        val serviceChargeText = binding.etServiceChargeAmount.text.toString()
-        val serviceCharge = removeCommasAndReturnDouble(serviceChargeText)
-        return if (isPercentage) {
-            if (serviceCharge > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.service_charge),
-                    getString(R.string.percentage_exceeded_alert_message),
-                    serviceChargeField = binding.etServiceChargeAmount,
-                )
-                total
-            } else {
-                total + (total * serviceCharge / 100)
-            }
-        } else {
-            total + serviceCharge
-        }
-    }
-
-    private fun calculateVatForTotalAmount(total: Double): Double {
-        val vatText = binding.etVatAmount.text.toString()
-        val vat = removeCommasAndReturnDouble(vatText)
-        return if (isPercentage) {
-            if (vat > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.vat),
-                    getString(R.string.percentage_exceeded_alert_message),
-                    vatField = binding.etVatAmount,
-                )
-                total
-            } else {
-                total + (total * vat / 100)
-            }
-        } else {
-            total + vat
         }
     }
 
@@ -424,6 +384,7 @@ class AddListFragment : Fragment() {
                 val chip = Chip(context).apply {
                     text = name
                     tag = name
+                    isClickable = false
                     ellipsize = TextUtils.TruncateAt.END
                     maxWidth = resources.getDimensionPixelSize(R.dimen.space_85dp)
                     isCloseIconVisible = true

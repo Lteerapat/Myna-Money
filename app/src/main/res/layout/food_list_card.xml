@@ -43,10 +43,24 @@
             android:inputType="numberDecimal"
             android:labelFor="@id/etFoodPrice"
             app:isSeparateByCommas="true"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvPersonPerFoodCard"
             app:layout_constraintTop_toTopOf="@id/etFoodList"
             app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
+
+        <TextView
+            android:id="@+id/tvPersonPerFoodCard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/space_02dp"
+            android:layout_marginBottom="@dimen/space_01dp"
+            android:textColor="@color/teal_200"
+            android:textSize="@dimen/text_size_16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/etFoodPrice"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/etFoodPrice"
+            tools:text="@string/max_amount_person" />
 
         <ImageView
             android:id="@+id/ivAddNameList"

@@ -5,7 +5,8 @@
     // general
     <string name="zero_amount">0.00</string>
     <string name="food_name">Food name</string>
-    <string name="food_price">0</string>
+    <string name="zero_amount_no_decimal">0</string>
+    <string name="max_amount_person">/30</string>
     <string name="add">Add</string>
     <string name="percentage_sign">%</string>
     <string name="next">Next</string>
@@ -16,6 +17,7 @@
     <string name="add_food_list">Add food list</string>
     <string name="add_name">Add name</string>
     <string name="name">Name</string>
+    <string name="person_count">/%d</string>
 
     // alert dialog
     <string name="incomplete_item">Incomplete Item</string>
@@ -57,4 +59,5 @@
     <string name="total_amount_summary">฿10,000.00</string>
     <string name="percentage_baht_btn">Percentage / Baht</string>
     <string name="percentage_or_amount_toggle_message">Please choose a percentage or an amount for the calculation</string>
+    <string name="slash">/</string>
 </resources>
