@@ -192,61 +192,62 @@ class AddListFragment : Fragment() {
     }
 
     private fun calculateTotalAmount() {
-        var totalAmount = 0.0
+        var totalAmountBeforeCalculation = 0.0
 
         for (i in 0 until binding.foodListContainer.childCount) {
             val foodListCard = binding.foodListContainer.getChildAt(i)
             val foodListCardBinding = FoodListCardBinding.bind(foodListCard)
             val priceText = foodListCardBinding.etFoodPrice.text.toString()
-            totalAmount += removeCommasAndReturnDouble(priceText)
+            totalAmountBeforeCalculation += removeCommasAndReturnDouble(priceText)
         }
 
-        totalAmount = calculateDiscount(totalAmount)
-        totalAmount = calculateServiceCharge(totalAmount)
-        totalAmount = calculateVat(totalAmount)
+        val totalAmountAfterDiscount =
+            totalAmountBeforeCalculation * (1 - calculateDiscountFraction(
+                totalAmountBeforeCalculation
+            ))
+        val totalAmountAfterDiscountAndServiceCharge =
+            totalAmountAfterDiscount * (1 + calculateServiceChargeFraction(totalAmountAfterDiscount))
+        val totalAmountAfterDiscountAndServiceChargeAndVat =
+            totalAmountAfterDiscountAndServiceCharge * (1 + calculateVatFraction(
+                totalAmountAfterDiscountAndServiceCharge
+            ))
 
-        binding.tvTotalAmount.text = thousandSeparator(totalAmount)
+        binding.tvTotalAmount.text =
+            thousandSeparator(totalAmountAfterDiscountAndServiceChargeAndVat)
     }
 
-    private fun calculateServiceCharge(total: Double): Double {
+    private fun calculateDiscountFraction(totalAmountBeforeCalculation: Double): Double {
+        val discountText = binding.etDiscountAmount.text.toString()
+        val discount = removeCommasAndReturnDouble(discountText)
+
+        return if (isPercentage) {
+            discount / 100
+        } else {
+            convertAmountToFraction(discount, totalAmountBeforeCalculation)
+        }
+    }
+
+    private fun calculateServiceChargeFraction(totalAmountAfterDiscount: Double): Double {
         val serviceChargeText = binding.etServiceChargeAmount.text.toString()
         val serviceCharge = removeCommasAndReturnDouble(serviceChargeText)
         return if (isPercentage) {
-            if (serviceCharge > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.service_charge),
-                    getString(R.string.percentage_exceeded_alert_message),
-                    serviceChargeField = binding.etServiceChargeAmount,
-                )
-                total
-            } else {
-                total + (total * serviceCharge / 100)
-            }
+            serviceCharge / 100
         } else {
-            total + serviceCharge
+            convertAmountToFraction(serviceCharge, totalAmountAfterDiscount)
         }
     }
 
-    private fun calculateVat(total: Double): Double {
+    private fun calculateVatFraction(totalAmountAfterDiscountAndServiceCharge: Double): Double {
         val vatText = binding.etVatAmount.text.toString()
         val vat = removeCommasAndReturnDouble(vatText)
         return if (isPercentage) {
-            if (vat > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.vat),
-                    getString(R.string.percentage_exceeded_alert_message),
-                    vatField = binding.etVatAmount,
-                )
-                total
-            } else {
-                total + (total * vat / 100)
-            }
+            vat / 100
         } else {
-            total + vat
+            convertAmountToFraction(vat, totalAmountAfterDiscountAndServiceCharge)
         }
     }
 
-    private fun calculateDiscount(total: Double): Double {
+    private fun calculateDiscountForTotalAmount(total: Double): Double {
         val discountText = binding.etDiscountAmount.text.toString()
         val discount = removeCommasAndReturnDouble(discountText)
         return if (isPercentage) {
@@ -271,6 +272,44 @@ class AddListFragment : Fragment() {
             } else {
                 total - discount
             }
+        }
+    }
+
+    private fun calculateServiceChargeForTotalAmount(total: Double): Double {
+        val serviceChargeText = binding.etServiceChargeAmount.text.toString()
+        val serviceCharge = removeCommasAndReturnDouble(serviceChargeText)
+        return if (isPercentage) {
+            if (serviceCharge > 100) {
+                showAlertOnVScDis(
+                    getString(R.string.service_charge),
+                    getString(R.string.percentage_exceeded_alert_message),
+                    serviceChargeField = binding.etServiceChargeAmount,
+                )
+                total
+            } else {
+                total + (total * serviceCharge / 100)
+            }
+        } else {
+            total + serviceCharge
+        }
+    }
+
+    private fun calculateVatForTotalAmount(total: Double): Double {
+        val vatText = binding.etVatAmount.text.toString()
+        val vat = removeCommasAndReturnDouble(vatText)
+        return if (isPercentage) {
+            if (vat > 100) {
+                showAlertOnVScDis(
+                    getString(R.string.vat),
+                    getString(R.string.percentage_exceeded_alert_message),
+                    vatField = binding.etVatAmount,
+                )
+                total
+            } else {
+                total + (total * vat / 100)
+            }
+        } else {
+            total + vat
         }
     }
 
@@ -417,7 +456,6 @@ class AddListFragment : Fragment() {
         val dcAmount = binding.etDiscountAmount.text.toString()
 
         return Bundle().apply {
-            //sc vat dc data
             putString("scAmount", scAmount)
             putString("vatAmount", vatAmount)
             putString("dcAmount", dcAmount)
@@ -425,8 +463,12 @@ class AddListFragment : Fragment() {
         }
     }
 
-    private fun convertAmountToPercentage() {
+    private fun convertAmountToFraction(numerator: Double, denominator: Double): Double {
+        if (denominator == 0.0) {
+            throw IllegalArgumentException("Denominator cannot be zero")
+        }
 
+        return numerator / denominator
     }
 
     private fun findFirstIncompleteCard(): View? {
@@ -479,9 +521,6 @@ class AddListFragment : Fragment() {
     }
 
     companion object {
-        private const val SERVICE_CHARGE = "sc"
-        private const val DISCOUNT = "dis"
-        private const val VAT = "vat"
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
         private val NUM_REGEX = Regex("[0-9]*$")
         private const val DECIMAL_PATTERN = "#,###.##"
