@@ -107,7 +107,7 @@ class AddListFragment : Fragment() {
             foodListCardBinding.ivDeleteFoodList.isEnabled = false
             val foodListText = foodListCardBinding.etFoodList.text.toString()
             val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
-            if (foodListText.isNotBlank() || foodPriceText.isNotBlank()) {
+            if (foodListText.isNotBlank() || foodPriceText.isNotBlank() || foodListCardBinding.nameChipContainer.childCount > 0) {
                 showDeleteItemConfirmationDialog(foodListCardBinding.ivDeleteFoodList) {
                     (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
                     calculateTotalAmount()
