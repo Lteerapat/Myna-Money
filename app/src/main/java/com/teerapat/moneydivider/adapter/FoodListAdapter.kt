@@ -5,37 +5,40 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.teerapat.moneydivider.addfoodlist.FoodCardInfo
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 
-class FoodListAdapter() : RecyclerView.Adapter<FoodListAdapter.ViewHolder>() {
-    private var foodList: List<Editable> = listOf()
+class FoodListAdapter() : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
+    private var foodCardInfo: MutableList<FoodCardInfo> = mutableListOf()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addFoodListCard(list: List<Editable>) {
-        this.foodList = list
+    fun addFoodListCard(list: MutableList<FoodCardInfo>) {
+        this.foodCardInfo = list
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoodListViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = FoodListCardBinding.inflate(layoutInflater, parent, false)
 
-        return ViewHolder(binding)
+        return FoodListViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bindView(foodList[position])
+    override fun onBindViewHolder(holder: FoodListViewHolder, position: Int) {
+        holder.bindView(foodCardInfo[position])
     }
 
     override fun getItemCount(): Int {
-        return foodList.size
+        return foodCardInfo.size
     }
 
-    inner class ViewHolder(private val binding: FoodListCardBinding) :
+    inner class FoodListViewHolder(private val binding: FoodListCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bindView(foodName: Editable) {
-            binding.etFoodList.text = foodName
-
+        fun bindView(foodCardInfo: FoodCardInfo) {
+            binding.etFoodList.text = foodCardInfo.foodName.toEditable()
         }
     }
+
+    private fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
+
 }
