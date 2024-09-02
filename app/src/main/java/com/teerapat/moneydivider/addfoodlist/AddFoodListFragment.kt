@@ -1,4 +1,4 @@
-package com.teerapat.moneydivider.addlist
+package com.teerapat.moneydivider.addfoodlist
 
 import android.os.Bundle
 import android.text.TextUtils
@@ -17,7 +17,7 @@ import com.google.android.material.chip.ChipGroup
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.addnamelist.AddNameModal
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
-import com.teerapat.moneydivider.databinding.FragmentAddListBinding
+import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
 import com.teerapat.moneydivider.utils.focusOnCard
 import com.teerapat.moneydivider.utils.showAlertDuplicateNames
 import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
@@ -33,9 +33,9 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 
-class AddListFragment : Fragment() {
-    private lateinit var viewModel: AddListViewModel
-    private var _binding: FragmentAddListBinding? = null
+class AddFoodListFragment : Fragment() {
+    private lateinit var viewModel: AddFoodListViewModel
+    private var _binding: FragmentAddFoodListBinding? = null
     private val binding get() = _binding!!
 
     private var isPercentage = true
@@ -45,7 +45,7 @@ class AddListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[AddListViewModel::class.java]
+        viewModel = ViewModelProvider(this)[AddFoodListViewModel::class.java]
 //        observe()
     }
 
@@ -64,7 +64,7 @@ class AddListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentAddListBinding.inflate(inflater, container, false)
+        _binding = FragmentAddFoodListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -408,7 +408,7 @@ class AddListFragment : Fragment() {
                     binding.btnNext.isEnabled = false
                     showContinueDialog(binding.btnNext) {
                         findNavController().navigate(
-                            R.id.action_addListFragment_to_summaryFragment,
+                            R.id.action_addFoodListFragment_to_summaryFragment,
                             buildBundle()
                         )
                     }

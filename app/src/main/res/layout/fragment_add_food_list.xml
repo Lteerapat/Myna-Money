@@ -5,25 +5,25 @@
     android:id="@+id/mainFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".addlist.AddListFragment">
+    tools:context=".addfoodlist.AddFoodListFragment">
 
-    <ScrollView
-        android:id="@+id/svFoodList"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@id/addFoodListBtnContainer"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:id="@+id/foodListContainer"
+        <ScrollView
+            android:id="@+id/svFoodList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toTopOf="@id/addFoodListBtnContainer"
             app:layout_constraintTop_toTopOf="parent">
 
-        </LinearLayout>
-    </ScrollView>
+            <LinearLayout
+                android:id="@+id/foodListContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </LinearLayout>
+        </ScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/addFoodListBtnContainer"
@@ -140,7 +140,7 @@
             app:layout_constraintBottom_toBottomOf="@id/etDiscountAmount"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/etDiscountAmount" />
-        
+
         <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
             android:id="@+id/etDiscountAmount"
             android:layout_width="wrap_content"

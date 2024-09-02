@@ -144,7 +144,7 @@ class AddNameListFragment : Fragment() {
                     showContinueDialog(binding.btnNext) {
                         viewModel.saveNameList(getNameList())
                         findNavController().navigate(
-                            R.id.action_addNameListFragment_to_addListFragment,
+                            R.id.action_addNameListFragment_to_addFoodListFragment,
                             buildBundle()
                         )
                     }

@@ -10,16 +10,16 @@
         android:label="fragment_add_name_list"
         tools:layout="@layout/fragment_add_name_list">
         <action
-            android:id="@+id/action_addNameListFragment_to_addListFragment"
-            app:destination="@id/addListFragment" />
+            android:id="@+id/action_addNameListFragment_to_addFoodListFragment"
+            app:destination="@id/addFoodListFragment" />
     </fragment>
     <fragment
-        android:id="@+id/addListFragment"
-        android:name="com.teerapat.moneydivider.addlist.AddListFragment"
-        android:label="fragment_add_list"
-        tools:layout="@layout/fragment_add_list">
+        android:id="@+id/addFoodListFragment"
+        android:name="com.teerapat.moneydivider.addfoodlist.AddFoodListFragment"
+        android:label="fragment_add_food_list"
+        tools:layout="@layout/fragment_add_food_list">
         <action
-            android:id="@+id/action_addListFragment_to_summaryFragment"
+            android:id="@+id/action_addFoodListFragment_to_summaryFragment"
             app:destination="@id/summaryFragment" />
     </fragment>
     <fragment

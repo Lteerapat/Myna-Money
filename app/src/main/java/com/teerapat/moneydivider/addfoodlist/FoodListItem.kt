@@ -1,3 +1,3 @@
-package com.teerapat.moneydivider.addlist
+package com.teerapat.moneydivider.addfoodlist
 
 data class FoodListItem(val foodName: String, val foodPrice: Double)
