@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.teerapat.moneydivider.R
+import com.teerapat.moneydivider.adapter.NameListAdapter
 import com.teerapat.moneydivider.databinding.FragmentAddNameListBinding
 import com.teerapat.moneydivider.databinding.NameListCardBinding
 import com.teerapat.moneydivider.utils.focusOnCard
@@ -23,6 +24,7 @@ class AddNameListFragment : Fragment() {
     private lateinit var viewModel: AddNameListViewModel
     private var _binding: FragmentAddNameListBinding? = null
     private val binding get() = _binding!!
+    private val nameListAdapter = NameListAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +42,17 @@ class AddNameListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupNameListRecyclerView()
         setUpNameListCard()
         setUpNextButton()
     }
 
     private fun observe() {
+    }
+
+    private fun setupNameListRecyclerView() {
+        binding.rvNameList.adapter = nameListAdapter
     }
 
     private fun setUpNameListCard() {
@@ -179,8 +187,8 @@ class AddNameListFragment : Fragment() {
         return false
     }
 
-    private fun getNameList(): List<AddNameModal> {
-        val nameList = mutableListOf<AddNameModal>()
+    private fun getNameList(): List<NameInfo> {
+        val nameList = mutableListOf<NameInfo>()
 
         for (i in 0 until binding.nameListContainer.childCount) {
             val nameListCard = binding.nameListContainer.getChildAt(i)
@@ -188,7 +196,7 @@ class AddNameListFragment : Fragment() {
             val name = nameListCardBinding.etNameList.text.toString().trim()
 
             if (name.isNotBlank()) {
-                nameList.add(AddNameModal(name, false))
+                nameList.add(NameInfo(name, false))
             }
         }
 

@@ -5,14 +5,14 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.teerapat.moneydivider.addfoodlist.FoodCardInfo
+import com.teerapat.moneydivider.addfoodlist.FoodInfo
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 
 class FoodListAdapter() : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
-    private var foodCardInfo: MutableList<FoodCardInfo> = mutableListOf()
+    private var foodCardInfo: MutableList<FoodInfo> = mutableListOf()
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addFoodListCard(list: MutableList<FoodCardInfo>) {
+    fun addFoodListCard(list: MutableList<FoodInfo>) {
         this.foodCardInfo = list
         notifyDataSetChanged()
     }
@@ -34,7 +34,7 @@ class FoodListAdapter() : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolde
 
     inner class FoodListViewHolder(private val binding: FoodListCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bindView(foodCardInfo: FoodCardInfo) {
+        fun bindView(foodCardInfo: FoodInfo) {
             binding.etFoodList.text = foodCardInfo.foodName.toEditable()
         }
     }

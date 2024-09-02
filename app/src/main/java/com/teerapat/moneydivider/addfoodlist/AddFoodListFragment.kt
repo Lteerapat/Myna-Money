@@ -16,7 +16,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.adapter.FoodListAdapter
-import com.teerapat.moneydivider.addnamelist.AddNameModal
+import com.teerapat.moneydivider.addnamelist.NameInfo
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
 import com.teerapat.moneydivider.utils.focusOnCard
@@ -39,11 +39,11 @@ class AddFoodListFragment : Fragment() {
     private var _binding: FragmentAddFoodListBinding? = null
     private val binding get() = _binding!!
 
-    private val adapter = FoodListAdapter()
+    private val foodListAdapter = FoodListAdapter()
 
     private var isPercentage = true
 
-    private val nameStateMap = mutableMapOf<Int, List<AddNameModal>>()
+    private val nameStateMap = mutableMapOf<Int, List<NameInfo>>()
     private var cardIndexCounter = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +82,7 @@ class AddFoodListFragment : Fragment() {
     }
 
     private fun setupFoodListRecyclerView() {
-        binding.rvFoodList.adapter = adapter
+        binding.rvFoodList.adapter = foodListAdapter
     }
 
     private fun setUpFoodListCard() {
@@ -132,8 +132,8 @@ class AddFoodListFragment : Fragment() {
             foodListCardBinding.ivAddNameList.isEnabled = false
 
             val nameList = nameStateMap[cardIndex]?.toMutableList()
-                ?: arguments?.getParcelableArrayList<AddNameModal>("nameList")?.map {
-                    AddNameModal(it.name, it.isChecked)
+                ?: arguments?.getParcelableArrayList<NameInfo>("nameList")?.map {
+                    NameInfo(it.name, it.isChecked)
                 }?.toMutableList() ?: mutableListOf()
             nameList.sortBy { it.name }
             val onlyNameList = nameList.map { it.name }.toTypedArray()

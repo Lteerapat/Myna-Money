@@ -6,7 +6,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.teerapat.moneydivider.R
-import com.teerapat.moneydivider.addnamelist.AddNameModal
+import com.teerapat.moneydivider.addnamelist.NameInfo
 
 fun Fragment.showDeleteItemConfirmationDialog(
     deleteIcon: ImageView,
@@ -110,7 +110,7 @@ fun Fragment.showNameSelectionDialog(
     names: Array<String>,
     isCheckedArray: BooleanArray,
     ivAddNameList: ImageView,
-    onOkClick: (List<AddNameModal>) -> Unit,
+    onOkClick: (List<NameInfo>) -> Unit,
 ) {
     val dialog = AlertDialog.Builder(requireContext())
         .setTitle(getString(R.string.add_name_for_food_list_card_title))
@@ -122,7 +122,7 @@ fun Fragment.showNameSelectionDialog(
         }
         .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
             val updatedNameList = names.mapIndexed { index, name ->
-                AddNameModal(name, isCheckedArray[index])
+                NameInfo(name, isCheckedArray[index])
             }
             onOkClick(updatedNameList)
         }
