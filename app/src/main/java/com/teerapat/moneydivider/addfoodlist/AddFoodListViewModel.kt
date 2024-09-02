@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
 
 class AddFoodListViewModel : ViewModel() {
-    private val _foodListItems = LiveEvent<FoodListItem>()
-    val foodListItems: LiveData<FoodListItem> get() = _foodListItems
+    private val _foodListItems = LiveEvent<FoodCardInfo>()
+    val foodListItems: LiveData<FoodCardInfo> get() = _foodListItems
 
     private val _serviceChargeAmount = LiveEvent<Double>()
     val serviceChargeAmount: LiveData<Double>

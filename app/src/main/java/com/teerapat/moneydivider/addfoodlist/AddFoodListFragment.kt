@@ -74,10 +74,15 @@ class AddFoodListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupFoodListRecyclerView()
         setUpFoodListCard()
         setUpToggleListeners()
         setUpAmountOfVScDis()
         setUpNextButton()
+    }
+
+    private fun setupFoodListRecyclerView() {
+        binding.rvFoodList.adapter = adapter
     }
 
     private fun setUpFoodListCard() {
