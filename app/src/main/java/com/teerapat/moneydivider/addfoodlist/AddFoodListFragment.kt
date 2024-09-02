@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.teerapat.moneydivider.R
+import com.teerapat.moneydivider.adapter.FoodListAdapter
 import com.teerapat.moneydivider.addnamelist.AddNameModal
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
@@ -37,6 +38,8 @@ class AddFoodListFragment : Fragment() {
     private lateinit var viewModel: AddFoodListViewModel
     private var _binding: FragmentAddFoodListBinding? = null
     private val binding get() = _binding!!
+
+    private val adapter = FoodListAdapter()
 
     private var isPercentage = true
 
