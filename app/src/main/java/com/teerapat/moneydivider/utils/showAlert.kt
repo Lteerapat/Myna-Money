@@ -110,7 +110,8 @@ fun Fragment.showNameSelectionDialog(
     names: Array<String>,
     isCheckedArray: BooleanArray,
     ivAddNameList: ImageView,
-    onPositiveClick: (List<AddNameModal>) -> Unit
+    onOkClick: (List<AddNameModal>) -> Unit,
+    onSelectAllClick: (List<AddNameModal>) -> Unit
 ) {
     AlertDialog.Builder(requireContext())
         .setTitle(getString(R.string.add_name_for_food_list_card_title))
@@ -124,9 +125,14 @@ fun Fragment.showNameSelectionDialog(
             val updatedNameList = names.mapIndexed { index, name ->
                 AddNameModal(name, isCheckedArray[index])
             }
-            onPositiveClick(updatedNameList)
+            onOkClick(updatedNameList)
         }
-        .setNegativeButton(getString(R.string.cancel), null)
+        .setNegativeButton(getString(R.string.select_all)) { _, _ ->
+            val updatedNameList = names.mapIndexed { _, name ->
+                AddNameModal(name, true)
+            }
+            onSelectAllClick(updatedNameList)
+        }
         .setOnDismissListener {
             ivAddNameList.isEnabled = true
         }
