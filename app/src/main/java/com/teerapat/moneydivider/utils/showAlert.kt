@@ -111,9 +111,8 @@ fun Fragment.showNameSelectionDialog(
     isCheckedArray: BooleanArray,
     ivAddNameList: ImageView,
     onOkClick: (List<AddNameModal>) -> Unit,
-    onSelectAllClick: (List<AddNameModal>) -> Unit
 ) {
-    AlertDialog.Builder(requireContext())
+    val dialog = AlertDialog.Builder(requireContext())
         .setTitle(getString(R.string.add_name_for_food_list_card_title))
         .setMultiChoiceItems(
             names,
@@ -127,14 +126,21 @@ fun Fragment.showNameSelectionDialog(
             }
             onOkClick(updatedNameList)
         }
-        .setNegativeButton(getString(R.string.select_all)) { _, _ ->
-            val updatedNameList = names.mapIndexed { _, name ->
-                AddNameModal(name, true)
-            }
-            onSelectAllClick(updatedNameList)
-        }
+        .setNegativeButton(getString(R.string.select_all), null)
         .setOnDismissListener {
             ivAddNameList.isEnabled = true
         }
-        .show()
+        .create()
+
+    dialog.setOnShowListener { _ ->
+        val button = (dialog as AlertDialog).getButton(AlertDialog.BUTTON_NEGATIVE)
+        button.setOnClickListener {
+            for (i in isCheckedArray.indices) {
+                isCheckedArray[i] = true
+                dialog.listView.setItemChecked(i, true)
+            }
+        }
+    }
+
+    dialog.show()
 }

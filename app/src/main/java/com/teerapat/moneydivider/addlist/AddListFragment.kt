@@ -133,17 +133,13 @@ class AddListFragment : Fragment() {
             showNameSelectionDialog(
                 onlyNameList,
                 onlyIsCheckedList,
-                foodListCardBinding.ivAddNameList,
-                onOkClick = { updatedList ->
-                    val checkedNameList = updatedList.filter { it.isChecked }.map { it.name }
-                    nameStateMap[cardIndex] = updatedList
-                    addNameChip(foodListCardBinding.nameChipContainer, checkedNameList, cardIndex)
-                },
-                onSelectAllClick = { updatedList ->
-                    val checkedNameList = updatedList.filter { it.isChecked }.map { it.name }
-                    nameStateMap[cardIndex] = updatedList
-                    addNameChip(foodListCardBinding.nameChipContainer, checkedNameList, cardIndex)
-                })
+                foodListCardBinding.ivAddNameList
+            )
+            { updatedList ->
+                val checkedNameList = updatedList.filter { it.isChecked }.map { it.name }
+                nameStateMap[cardIndex] = updatedList
+                addNameChip(foodListCardBinding.nameChipContainer, checkedNameList, cardIndex)
+            }
         }
 
         addChipListener(foodListCardBinding)
