@@ -103,7 +103,7 @@ class AddNameListFragment : Fragment() {
                         viewModel.saveNameList(nameListAdapter.getNameList())
                         findNavController().navigate(
                             R.id.action_addNameListFragment_to_addFoodListFragment,
-                            buildBundle(nameList)
+                            buildBundle(viewModel.nameList)
                         )
                     }
                 }
@@ -112,13 +112,11 @@ class AddNameListFragment : Fragment() {
     }
 
     private fun loadInitialData() {
-        val existingNameList = viewModel.nameList.value
-        existingNameList?.let {
-            if (existingNameList.isNotEmpty()) {
-                nameListAdapter.setItems(existingNameList)
-            } else {
-                nameListAdapter.addItem(NameInfo("", false))
-            }
+        val existingNameList = viewModel.nameList
+        if (existingNameList.isNotEmpty()) {
+            nameListAdapter.setItems(existingNameList)
+        } else {
+            nameListAdapter.addItem(NameInfo("", false))
         }
     }
 
@@ -129,12 +127,19 @@ class AddNameListFragment : Fragment() {
     }
 
     private fun hasDuplicateNames(nameList: List<NameInfo>): Boolean {
-        val names = nameList.map { it.name.trim() }
-        return names.size != names.toSet().size
+        val nameSet = mutableSetOf<String>()
+        for (nameInfo in nameList) {
+            val name = nameInfo.name.trim()
+            if (name in nameSet) {
+                return true
+            }
+            nameSet.add(name)
+        }
+        return false
     }
 
     private fun findFirstIncompleteCard(nameList: List<NameInfo>): IncompleteCard? {
-        nameList.forEachIndexed { index, nameInfo ->
+        for ((index, nameInfo) in nameList.withIndex()) {
             val name = nameInfo.name.trim()
 
             when {
@@ -165,29 +170,32 @@ class AddNameListFragment : Fragment() {
 
     private fun focusOnCard(position: Int, isIncompleteCard: Boolean = false) {
         binding.rvNameList.scrollToPosition(position)
-        val viewHolder =
-            binding.rvNameList.findViewHolderForAdapterPosition(position) as? NameListAdapter.NameListViewHolder
-        val etNameList = viewHolder?.binding?.etNameList
-        etNameList?.requestFocus()
-        etNameList?.text?.clear()
-        val imm =
-            ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
-        etNameList?.postDelayed({
-            imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
-        }, 100)
 
-        if (isIncompleteCard) {
-            etNameList?.backgroundTintList = ColorStateList.valueOf(
-                ContextCompat.getColor(requireContext(), R.color.red)
-            )
-            etNameList?.addTextChangedListener {
-                etNameList.backgroundTintList =
-                    ColorStateList.valueOf(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.teal_700
+        binding.rvNameList.post {
+            val viewHolder =
+                binding.rvNameList.findViewHolderForAdapterPosition(position) as? NameListAdapter.NameListViewHolder
+            val etNameList = viewHolder?.binding?.etNameList
+            etNameList?.requestFocus()
+            etNameList?.text?.clear()
+            val imm =
+                ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+            etNameList?.postDelayed({
+                imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
+            }, 100)
+
+            if (isIncompleteCard) {
+                etNameList?.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(requireContext(), R.color.red)
+                )
+                etNameList?.addTextChangedListener {
+                    etNameList.backgroundTintList =
+                        ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.teal_700
+                            )
                         )
-                    )
+                }
             }
         }
     }
