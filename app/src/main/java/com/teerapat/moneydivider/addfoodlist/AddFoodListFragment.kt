@@ -118,7 +118,10 @@ class AddFoodListFragment : Fragment() {
             val foodListText = foodListCardBinding.etFoodList.text.toString()
             val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
             if (foodListText.isNotBlank() || foodPriceText.isNotBlank() || foodListCardBinding.nameChipContainer.childCount > 0) {
-                showDeleteItemConfirmationDialog(foodListCardBinding.ivDeleteFoodList) {
+                showDeleteItemConfirmationDialog(
+                    requireContext(),
+                    foodListCardBinding.ivDeleteFoodList
+                ) {
                     (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
                     calculateTotalAmount()
                 }
@@ -347,6 +350,8 @@ class AddFoodListFragment : Fragment() {
 
     private fun setUpNextButton() {
         binding.btnNext.setOnClickListener {
+            val btnNext = binding.btnNext
+            btnNext.isEnabled = false
             val incompleteCard = findFirstIncompleteCard()
 
             when {
@@ -355,6 +360,7 @@ class AddFoodListFragment : Fragment() {
                         focusOnCard(addFoodListCard(cardIndexCounter++)) { cardView ->
                             FoodListCardBinding.bind(cardView).etFoodList
                         }
+                        btnNext.isEnabled = true
                     }
                 }
 
@@ -405,15 +411,15 @@ class AddFoodListFragment : Fragment() {
                                 else -> etFoodList
                             }
                         }
+                        btnNext.isEnabled = true
                     }
                 }
 
                 hasDuplicateNames() -> {
-                    showAlertDuplicateNames()
+                    showAlertDuplicateNames { btnNext.isEnabled = true }
                 }
 
                 else -> {
-                    binding.btnNext.isEnabled = false
                     showContinueDialog(binding.btnNext) {
                         findNavController().navigate(
                             R.id.action_addFoodListFragment_to_summaryFragment,

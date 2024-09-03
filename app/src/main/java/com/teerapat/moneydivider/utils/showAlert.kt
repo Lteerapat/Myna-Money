@@ -1,6 +1,7 @@
 package com.teerapat.moneydivider.utils
 
 import android.app.AlertDialog
+import android.content.Context
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -8,18 +9,19 @@ import androidx.fragment.app.Fragment
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.addnamelist.NameInfo
 
-fun Fragment.showDeleteItemConfirmationDialog(
-    deleteIcon: ImageView,
+fun showDeleteItemConfirmationDialog(
+    context: Context,
+    deleteIcon: ImageView?,
     onDeleteConfirmed: () -> Unit
 ) {
-    AlertDialog.Builder(requireContext())
-        .setTitle(getString(R.string.confirm_delete_title))
-        .setMessage(getString(R.string.confirm_delete_message))
-        .setPositiveButton(getString(R.string.yes_btn)) { _, _ ->
+    AlertDialog.Builder(context)
+        .setTitle(R.string.confirm_delete_title)
+        .setMessage(R.string.confirm_delete_message)
+        .setPositiveButton(R.string.yes_btn) { _, _ ->
             onDeleteConfirmed()
         }
-        .setNegativeButton(getString(R.string.no_btn), null)
-        .setOnDismissListener { deleteIcon.isEnabled = true }
+        .setNegativeButton(R.string.no_btn, null)
+        .setOnDismissListener { deleteIcon?.isEnabled = true }
         .show()
 }
 
@@ -49,11 +51,12 @@ fun Fragment.showAlertOverLimitItemCard(maxItems: Int) {
         .show()
 }
 
-fun Fragment.showAlertDuplicateNames() {
+fun Fragment.showAlertDuplicateNames(onDismiss: () -> Unit) {
     AlertDialog.Builder(requireContext())
         .setTitle(getString(R.string.duplicate_name_alert_title))
         .setMessage(getString(R.string.duplicate_name_alert_message))
         .setPositiveButton(getString(R.string.ok_btn), null)
+        .setOnDismissListener { onDismiss() }
         .show()
 }
 

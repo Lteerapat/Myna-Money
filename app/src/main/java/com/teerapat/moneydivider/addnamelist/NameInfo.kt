@@ -5,6 +5,6 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class NameInfo(
-    val name: String,
+    var name: String,
     var isChecked: Boolean = false
 ): Parcelable

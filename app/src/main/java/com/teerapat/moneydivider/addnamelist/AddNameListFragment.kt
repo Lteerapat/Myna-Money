@@ -1,30 +1,30 @@
 package com.teerapat.moneydivider.addnamelist
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.adapter.NameListAdapter
 import com.teerapat.moneydivider.databinding.FragmentAddNameListBinding
-import com.teerapat.moneydivider.databinding.NameListCardBinding
-import com.teerapat.moneydivider.utils.focusOnCard
 import com.teerapat.moneydivider.utils.showAlertDuplicateNames
 import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
 import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
 import com.teerapat.moneydivider.utils.showAlertZeroCardList
 import com.teerapat.moneydivider.utils.showContinueDialog
-import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 
 class AddNameListFragment : Fragment() {
     private lateinit var viewModel: AddNameListViewModel
     private var _binding: FragmentAddNameListBinding? = null
     private val binding get() = _binding!!
-    private val nameListAdapter = NameListAdapter()
+    private lateinit var nameListAdapter: NameListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,115 +44,66 @@ class AddNameListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupNameListRecyclerView()
-        setUpNameListCard()
+        setUpAddButton()
         setUpNextButton()
+        loadInitialData()
     }
 
     private fun observe() {
     }
 
     private fun setupNameListRecyclerView() {
+        nameListAdapter = NameListAdapter(requireContext())
+
         binding.rvNameList.adapter = nameListAdapter
     }
 
-    private fun setUpNameListCard() {
-        addNameListCard()
-
-        for (nameModal in viewModel.nameList) {
-            addNameListCard()
-        }
-
+    private fun setUpAddButton() {
         binding.btnAddNameList.setOnClickListener {
-            focusOnCard(addNameListCard().findViewById(R.id.etNameList), isIncompleteCard = false)
-        }
-    }
-
-    private fun addNameListCard(name: String = ""): View {
-        val inflater = LayoutInflater.from(requireContext())
-        val nameListCardBinding = NameListCardBinding.inflate(inflater)
-        val nameListCard = nameListCardBinding.root
-
-        val layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        nameListCard.layoutParams = layoutParams
-
-        nameListCardBinding.etNameList.setText(name)
-
-        nameListCardBinding.ivDeleteNameList.setOnClickListener {
-            nameListCardBinding.ivDeleteNameList.isEnabled = false
-            val nameListText = nameListCardBinding.etNameList.text.toString()
-            if (nameListText.isNotBlank()) {
-                showDeleteItemConfirmationDialog(nameListCardBinding.ivDeleteNameList) {
-                    (nameListCard.parent as? LinearLayout)?.removeView(nameListCard)
-                }
-            } else {
-                (nameListCard.parent as? LinearLayout)?.removeView(nameListCard)
+            if (nameListAdapter.itemCount >= MAX_NAME_CARD) {
+                showAlertOverLimitItemCard(MAX_NAME_CARD)
+                return@setOnClickListener
             }
+            nameListAdapter.addItem(NameInfo("", false))
+            focusOnCard(nameListAdapter.itemCount - 1)
         }
-
-        if (binding.nameListContainer.childCount == MAX_NAME_CARD) {
-            showAlertOverLimitItemCard(MAX_NAME_CARD)
-        } else {
-            binding.nameListContainer.addView(nameListCard)
-        }
-
-        return nameListCard
     }
 
     private fun setUpNextButton() {
         binding.btnNext.setOnClickListener {
-            val incompleteCard = findFirstIncompleteCard()
+            val btnNext = binding.btnNext
+            btnNext.isEnabled = false
+            val nameList = nameListAdapter.getNameList()
+            val incompleteCard = findFirstIncompleteCard(nameList)
 
             when {
-                binding.nameListContainer.childCount <= 0 -> {
-                    showAlertZeroCardList {
-                        focusOnCard(addNameListCard()) { cardView ->
-                            NameListCardBinding.bind(cardView).etNameList
-                        }
+                nameList.isEmpty() -> {
+                    showAlertZeroCardList() {
+                        nameListAdapter.addItem(NameInfo("", false))
+                        focusOnCard(0, isIncompleteCard = true)
+                        btnNext.isEnabled = true
                     }
                 }
 
                 incompleteCard != null -> {
-                    val nameListCardBinding = NameListCardBinding.bind(incompleteCard)
-                    val etNameList = nameListCardBinding.etNameList
-                    val message = when {
-                        !etNameList.text.toString().matches(REGEX) -> {
-                            getString(R.string.incomplete_letter_or_num_message_2)
-                        }
-
-                        etNameList.text.isBlank() -> {
-                            getString(R.string.incomplete_empty_card_message_2)
-                        }
-
-                        etNameList.text.toString().matches(NUM_REGEX) -> {
-                            getString(R.string.incomplete_card_num_only_message_2)
-                        }
-
-                        else -> {
-                            getString(R.string.incomplete_item)
-                        }
-                    }
-
-                    showAlertOnIncompleteCard(message) {
-                        focusOnCard(incompleteCard) { _ ->
-                            etNameList
-                        }
+                    showAlertOnIncompleteCard(incompleteCard.message) {
+                        focusOnCard(incompleteCard.position, isIncompleteCard = true)
+                        btnNext.isEnabled = true
                     }
                 }
 
-                hasDuplicateNames() -> {
-                    showAlertDuplicateNames()
+                hasDuplicateNames(nameList) -> {
+                    showAlertDuplicateNames {
+                        btnNext.isEnabled = true
+                    }
                 }
 
                 else -> {
-                    binding.btnNext.isEnabled = false
                     showContinueDialog(binding.btnNext) {
-                        viewModel.saveNameList(getNameList())
+                        viewModel.saveNameList(nameListAdapter.getNameList())
                         findNavController().navigate(
                             R.id.action_addNameListFragment_to_addFoodListFragment,
-                            buildBundle()
+                            buildBundle(viewModel.nameList)
                         )
                     }
                 }
@@ -160,76 +111,109 @@ class AddNameListFragment : Fragment() {
         }
     }
 
-    private fun buildBundle(): Bundle {
-        val nameList = getNameList()
+    private fun loadInitialData() {
+        val existingNameList = viewModel.nameList
+        if (existingNameList.isNotEmpty()) {
+            nameListAdapter.setItems(existingNameList)
+        } else {
+            nameListAdapter.addItem(NameInfo("", false))
+        }
+    }
 
+    private fun buildBundle(nameList: List<NameInfo>): Bundle {
         return Bundle().apply {
             putParcelableArrayList("nameList", ArrayList(nameList))
         }
     }
 
-    private fun hasDuplicateNames(): Boolean {
+    private fun hasDuplicateNames(nameList: List<NameInfo>): Boolean {
         val nameSet = mutableSetOf<String>()
-
-        for (i in 0 until binding.nameListContainer.childCount) {
-            val nameListCard = binding.nameListContainer.getChildAt(i)
-            val nameListCardBinding = NameListCardBinding.bind(nameListCard)
-            val name = nameListCardBinding.etNameList.text.toString().trim()
-
+        for (nameInfo in nameList) {
+            val name = nameInfo.name.trim()
             if (name in nameSet) {
                 return true
-            } else {
-                nameSet.add(name)
             }
+            nameSet.add(name)
         }
-
         return false
     }
 
-    private fun getNameList(): List<NameInfo> {
-        val nameList = mutableListOf<NameInfo>()
+    private fun findFirstIncompleteCard(nameList: List<NameInfo>): IncompleteCard? {
+        for ((index, nameInfo) in nameList.withIndex()) {
+            val name = nameInfo.name.trim()
 
-        for (i in 0 until binding.nameListContainer.childCount) {
-            val nameListCard = binding.nameListContainer.getChildAt(i)
-            val nameListCardBinding = NameListCardBinding.bind(nameListCard)
-            val name = nameListCardBinding.etNameList.text.toString().trim()
+            when {
+                name.isBlank() -> {
+                    return IncompleteCard(
+                        position = index,
+                        message = getString(R.string.incomplete_empty_card_message_2)
+                    )
+                }
 
-            if (name.isNotBlank()) {
-                nameList.add(NameInfo(name, false))
+                !name.matches(REGEX) -> {
+                    return IncompleteCard(
+                        position = index,
+                        message = getString(R.string.incomplete_letter_or_num_message_2)
+                    )
+                }
+
+                name.matches(NUM_REGEX) -> {
+                    return IncompleteCard(
+                        position = index,
+                        message = getString(R.string.incomplete_card_num_only_message_2)
+                    )
+                }
             }
         }
-
-        return nameList
+        return null
     }
 
-    private fun findFirstIncompleteCard(): View? {
-        for (i in 0 until binding.nameListContainer.childCount) {
-            val nameListCard = binding.nameListContainer.getChildAt(i)
-            val nameListCardBinding = NameListCardBinding.bind(nameListCard)
-            val name = nameListCardBinding.etNameList.text.toString()
+    private fun focusOnCard(position: Int, isIncompleteCard: Boolean = false) {
+        binding.rvNameList.scrollToPosition(position)
 
-            if (name.isBlank()) return nameListCard
-            if (!name.matches(REGEX)) return nameListCard
-            if (name.matches(NUM_REGEX)) return nameListCard
+        binding.rvNameList.post {
+            val viewHolder =
+                binding.rvNameList.findViewHolderForAdapterPosition(position) as? NameListAdapter.NameListViewHolder
+            val etNameList = viewHolder?.binding?.etNameList
+            etNameList?.requestFocus()
+            etNameList?.text?.clear()
+            val imm =
+                ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+            etNameList?.postDelayed({
+                imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
+            }, 100)
+
+            if (isIncompleteCard) {
+                etNameList?.backgroundTintList = ColorStateList.valueOf(
+                    ContextCompat.getColor(requireContext(), R.color.red)
+                )
+                etNameList?.addTextChangedListener {
+                    etNameList.backgroundTintList =
+                        ColorStateList.valueOf(
+                            ContextCompat.getColor(
+                                requireContext(),
+                                R.color.teal_700
+                            )
+                        )
+                }
+            }
         }
-
-        return null
     }
 
     override fun onPause() {
         super.onPause()
-        viewModel.saveNameList(getNameList())
+        viewModel.saveNameList(nameListAdapter.getNameList())
     }
 
     override fun onStop() {
         super.onStop()
-        viewModel.saveNameList(getNameList())
+        viewModel.saveNameList(nameListAdapter.getNameList())
     }
 
-//    override fun onDestroyView() {
-//        super.onDestroyView()
-//        _binding = null
-//    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     companion object {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
