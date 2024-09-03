@@ -38,22 +38,29 @@
         android:id="@+id/addFoodListBtnContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/large_padding"
         app:layout_constraintBottom_toTopOf="@id/vScDis">
 
         <Button
             android:id="@+id/btnAddFoodList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/large_padding"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/large_padding"
             android:background="@drawable/rounded_corner_white_bg"
             android:drawableEnd="@drawable/baseline_add_circle_24"
-            android:padding="@dimen/large_padding"
             android:src="@drawable/baseline_add_circle_24"
             android:text="@string/add_food_list"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toStartOf="@id/btnPercentageToggle"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnPercentageToggle"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/rounded_corner_white_bg"
+            android:drawableEnd="@drawable/baseline_arrow_downward_24"
+            android:text="@string/percentage_baht_btn"
+            app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,15 +69,6 @@
         android:layout_height="wrap_content"
         android:paddingHorizontal="@dimen/large_padding"
         app:layout_constraintBottom_toTopOf="@id/totalAmountLayout">
-
-        <Button
-            android:id="@+id/btnPercentageToggle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/rounded_corner_teal_700_bg"
-            android:drawableEnd="@drawable/baseline_arrow_downward_24"
-            android:text="@string/percentage_baht_btn"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvServiceCharge"
@@ -92,7 +90,7 @@
             android:textSize="@dimen/text_size_20sp"
             app:isSeparateByCommas="true"
             app:layout_constraintEnd_toStartOf="@id/tvServiceChargePercentage"
-            app:layout_constraintTop_toBottomOf="@id/btnPercentageToggle"
+            app:layout_constraintTop_toTopOf="parent"
             app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
