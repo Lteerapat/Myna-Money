@@ -73,14 +73,29 @@
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:padding="@dimen/large_padding"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
+            android:id="@+id/btnAddNameList2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/space_08dp"
+            android:background="@drawable/rounded_corner_white_bg"
+            android:drawableEnd="@drawable/baseline_add_circle_24"
+            android:src="@drawable/baseline_add_circle_24"
+            android:text="@string/add_name"
+            android:textSize="@dimen/text_size_20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnNext"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
             android:id="@+id/btnNext"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/large_padding"
             android:background="@drawable/rounded_corner_teal_700_bg"
             android:drawableEnd="@drawable/baseline_double_arrow_24"
             android:text="@string/next"
@@ -89,7 +104,6 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
 

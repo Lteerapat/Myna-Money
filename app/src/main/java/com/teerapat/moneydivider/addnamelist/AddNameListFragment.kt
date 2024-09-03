@@ -96,7 +96,6 @@ class AddNameListFragment : Fragment() {
             showAlertOverLimitItemCard(MAX_NAME_CARD)
         } else {
             binding.nameListContainer.addView(nameListCard)
-
         }
 
         return nameListCard

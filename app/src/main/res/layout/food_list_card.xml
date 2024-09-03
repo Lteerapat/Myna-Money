@@ -6,107 +6,111 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/foodCardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/large_padding"
-        android:background="@drawable/rounded_corner_white_bg"
-        android:elevation="2dp"
+        app:cardCornerRadius="@dimen/space_10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="12dp">
 
-        <EditText
-            android:id="@+id/etFoodList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal_700"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:hint="@string/food_name"
-            android:inputType="textVisiblePassword|textNoSuggestions"
-            android:labelFor="@id/etFoodList"
-            android:maxLength="15"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill,LabelFor" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
-            android:id="@+id/etFoodPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal_700"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:hint="@string/zero_amount"
-            android:inputType="numberDecimal"
-            android:labelFor="@id/etFoodPrice"
-            app:isSeparateByCommas="true"
-            app:layout_constraintEnd_toStartOf="@id/tvPersonPerFoodCard"
-            app:layout_constraintTop_toTopOf="@id/etFoodList"
-            app:noOfDecimals="2"
-            tools:ignore="Autofill,LabelFor" />
 
-        <TextView
-            android:id="@+id/tvPersonPerFoodCard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/space_02dp"
-            android:layout_marginBottom="@dimen/space_01dp"
-            android:textColor="@color/teal_200"
-            android:textSize="@dimen/text_size_16sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@id/etFoodPrice"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/etFoodPrice"
-            tools:text="@string/max_amount_person" />
-
-        <ImageView
-            android:id="@+id/ivAddNameList"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/large_padding"
-            android:layout_marginVertical="@dimen/large_padding"
-            android:background="@drawable/circle_background"
-            android:elevation="3dp"
-            android:padding="@dimen/space_03dp"
-            android:src="@drawable/baseline_person_add_alt_1_20"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etFoodList"
-            tools:ignore="ContentDescription" />
-
-        <HorizontalScrollView
-            android:id="@+id/nameChipScrollContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/large_padding"
-            android:fillViewport="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/vSpacing1"
-            app:layout_constraintStart_toEndOf="@id/ivAddNameList"
-            app:layout_constraintTop_toBottomOf="@id/etFoodList">
-
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/nameChipContainer"
+            <EditText
+                android:id="@+id/etFoodList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:singleLine="true">
+                android:backgroundTint="@color/teal_700"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="@string/food_name"
+                android:inputType="textVisiblePassword|textNoSuggestions"
+                android:labelFor="@id/etFoodList"
+                android:maxLength="15"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="Autofill,LabelFor" />
 
-            </com.google.android.material.chip.ChipGroup>
-        </HorizontalScrollView>
+            <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
+                android:id="@+id/etFoodPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/teal_700"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="@string/zero_amount"
+                android:inputType="numberDecimal"
+                android:labelFor="@id/etFoodPrice"
+                app:isSeparateByCommas="true"
+                app:layout_constraintEnd_toStartOf="@id/tvPersonPerFoodCard"
+                app:layout_constraintTop_toTopOf="@id/etFoodList"
+                app:noOfDecimals="2"
+                tools:ignore="Autofill,LabelFor" />
 
-        <View
-            android:id="@+id/vSpacing1"
-            android:layout_width="@dimen/space_12dp"
-            android:layout_height="0dp"
-            android:background="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="@id/nameChipScrollContainer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/nameChipScrollContainer" />
+            <TextView
+                android:id="@+id/tvPersonPerFoodCard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/space_02dp"
+                android:layout_marginBottom="@dimen/space_01dp"
+                android:textColor="@color/teal_200"
+                android:textSize="@dimen/text_size_16sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/etFoodPrice"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/etFoodPrice"
+                tools:text="@string/max_amount_person" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/ivAddNameList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/large_padding"
+                android:layout_marginVertical="@dimen/large_padding"
+                android:background="@drawable/circle_background"
+                android:elevation="3dp"
+                android:padding="@dimen/space_03dp"
+                android:src="@drawable/baseline_person_add_alt_1_20"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/etFoodList"
+                tools:ignore="ContentDescription" />
+
+            <HorizontalScrollView
+                android:id="@+id/nameChipScrollContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/large_padding"
+                android:fillViewport="true"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/vSpacing1"
+                app:layout_constraintStart_toEndOf="@id/ivAddNameList"
+                app:layout_constraintTop_toBottomOf="@id/etFoodList">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/nameChipContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleLine="true">
+
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <View
+                android:id="@+id/vSpacing1"
+                android:layout_width="@dimen/space_12dp"
+                android:layout_height="0dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="@id/nameChipScrollContainer"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/nameChipScrollContainer" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
     <ImageView
         android:id="@+id/ivDeleteFoodList"
