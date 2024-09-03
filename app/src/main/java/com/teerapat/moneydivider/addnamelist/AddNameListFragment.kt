@@ -127,19 +127,12 @@ class AddNameListFragment : Fragment() {
     }
 
     private fun hasDuplicateNames(nameList: List<NameInfo>): Boolean {
-        val nameSet = mutableSetOf<String>()
-        for (nameInfo in nameList) {
-            val name = nameInfo.name.trim()
-            if (name in nameSet) {
-                return true
-            }
-            nameSet.add(name)
-        }
-        return false
+        val names = nameList.map { it.name.trim() }
+        return names.size != names.toSet().size
     }
 
     private fun findFirstIncompleteCard(nameList: List<NameInfo>): IncompleteCard? {
-        for ((index, nameInfo) in nameList.withIndex()) {
+        nameList.forEachIndexed { index, nameInfo ->
             val name = nameInfo.name.trim()
 
             when {
