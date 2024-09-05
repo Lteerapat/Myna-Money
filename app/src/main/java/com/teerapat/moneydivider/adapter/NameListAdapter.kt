@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.teerapat.moneydivider.R
-import com.teerapat.moneydivider.addnamelist.NameInfo
+import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.NameListCardBinding
 import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 

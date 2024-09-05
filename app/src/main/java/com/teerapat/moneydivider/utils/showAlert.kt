@@ -7,7 +7,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.teerapat.moneydivider.R
-import com.teerapat.moneydivider.addnamelist.NameInfo
+import com.teerapat.moneydivider.data.NameInfo
 
 fun showDeleteItemConfirmationDialog(
     context: Context,

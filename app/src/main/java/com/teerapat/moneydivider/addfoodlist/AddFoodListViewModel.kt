@@ -3,6 +3,7 @@ package com.teerapat.moneydivider.addfoodlist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
+import com.teerapat.moneydivider.data.FoodInfo
 
 class AddFoodListViewModel : ViewModel() {
     private val _foodListItems = LiveEvent<FoodInfo>()

@@ -1,4 +1,4 @@
-package com.teerapat.moneydivider.addnamelist
+package com.teerapat.moneydivider.data
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
