@@ -7,24 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".addfoodlist.AddFoodListFragment">
 
-    <ScrollView
-        android:id="@+id/svFoodList"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@id/addFoodListBtnContainer"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:id="@+id/foodListContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toTopOf="parent">
-
-        </LinearLayout>
-    </ScrollView>
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFoodList"
         android:layout_width="match_parent"
