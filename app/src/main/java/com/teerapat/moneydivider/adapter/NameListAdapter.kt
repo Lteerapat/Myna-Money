@@ -109,7 +109,7 @@ class NameListAdapter(
             binding.ivDeleteNameList.isEnabled = false
             val nameListText = binding.etNameList.text.toString()
 
-            if (nameListText.isNotEmpty()) {
+            if (nameListText.isNotBlank()) {
                 showDeleteItemConfirmationDialog(context, binding.ivDeleteNameList) {
                     removeItem(position)
                 }
