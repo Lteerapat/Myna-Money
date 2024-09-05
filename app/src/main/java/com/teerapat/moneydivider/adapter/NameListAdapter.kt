@@ -2,11 +2,14 @@ package com.teerapat.moneydivider.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.addnamelist.NameInfo
 import com.teerapat.moneydivider.databinding.NameListCardBinding
 import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
@@ -16,7 +19,7 @@ class NameListAdapter(
     private val context: Context,
 ) :
     RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
-    var nameCardInfo: MutableList<NameInfo> = mutableListOf()
+    private val nameCardInfo = mutableListOf<NameInfo>()
 
     fun setItems(items: List<NameInfo>) {
         nameCardInfo.clear()
@@ -49,7 +52,7 @@ class NameListAdapter(
 
     override fun onBindViewHolder(holder: NameListViewHolder, position: Int) {
         holder.apply {
-            bindView(nameCardInfo[position], position)
+            bindView(nameCardInfo[absoluteAdapterPosition], absoluteAdapterPosition)
         }
     }
 
@@ -64,6 +67,15 @@ class NameListAdapter(
         fun bindView(nameInfo: NameInfo, position: Int) {
             currentTextWatcher?.let { binding.etNameList.removeTextChangedListener(it) }
             binding.etNameList.setText(nameInfo.name)
+
+            if (nameInfo.isIncomplete) {
+                binding.etNameList.backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red))
+            } else {
+                binding.etNameList.backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.teal_700))
+            }
+
             currentTextWatcher = object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
@@ -77,6 +89,9 @@ class NameListAdapter(
                 }
 
                 override fun afterTextChanged(s: Editable?) {
+                    nameCardInfo[position].isIncomplete = false
+                    binding.etNameList.backgroundTintList =
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.teal_700))
                     nameCardInfo[position].name = binding.etNameList.text.toString()
                 }
             }
@@ -87,10 +102,10 @@ class NameListAdapter(
                 val nameListText = binding.etNameList.text.toString()
                 if (nameListText.isNotEmpty()) {
                     showDeleteItemConfirmationDialog(context, binding.ivDeleteNameList) {
-                        removeItem(absoluteAdapterPosition)
+                        removeItem(position)
                     }
                 } else {
-                    removeItem(absoluteAdapterPosition)
+                    removeItem(position)
                     binding.ivDeleteNameList.isEnabled = true
                 }
             }

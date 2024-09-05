@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -137,6 +136,7 @@ class AddNameListFragment : Fragment() {
 
             when {
                 name.isBlank() -> {
+                    nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
                         message = getString(R.string.incomplete_empty_card_message_2)
@@ -144,6 +144,7 @@ class AddNameListFragment : Fragment() {
                 }
 
                 !name.matches(REGEX) -> {
+                    nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
                         message = getString(R.string.incomplete_letter_or_num_message_2)
@@ -151,6 +152,7 @@ class AddNameListFragment : Fragment() {
                 }
 
                 name.matches(NUM_REGEX) -> {
+                    nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
                         message = getString(R.string.incomplete_card_num_only_message_2)
@@ -180,15 +182,15 @@ class AddNameListFragment : Fragment() {
                 etNameList?.backgroundTintList = ColorStateList.valueOf(
                     ContextCompat.getColor(requireContext(), R.color.red)
                 )
-                etNameList?.addTextChangedListener {
-                    etNameList.backgroundTintList =
-                        ColorStateList.valueOf(
-                            ContextCompat.getColor(
-                                requireContext(),
-                                R.color.teal_700
-                            )
-                        )
-                }
+//                etNameList?.addTextChangedListener {
+//                    etNameList.backgroundTintList =
+//                        ColorStateList.valueOf(
+//                            ContextCompat.getColor(
+//                                requireContext(),
+//                                R.color.teal_700
+//                            )
+//                        )
+//                }
             }
         }
     }
