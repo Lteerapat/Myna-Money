@@ -16,8 +16,7 @@ import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 
 class NameListAdapter(
     private val context: Context,
-) :
-    RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
+) : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
     private val nameInfo = mutableListOf<NameInfo>()
 
     @SuppressLint("NotifyDataSetChanged")
@@ -62,7 +61,6 @@ class NameListAdapter(
 
     inner class NameListViewHolder(val binding: NameListCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
         private var currentTextWatcher: TextWatcher? = null
 
         fun bindView(nameInfo: NameInfo) {

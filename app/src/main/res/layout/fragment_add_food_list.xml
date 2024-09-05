@@ -29,6 +29,7 @@
         android:id="@+id/rvFoodList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/addFoodListBtnContainer"
         app:layout_constraintTop_toTopOf="parent"
         tools:itemCount="5"

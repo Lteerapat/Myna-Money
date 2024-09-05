@@ -38,8 +38,7 @@ class AddFoodListFragment : Fragment() {
     private lateinit var viewModel: AddFoodListViewModel
     private var _binding: FragmentAddFoodListBinding? = null
     private val binding get() = _binding!!
-
-    private val foodListAdapter = FoodListAdapter()
+    private lateinit var foodListAdapter: FoodListAdapter
 
     private var isPercentage = true
 
@@ -50,17 +49,6 @@ class AddFoodListFragment : Fragment() {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[AddFoodListViewModel::class.java]
 //        observe()
-    }
-
-    private fun observe() {
-        viewModel.foodListItems.observe(viewLifecycleOwner) { items ->
-        }
-        viewModel.serviceChargeAmount.observe(viewLifecycleOwner) { amount ->
-        }
-        viewModel.vatAmount.observe(viewLifecycleOwner) { amount ->
-        }
-        viewModel.discountAmount.observe(viewLifecycleOwner) { amount ->
-        }
     }
 
     override fun onCreateView(
@@ -81,7 +69,20 @@ class AddFoodListFragment : Fragment() {
         setUpNextButton()
     }
 
+    private fun observe() {
+        viewModel.foodListItems.observe(viewLifecycleOwner) { items ->
+        }
+        viewModel.serviceChargeAmount.observe(viewLifecycleOwner) { amount ->
+        }
+        viewModel.vatAmount.observe(viewLifecycleOwner) { amount ->
+        }
+        viewModel.discountAmount.observe(viewLifecycleOwner) { amount ->
+        }
+    }
+
     private fun setupFoodListRecyclerView() {
+        foodListAdapter = FoodListAdapter(requireContext())
+
         binding.rvFoodList.adapter = foodListAdapter
     }
 

@@ -21,9 +21,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvNameList"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/footer"
         app:layout_constraintTop_toBottomOf="@id/tvAddNameTitle"
         tools:itemCount="5"
@@ -33,8 +33,8 @@
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/large_padding"
         android:background="@color/white"
+        android:padding="@dimen/large_padding"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button

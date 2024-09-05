@@ -183,15 +183,6 @@ class AddNameListFragment : Fragment() {
                 etNameList?.backgroundTintList = ColorStateList.valueOf(
                     ContextCompat.getColor(requireContext(), R.color.red)
                 )
-//                etNameList?.addTextChangedListener {
-//                    etNameList.backgroundTintList =
-//                        ColorStateList.valueOf(
-//                            ContextCompat.getColor(
-//                                requireContext(),
-//                                R.color.teal_700
-//                            )
-//                        )
-//                }
             }
         }
     }
