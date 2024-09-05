@@ -14,33 +14,33 @@ import com.teerapat.moneydivider.addnamelist.NameInfo
 import com.teerapat.moneydivider.databinding.NameListCardBinding
 import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 
-@SuppressLint("NotifyDataSetChanged")
 class NameListAdapter(
     private val context: Context,
 ) :
     RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
-    private val nameCardInfo = mutableListOf<NameInfo>()
+    private val nameInfo = mutableListOf<NameInfo>()
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<NameInfo>) {
-        nameCardInfo.clear()
-        nameCardInfo.addAll(items)
+        nameInfo.clear()
+        nameInfo.addAll(items)
         notifyDataSetChanged()
     }
 
     fun addItem(item: NameInfo) {
-        nameCardInfo.add(item)
-        notifyDataSetChanged()
+        nameInfo.add(item)
+        notifyItemInserted(nameInfo.size - 1)
     }
 
     fun removeItem(position: Int) {
-        if (position >= 0 && position < nameCardInfo.size) {
-            nameCardInfo.removeAt(position)
-            notifyDataSetChanged()
+        if (position >= 0 && position < nameInfo.size) {
+            nameInfo.removeAt(position)
+            notifyItemRemoved(position)
         }
     }
 
     fun getNameList(): List<NameInfo> {
-        return nameCardInfo
+        return nameInfo
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NameListViewHolder {
@@ -52,29 +52,23 @@ class NameListAdapter(
 
     override fun onBindViewHolder(holder: NameListViewHolder, position: Int) {
         holder.apply {
-            bindView(nameCardInfo[absoluteAdapterPosition], absoluteAdapterPosition)
+            bindView(nameInfo[position])
         }
     }
 
     override fun getItemCount(): Int {
-        return nameCardInfo.size
+        return nameInfo.size
     }
 
     inner class NameListViewHolder(val binding: NameListCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         private var currentTextWatcher: TextWatcher? = null
-        fun bindView(nameInfo: NameInfo, position: Int) {
+
+        fun bindView(nameInfo: NameInfo) {
             currentTextWatcher?.let { binding.etNameList.removeTextChangedListener(it) }
             binding.etNameList.setText(nameInfo.name)
-
-            if (nameInfo.isIncomplete) {
-                binding.etNameList.backgroundTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.red))
-            } else {
-                binding.etNameList.backgroundTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(context, R.color.teal_700))
-            }
+            setBackgroundTint(nameInfo.isIncomplete)
 
             currentTextWatcher = object : TextWatcher {
                 override fun beforeTextChanged(
@@ -89,25 +83,41 @@ class NameListAdapter(
                 }
 
                 override fun afterTextChanged(s: Editable?) {
-                    nameCardInfo[position].isIncomplete = false
-                    binding.etNameList.backgroundTintList =
-                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.teal_700))
-                    nameCardInfo[position].name = binding.etNameList.text.toString()
+                    nameInfo.name = s.toString()
+                    nameInfo.isIncomplete = false
+                    setBackgroundTint(false)
                 }
             }
             binding.etNameList.addTextChangedListener(currentTextWatcher)
 
             binding.ivDeleteNameList.setOnClickListener {
-                binding.ivDeleteNameList.isEnabled = false
-                val nameListText = binding.etNameList.text.toString()
-                if (nameListText.isNotEmpty()) {
-                    showDeleteItemConfirmationDialog(context, binding.ivDeleteNameList) {
-                        removeItem(position)
-                    }
-                } else {
-                    removeItem(position)
-                    binding.ivDeleteNameList.isEnabled = true
+                if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                    handleDelete(absoluteAdapterPosition)
                 }
+            }
+        }
+
+        private fun setBackgroundTint(isIncomplete: Boolean) {
+            val color = if (isIncomplete) {
+                R.color.red
+            } else {
+                R.color.teal_700
+            }
+            binding.etNameList.backgroundTintList =
+                ColorStateList.valueOf(ContextCompat.getColor(context, color))
+        }
+
+        private fun handleDelete(position: Int) {
+            binding.ivDeleteNameList.isEnabled = false
+            val nameListText = binding.etNameList.text.toString()
+
+            if (nameListText.isNotEmpty()) {
+                showDeleteItemConfirmationDialog(context, binding.ivDeleteNameList) {
+                    removeItem(position)
+                }
+            } else {
+                removeItem(position)
+                binding.ivDeleteNameList.isEnabled = true
             }
         }
     }
