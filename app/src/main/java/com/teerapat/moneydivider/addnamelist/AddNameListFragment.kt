@@ -54,7 +54,6 @@ class AddNameListFragment : Fragment() {
 
     private fun setupNameListRecyclerView() {
         nameListAdapter = NameListAdapter(requireContext())
-
         binding.rvNameList.adapter = nameListAdapter
     }
 
@@ -64,7 +63,7 @@ class AddNameListFragment : Fragment() {
                 showAlertOverLimitItemCard(MAX_NAME_CARD)
                 return@setOnClickListener
             }
-            nameListAdapter.addItem(NameInfo("", false))
+            nameListAdapter.addItem(NameInfo())
             focusOnCard(nameListAdapter.itemCount - 1)
         }
     }
@@ -79,7 +78,7 @@ class AddNameListFragment : Fragment() {
             when {
                 nameList.isEmpty() -> {
                     showAlertZeroCardList() {
-                        nameListAdapter.addItem(NameInfo("", false))
+                        nameListAdapter.addItem(NameInfo())
                         focusOnCard(0, isIncompleteCard = true)
                         btnNext.isEnabled = true
                     }
@@ -116,7 +115,7 @@ class AddNameListFragment : Fragment() {
         if (existingNameList.isNotEmpty()) {
             nameListAdapter.setItems(existingNameList)
         } else {
-            nameListAdapter.addItem(NameInfo("", false))
+            nameListAdapter.addItem(NameInfo())
         }
     }
 

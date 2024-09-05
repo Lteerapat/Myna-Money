@@ -21,14 +21,11 @@ class AddFoodListViewModel : ViewModel() {
     val discountAmount: LiveData<Double>
         get() = _discountAmount
 
-//    fun addFoodListItem(item: FoodListItem) {
-//        val currentList = _foodListItems.value ?: emptyList<FoodListItem>()
-//        _foodListItems.value = currentList + item
-//    }
-//
-//    fun removeFoodListItem(item: FoodListItem) {
-//        val currentList = _foodListItems.value ?: emptyList<FoodListItem>()
-//        _foodListItems.value = currentList - item
-//    }
+    var foodList: MutableList<FoodInfo> = mutableListOf()
+
+    fun saveFoodList(list: List<FoodInfo>) {
+        foodList.clear()
+        foodList.addAll(list)
+    }
 }
 
