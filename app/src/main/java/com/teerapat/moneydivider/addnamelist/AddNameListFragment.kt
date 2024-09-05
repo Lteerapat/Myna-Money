@@ -164,16 +164,14 @@ class AddNameListFragment : Fragment() {
     }
 
     private fun focusOnCard(position: Int, isIncompleteCard: Boolean = false) {
+        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
         binding.rvNameList.scrollToPosition(position)
-
         binding.rvNameList.post {
             val viewHolder =
                 binding.rvNameList.findViewHolderForAdapterPosition(position) as? NameListAdapter.NameListViewHolder
             val etNameList = viewHolder?.binding?.etNameList
             etNameList?.requestFocus()
             etNameList?.text?.clear()
-            val imm =
-                ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
             etNameList?.postDelayed({
                 imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
             }, 100)
