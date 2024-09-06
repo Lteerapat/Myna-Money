@@ -82,8 +82,8 @@ class NameListAdapter(
 
                 override fun afterTextChanged(s: Editable?) {
                     nameInfo.name = s.toString()
-                    nameInfo.isIncomplete = false
-                    setBackgroundTint(false)
+                    nameInfo.isIncomplete = nameInfo.name.isBlank()
+                    setBackgroundTint(nameInfo.isIncomplete)
                 }
             }
             binding.etNameList.addTextChangedListener(currentTextWatcher)

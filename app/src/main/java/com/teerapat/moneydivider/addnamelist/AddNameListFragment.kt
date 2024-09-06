@@ -78,7 +78,7 @@ class AddNameListFragment : Fragment() {
             when {
                 nameList.isEmpty() -> {
                     showAlertZeroCardList {
-                        nameListAdapter.addItem(NameInfo())
+                        nameListAdapter.addItem(NameInfo(isIncomplete = true))
                         focusOnCard(
                             position = 0,
                             isIncompleteCard = true,
@@ -190,12 +190,12 @@ class AddNameListFragment : Fragment() {
             when (incompleteField) {
                 ET_NAME_LIST -> {
                     etNameList?.requestFocus()
-                    etNameList?.text?.clear()
                     etNameList?.postDelayed({
                         imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
                     }, 100)
 
                     if (isIncompleteCard) {
+                        etNameList?.text?.clear()
                         etNameList?.backgroundTintList = ColorStateList.valueOf(
                             ContextCompat.getColor(requireContext(), R.color.red)
                         )
