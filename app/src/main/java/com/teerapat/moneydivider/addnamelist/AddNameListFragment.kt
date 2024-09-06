@@ -64,7 +64,7 @@ class AddNameListFragment : Fragment() {
                 return@setOnClickListener
             }
             nameListAdapter.addItem(NameInfo())
-            focusOnCard(nameListAdapter.itemCount - 1)
+            focusOnCard(position = nameListAdapter.itemCount - 1, incompleteField = ET_NAME_LIST)
         }
     }
 
@@ -79,14 +79,22 @@ class AddNameListFragment : Fragment() {
                 nameList.isEmpty() -> {
                     showAlertZeroCardList {
                         nameListAdapter.addItem(NameInfo())
-                        focusOnCard(0, isIncompleteCard = true)
+                        focusOnCard(
+                            position = 0,
+                            isIncompleteCard = true,
+                            incompleteField = ET_NAME_LIST
+                        )
                         btnNext.isEnabled = true
                     }
                 }
 
                 incompleteCard != null -> {
                     showAlertOnIncompleteCard(incompleteCard.message) {
-                        focusOnCard(incompleteCard.position, isIncompleteCard = true)
+                        focusOnCard(
+                            incompleteCard.position,
+                            isIncompleteCard = true,
+                            incompleteField = incompleteCard.incompleteField
+                        )
                         btnNext.isEnabled = true
                     }
                 }
@@ -140,7 +148,8 @@ class AddNameListFragment : Fragment() {
                     nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_empty_card_message_2)
+                        message = getString(R.string.incomplete_empty_card_message_2),
+                        incompleteField = ET_NAME_LIST
                     )
                 }
 
@@ -148,7 +157,8 @@ class AddNameListFragment : Fragment() {
                     nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_letter_or_num_message_2)
+                        message = getString(R.string.incomplete_letter_or_num_message_2),
+                        incompleteField = ET_NAME_LIST
                     )
                 }
 
@@ -156,7 +166,8 @@ class AddNameListFragment : Fragment() {
                     nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_num_only_message_2)
+                        message = getString(R.string.incomplete_card_num_only_message_2),
+                        incompleteField = ET_NAME_LIST
                     )
                 }
             }
@@ -164,23 +175,32 @@ class AddNameListFragment : Fragment() {
         return null
     }
 
-    private fun focusOnCard(position: Int, isIncompleteCard: Boolean = false) {
+    private fun focusOnCard(
+        position: Int,
+        isIncompleteCard: Boolean = false,
+        incompleteField: String
+    ) {
         val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
         binding.rvNameList.scrollToPosition(position)
         binding.rvNameList.post {
             val viewHolder =
                 binding.rvNameList.findViewHolderForAdapterPosition(position) as? NameListAdapter.NameListViewHolder
             val etNameList = viewHolder?.binding?.etNameList
-            etNameList?.requestFocus()
-            etNameList?.text?.clear()
-            etNameList?.postDelayed({
-                imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
-            }, 100)
 
-            if (isIncompleteCard) {
-                etNameList?.backgroundTintList = ColorStateList.valueOf(
-                    ContextCompat.getColor(requireContext(), R.color.red)
-                )
+            when (incompleteField) {
+                ET_NAME_LIST -> {
+                    etNameList?.requestFocus()
+                    etNameList?.text?.clear()
+                    etNameList?.postDelayed({
+                        imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
+                    }, 100)
+
+                    if (isIncompleteCard) {
+                        etNameList?.backgroundTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+                }
             }
         }
     }
@@ -204,5 +224,6 @@ class AddNameListFragment : Fragment() {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
         private val NUM_REGEX = Regex("[0-9]*$")
         private const val MAX_NAME_CARD = 30
+        private const val ET_NAME_LIST = "etNameList"
     }
 }
