@@ -10,9 +10,9 @@
         android:id="@+id/summaryHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/teal_200"
         android:orientation="vertical"
         android:padding="@dimen/large_padding"
-        android:background="@color/teal_200"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -24,6 +24,22 @@
 
         <TextView
             android:id="@+id/tvSummaryTotalAmount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_20sp"
+            android:textStyle="bold"
+            tools:text="@string/total_amount_summary" />
+
+        <TextView
+            android:id="@+id/vat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size_20sp"
+            android:textStyle="bold"
+            tools:text="@string/total_amount_summary" />
+
+        <TextView
+            android:id="@+id/sc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_size_20sp"

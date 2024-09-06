@@ -18,24 +18,33 @@ class FoodListAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
     private val foodInfo = mutableListOf<FoodInfo>()
+    private var onDataChangedListener: (() -> Unit)? = null
+
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<FoodInfo>) {
         foodInfo.clear()
         foodInfo.addAll(items)
         notifyDataSetChanged()
+        onDataChangedListener?.invoke()
     }
 
     fun addItem(item: FoodInfo) {
         foodInfo.add(item)
         notifyItemInserted(foodInfo.size - 1)
+        onDataChangedListener?.invoke()
     }
 
     fun removeItem(position: Int) {
         if (position >= 0 && position < foodInfo.size) {
             foodInfo.removeAt(position)
             notifyItemRemoved(position)
+            onDataChangedListener?.invoke()
         }
+    }
+
+    fun setOnDataChangedListener(listener: () -> Unit) {
+        onDataChangedListener = listener
     }
 
     fun getFoodList(): List<FoodInfo> {
@@ -61,14 +70,17 @@ class FoodListAdapter(
 
     inner class FoodListViewHolder(val binding: FoodListCardBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private var currentTextWatcher: TextWatcher? = null
+        private var currentEtFoodListTextWatcher: TextWatcher? = null
+        private var currentEtFoodPriceTextWatcher: TextWatcher? = null
 
         fun bindView(foodInfo: FoodInfo) {
-            currentTextWatcher?.let { binding.etFoodList.removeTextChangedListener(it) }
+            currentEtFoodListTextWatcher?.let { binding.etFoodList.removeTextChangedListener(it) }
+            currentEtFoodPriceTextWatcher?.let { binding.etFoodPrice.removeTextChangedListener(it) }
             binding.etFoodList.setText(foodInfo.foodName)
+            binding.etFoodPrice.setText(foodInfo.foodPrice)
             setBackgroundTint(foodInfo.isIncomplete)
 
-            currentTextWatcher = object : TextWatcher {
+            currentEtFoodListTextWatcher = object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
                     start: Int,
@@ -86,7 +98,29 @@ class FoodListAdapter(
                     setBackgroundTint(false)
                 }
             }
-            binding.etFoodList.addTextChangedListener(currentTextWatcher)
+            binding.etFoodList.addTextChangedListener(currentEtFoodListTextWatcher)
+
+            currentEtFoodPriceTextWatcher = object :
+                TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    foodInfo.foodPrice = s.toString().replace(",", "")
+                    foodInfo.isIncomplete = false
+                    setBackgroundTint(false)
+                    onDataChangedListener?.invoke()
+                }
+            }
+            binding.etFoodPrice.addTextChangedListener(currentEtFoodPriceTextWatcher)
 
             binding.ivDeleteFoodList.setOnClickListener {
                 if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
@@ -107,9 +141,10 @@ class FoodListAdapter(
 
         private fun handleDelete(position: Int) {
             binding.ivDeleteFoodList.isEnabled = false
-            val nameListText = binding.etFoodList.text.toString()
+            val foodListText = binding.etFoodList.text.toString()
+            val foodPriceText = binding.etFoodPrice.text.toString()
 
-            if (nameListText.isNotEmpty()) {
+            if (foodListText.isNotBlank() || foodPriceText.isNotBlank() || binding.nameChipContainer.childCount > 0) {
                 showDeleteItemConfirmationDialog(context, binding.ivDeleteFoodList) {
                     removeItem(position)
                 }
@@ -119,6 +154,4 @@ class FoodListAdapter(
             }
         }
     }
-
-
 }

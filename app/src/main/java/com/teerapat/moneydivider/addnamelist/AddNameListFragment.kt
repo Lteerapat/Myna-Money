@@ -77,7 +77,7 @@ class AddNameListFragment : Fragment() {
 
             when {
                 nameList.isEmpty() -> {
-                    showAlertZeroCardList() {
+                    showAlertZeroCardList {
                         nameListAdapter.addItem(NameInfo())
                         focusOnCard(0, isIncompleteCard = true)
                         btnNext.isEnabled = true
@@ -102,7 +102,7 @@ class AddNameListFragment : Fragment() {
                         viewModel.saveNameList(nameListAdapter.getNameList())
                         findNavController().navigate(
                             R.id.action_addNameListFragment_to_addFoodListFragment,
-                            buildBundle(viewModel.nameList)
+                            buildBundle()
                         )
                     }
                 }
@@ -119,7 +119,8 @@ class AddNameListFragment : Fragment() {
         }
     }
 
-    private fun buildBundle(nameList: List<NameInfo>): Bundle {
+    private fun buildBundle(): Bundle {
+        val nameList = viewModel.nameList
         return Bundle().apply {
             putParcelableArrayList("nameList", ArrayList(nameList))
         }

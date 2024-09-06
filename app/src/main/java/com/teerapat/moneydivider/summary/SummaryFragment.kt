@@ -6,27 +6,43 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.teerapat.moneydivider.R
+import com.teerapat.moneydivider.data.VatScDcBundleInfo
+import com.teerapat.moneydivider.databinding.FragmentSummaryBinding
 
 class SummaryFragment : Fragment() {
+    private lateinit var viewModel: SummaryViewModel
+    private var _binding: FragmentSummaryBinding? = null
+    private val binding get() = _binding!!
 
-    companion object {
-        fun newInstance() = SummaryFragment()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this)[SummaryViewModel::class.java]
+        observe()
     }
 
-    private lateinit var viewModel: SummaryViewModel
+    private fun observe() {
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_summary, container, false)
+    ): View {
+        _binding = FragmentSummaryBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(SummaryViewModel::class.java)
-        // TODO: Use the ViewModel
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setUpMock()
     }
 
+    private fun setUpMock() {
+        val vatScDcBundle = arguments?.getParcelable<VatScDcBundleInfo>("vatScDcBundle")
+
+        vatScDcBundle?.let {
+            binding.tvSummaryTotalAmount.text = String.format("%.2f", it.discount)
+            binding.vat.text = String.format("%.2f", it.vat)
+            binding.sc.text = String.format("%.2f", it.serviceCharge)
+        }
+    }
 }
