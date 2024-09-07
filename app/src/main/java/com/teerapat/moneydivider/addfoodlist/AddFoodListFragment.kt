@@ -1,22 +1,28 @@
 package com.teerapat.moneydivider.addfoodlist
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.adapter.FoodListAdapter
 import com.teerapat.moneydivider.addnamelist.IncompleteCard
 import com.teerapat.moneydivider.data.FoodInfo
+import com.teerapat.moneydivider.data.FoodNameInfo
+import com.teerapat.moneydivider.data.FoodPriceInfo
+import com.teerapat.moneydivider.data.NameChipInfo
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
@@ -63,15 +69,21 @@ class AddFoodListFragment : Fragment() {
 
         setupFoodListRecyclerView()
         setUpAddButton()
-//        setUpFoodListCard()
         setUpVScDisIsPercentage()
         setUpToggleListeners()
         setUpAmountOfVScDis()
         setUpNextButton()
         loadInitialData()
+        configureViewPool()
     }
 
     private fun observe() {
+    }
+
+    private fun configureViewPool() {
+        val viewPool = RecyclerView.RecycledViewPool()
+        viewPool.setMaxRecycledViews(0, MAX_FOOD_CARD)
+        binding.rvFoodList.setRecycledViewPool(viewPool)
     }
 
     private fun setupFoodListRecyclerView() {
@@ -82,27 +94,14 @@ class AddFoodListFragment : Fragment() {
         }
     }
 
-//    private fun setUpFoodListCard() {
-////        for (nameModal in viewModel.nameList) {
-//        addFoodListCard(cardIndexCounter++)
-////        }
-//
-//        binding.btnAddFoodList.setOnClickListener {
-//            focusOnCard(
-//                addFoodListCard(cardIndexCounter++).findViewById(R.id.etFoodList),
-//                isIncompleteCard = false
-//            )
-//        }
-//    }
-
     private fun setUpAddButton() {
         binding.btnAddFoodList.setOnClickListener {
             if (foodListAdapter.itemCount >= MAX_FOOD_CARD) {
                 showAlertOverLimitItemCard(MAX_FOOD_CARD)
                 return@setOnClickListener
             }
-            foodListAdapter.addItem(FoodInfo())
-//            focusOnCard(foodListAdapter.itemCount - 1)
+            foodListAdapter.addItem(FoodInfo(FoodNameInfo(), FoodPriceInfo(), NameChipInfo()))
+            focusOnCard(position = foodListAdapter.itemCount - 1, incompleteField = ET_FOOD_LIST)
         }
     }
 
@@ -115,7 +114,7 @@ class AddFoodListFragment : Fragment() {
         if (existingFoodList.isNotEmpty()) {
             foodListAdapter.setItems(existingFoodList)
         } else {
-            foodListAdapter.addItem(FoodInfo())
+            foodListAdapter.addItem(FoodInfo(FoodNameInfo(), FoodPriceInfo(), NameChipInfo()))
         }
 
         if (existingDiscount.isNotEmpty()) binding.etDiscountAmount.setText(existingDiscount)
@@ -124,75 +123,6 @@ class AddFoodListFragment : Fragment() {
         )
         if (existingVat.isNotEmpty()) binding.etVatAmount.setText(existingVat)
     }
-
-//    private fun addFoodListCard(
-//        cardIndex: Int,
-//        foodName: String = "",
-//        foodPrice: Double = 0.0
-//    ): View {
-//        val inflater = LayoutInflater.from(requireContext())
-//        val foodListCardBinding = FoodListCardBinding.inflate(inflater)
-//        val foodListCard = foodListCardBinding.root
-//
-//        val layoutParams = LinearLayout.LayoutParams(
-//            LinearLayout.LayoutParams.MATCH_PARENT,
-//            LinearLayout.LayoutParams.WRAP_CONTENT
-//        )
-//        foodListCard.layoutParams = layoutParams
-//
-//        foodListCardBinding.ivDeleteFoodList.setOnClickListener {
-//            foodListCardBinding.ivDeleteFoodList.isEnabled = false
-//            val foodListText = foodListCardBinding.etFoodList.text.toString()
-//            val foodPriceText = foodListCardBinding.etFoodPrice.text.toString()
-//            if (foodListText.isNotBlank() || foodPriceText.isNotBlank() || foodListCardBinding.nameChipContainer.childCount > 0) {
-//                showDeleteItemConfirmationDialog(
-//                    requireContext(),
-//                    foodListCardBinding.ivDeleteFoodList
-//                ) {
-//                    (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
-//                    calculateTotalAmount()
-//                }
-//            } else {
-//                (foodListCard.parent as? LinearLayout)?.removeView(foodListCard)
-//                calculateTotalAmount()
-//            }
-//        }
-//
-//        foodListCardBinding.ivAddNameList.setOnClickListener {
-//            foodListCardBinding.ivAddNameList.isEnabled = false
-//
-//            val nameList = nameStateMap[cardIndex]?.toMutableList()
-//                ?: arguments?.getParcelableArrayList<NameInfo>("nameList")?.map {
-//                    NameInfo(it.name, it.isChecked)
-//                }?.toMutableList() ?: mutableListOf()
-//            nameList.sortBy { it.name }
-//            val onlyNameList = nameList.map { it.name }.toTypedArray()
-//            val onlyIsCheckedList = nameList.map { it.isChecked }.toBooleanArray()
-//            showNameSelectionDialog(
-//                onlyNameList,
-//                onlyIsCheckedList,
-//                foodListCardBinding.ivAddNameList
-//            )
-//            { updatedList ->
-//                val checkedNameList = updatedList.filter { it.isChecked }.map { it.name }
-//                nameStateMap[cardIndex] = updatedList
-//                addNameChip(foodListCardBinding.nameChipContainer, checkedNameList, cardIndex)
-//            }
-//        }
-//
-//        addChipListener(foodListCardBinding)
-//
-//        foodListCardBinding.etFoodList.addTextChangedListener { calculateTotalAmount() }
-//        foodListCardBinding.etFoodPrice.addTextChangedListener { calculateTotalAmount() }
-//
-//        if (binding.foodListContainer.childCount == MAX_FOOD_CARD) {
-//            showAlertOverLimitItemCard(MAX_FOOD_CARD)
-//        } else {
-//            binding.foodListContainer.addView(foodListCard)
-//        }
-//
-//        return foodListCard
-//    }
 
     private fun addChipListener(foodListCardBinding: FoodListCardBinding) {
         val tvPersonPerFoodCard = foodListCardBinding.tvPersonPerFoodCard
@@ -278,7 +208,7 @@ class AddFoodListFragment : Fragment() {
         viewModel.saveVatScDcBundle(discount, serviceCharge, vat)
 
         for (food in foodListAdapter.getFoodList()) {
-            totalAmountBeforeCalculation += removeCommasAndReturnDouble(food.foodPrice)
+            totalAmountBeforeCalculation += removeCommasAndReturnDouble(food.foodPrice.price)
         }
 
         if (!viewModel.isPercentage) {
@@ -406,31 +336,31 @@ class AddFoodListFragment : Fragment() {
             when {
                 foodList.isEmpty() -> {
                     showAlertZeroCardList {
-                        foodListAdapter.addItem(FoodInfo())
-//                        focusOnCard(0, isIncompleteCard = true)
+                        foodListAdapter.addItem(
+                            FoodInfo(
+                                FoodNameInfo(isIncomplete = true),
+                                FoodPriceInfo(),
+                                NameChipInfo()
+                            )
+                        )
+                        focusOnCard(
+                            position = 0,
+                            isIncompleteCard = true,
+                            incompleteField = ET_FOOD_LIST
+                        )
                         btnNext.isEnabled = true
                     }
                 }
 
                 incompleteCard != null -> {
                     showAlertOnIncompleteCard(incompleteCard.message) {
-//                        focusOnCard(incompleteCard) { _ ->
-//                            when {
-//                                !etFoodList.text.toString().matches(REGEX) -> etFoodList
-//                                etFoodList.text.isBlank() -> etFoodList
-//                                etFoodPrice.text!!.isBlank() -> etFoodPrice
-//                                etFoodList.text.toString().matches(NUM_REGEX) -> etFoodList
-//                                etFoodPrice.text.toString()
-//                                    .toDoubleOrNull() == 0.0 -> etFoodPrice
-//
-//                                foodListCardBinding.nameChipContainer.childCount <= 0 -> incompleteCard.findViewById(
-//                                    R.id.foodCardContainer
-//                                )
-//
-//                                else -> etFoodList
-//                            }
-//                        }
+                        focusOnCard(
+                            position = incompleteCard.position,
+                            isIncompleteCard = true,
+                            incompleteField = incompleteCard.incompleteField
+                        )
                         btnNext.isEnabled = true
+
                     }
                 }
 
@@ -451,9 +381,8 @@ class AddFoodListFragment : Fragment() {
         }
     }
 
-
     private fun hasDuplicateNames(nameList: List<FoodInfo>): Boolean {
-        val names = nameList.map { it.foodName.trim() }
+        val names = nameList.map { it.foodName.name.trim() }
         return names.size != names.toSet().size
     }
 
@@ -515,82 +444,118 @@ class AddFoodListFragment : Fragment() {
         return numerator / denominator
     }
 
-//    private fun focusOnCard(
-//        position: Int,
-//        isIncompleteCard: Boolean = false,
-//        getTargetView: (View) -> View = { it }
-//    ) {
-//        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
-//        val targetView = getTargetView(cardView)
-//        targetView.requestFocus()
-//
-//        binding.rvFoodList.post {
-//            val viewHolder =
-//                binding.rvFoodList.findViewHolderForAdapterPosition(position) as? FoodListAdapter.FoodListViewHolder
-//            val etFoodList = viewHolder?.binding?.etFoodList
-//            val etFoodPrice = viewHolder?.binding?.etFoodPrice
-//            etNameList?.requestFocus()
-//            etNameList?.text?.clear()
-//
-//            etNameList?.postDelayed({
-//                imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
-//            }, 100)
-//
-//            if (isIncompleteCard) {
-//                etNameList?.backgroundTintList = ColorStateList.valueOf(
-//                    ContextCompat.getColor(requireContext(), R.color.red)
-//                )
-//            }
-//        }
-//    }
+    private fun focusOnCard(
+        position: Int,
+        isIncompleteCard: Boolean = false,
+        incompleteField: String
+    ) {
+        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
+        binding.rvFoodList.scrollToPosition(position)
+        binding.rvFoodList.post {
+            val viewHolder =
+                binding.rvFoodList.findViewHolderForAdapterPosition(position) as? FoodListAdapter.FoodListViewHolder
+            val etFoodList = viewHolder?.binding?.etFoodList
+            val etFoodPrice = viewHolder?.binding?.etFoodPrice
+            val foodCardContainer = viewHolder?.binding?.foodCardContainer
 
-    private fun findFirstIncompleteCard(foodList: List<FoodInfo>): IncompleteCard? {
-        foodList.forEachIndexed { index, foodInfo ->
-            val foodName = foodInfo.foodName.trim()
-            val foodPrice = foodInfo.foodPrice
-            val name = foodInfo.name
+            when (incompleteField) {
+                ET_FOOD_PRICE -> {
+                    etFoodPrice?.requestFocus()
+                    etFoodPrice?.postDelayed({
+                        imm?.showSoftInput(etFoodPrice, InputMethodManager.SHOW_IMPLICIT)
+                    }, 100)
+                    if (isIncompleteCard) {
+                        etFoodPrice?.text?.clear()
+                        etFoodPrice?.backgroundTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+                }
 
-            when {
-                !foodName.matches(REGEX) -> {
-                    foodList[index].isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = getString(R.string.incomplete_card_letter_or_num_message)
+                FOOD_CARD_CONTAINER -> {
+                    foodCardContainer?.background = ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.incomplete_card_border
                     )
                 }
 
+                else -> {
+                    etFoodList?.requestFocus()
+                    etFoodList?.postDelayed({
+                        imm?.showSoftInput(etFoodList, InputMethodManager.SHOW_IMPLICIT)
+                    }, 100)
+                    if (isIncompleteCard) {
+                        etFoodList?.text?.clear()
+                        etFoodList?.backgroundTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+                }
 
-                foodName.isBlank() || foodPrice.isBlank() -> {
-                    foodList[index].isIncomplete = true
+            }
+        }
+    }
+
+    private fun findFirstIncompleteCard(foodList: List<FoodInfo>): IncompleteCard? {
+        foodList.forEachIndexed { index, foodInfo ->
+            val foodName = foodInfo.foodName.name.trim()
+            val foodPrice = foodInfo.foodPrice.price
+            val name = foodInfo.name.nameList
+
+            when {
+                !foodName.matches(REGEX) -> {
+                    foodList[index].foodName.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_empty_message)
+                        message = getString(R.string.incomplete_card_letter_or_num_message),
+                        incompleteField = ET_FOOD_LIST
+                    )
+                }
+
+                foodName.isBlank() -> {
+                    foodList[index].foodName.isIncomplete = true
+                    return IncompleteCard(
+                        position = index,
+                        message = getString(R.string.incomplete_card_empty_message),
+                        incompleteField = ET_FOOD_LIST
+                    )
+                }
+
+                foodPrice.isBlank() -> {
+                    foodList[index].foodPrice.isIncomplete = true
+                    return IncompleteCard(
+                        position = index,
+                        message = getString(R.string.incomplete_card_empty_message),
+                        incompleteField = ET_FOOD_PRICE
                     )
                 }
 
                 foodName.matches(NUM_REGEX) -> {
-                    foodList[index].isIncomplete = true
+                    foodList[index].foodName.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_num_only_message)
+                        message = getString(R.string.incomplete_card_num_only_message),
+                        incompleteField = ET_FOOD_LIST
                     )
                 }
 
                 removeCommasAndReturnDouble(foodPrice) == 0.0 -> {
-                    foodList[index].isIncomplete = true
+                    foodList[index].foodPrice.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_zero_message)
+                        message = getString(R.string.incomplete_card_zero_message),
+                        incompleteField = ET_FOOD_PRICE
                     )
                 }
 
-//                name.isEmpty() -> {
-//                    foodList[index].isIncomplete = true
-//                    return IncompleteCard(
-//                        position = index,
-//                        message = getString(R.string.incomplete_card_zero_chip_message)
-//                    )
-//                }
+                name.isEmpty() -> {
+                    foodList[index].name.isIncomplete = true
+                    return IncompleteCard(
+                        position = index,
+                        message = getString(R.string.incomplete_card_zero_chip_message),
+                        incompleteField = FOOD_CARD_CONTAINER
+                    )
+                }
 
                 else -> {
                     getString(R.string.incomplete_item)
@@ -634,5 +599,8 @@ class AddFoodListFragment : Fragment() {
         private val NUM_REGEX = Regex("[0-9]*$")
         private const val DECIMAL_PATTERN = "#,###.##"
         private const val MAX_FOOD_CARD = 50
+        private const val ET_FOOD_LIST = "etFoodList"
+        private const val ET_FOOD_PRICE = "etFoodPrice"
+        private const val FOOD_CARD_CONTAINER = "foodCardContainer"
     }
 }

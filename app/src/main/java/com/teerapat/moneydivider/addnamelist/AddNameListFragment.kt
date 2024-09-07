@@ -193,7 +193,6 @@ class AddNameListFragment : Fragment() {
                     etNameList?.postDelayed({
                         imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
                     }, 100)
-
                     if (isIncompleteCard) {
                         etNameList?.text?.clear()
                         etNameList?.backgroundTintList = ColorStateList.valueOf(

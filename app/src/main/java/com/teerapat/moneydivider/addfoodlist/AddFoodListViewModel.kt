@@ -19,7 +19,9 @@ class AddFoodListViewModel : ViewModel() {
     }
 
     fun saveDiscount(discount: Double) {
-        this.discount = if (discount % 1 == 0.0) {
+        this.discount = if (discount == 0.0) {
+            ""
+        } else if (discount % 1 == 0.0) {
             discount.toInt().toString()
         } else {
             discount.toString()
@@ -27,7 +29,9 @@ class AddFoodListViewModel : ViewModel() {
     }
 
     fun saveServiceCharge(serviceCharge: Double) {
-        this.serviceCharge = if (serviceCharge % 1 == 0.0) {
+        this.serviceCharge = if (serviceCharge == 0.0) {
+            ""
+        } else if (serviceCharge % 1 == 0.0) {
             serviceCharge.toInt().toString()
         } else {
             serviceCharge.toString()
@@ -35,7 +39,9 @@ class AddFoodListViewModel : ViewModel() {
     }
 
     fun saveVat(vat: Double) {
-        this.vat = if (vat % 1 == 0.0) {
+        this.vat = if (vat == 0.0) {
+            ""
+        } else if (vat % 1 == 0.0) {
             vat.toInt().toString()
         } else {
             vat.toString()

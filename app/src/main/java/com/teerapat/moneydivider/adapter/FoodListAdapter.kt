@@ -76,9 +76,12 @@ class FoodListAdapter(
         fun bindView(foodInfo: FoodInfo) {
             currentEtFoodListTextWatcher?.let { binding.etFoodList.removeTextChangedListener(it) }
             currentEtFoodPriceTextWatcher?.let { binding.etFoodPrice.removeTextChangedListener(it) }
-            binding.etFoodList.setText(foodInfo.foodName)
-            binding.etFoodPrice.setText(foodInfo.foodPrice)
-            setBackgroundTint(foodInfo.isIncomplete)
+
+            binding.etFoodList.setText(foodInfo.foodName.name)
+            binding.etFoodPrice.setText(foodInfo.foodPrice.price)
+
+            setBackgroundTint(foodInfo.foodName.isIncomplete, "foodName")
+            setBackgroundTint(foodInfo.foodPrice.isIncomplete, "foodPrice")
 
             currentEtFoodListTextWatcher = object : TextWatcher {
                 override fun beforeTextChanged(
@@ -93,9 +96,9 @@ class FoodListAdapter(
                 }
 
                 override fun afterTextChanged(s: Editable?) {
-                    foodInfo.foodName = s.toString()
-                    foodInfo.isIncomplete = false
-                    setBackgroundTint(false)
+                    foodInfo.foodName.name = s.toString()
+                    foodInfo.foodName.isIncomplete = foodInfo.foodName.name.isEmpty()
+                    setBackgroundTint(foodInfo.foodName.isIncomplete, "foodName")
                 }
             }
             binding.etFoodList.addTextChangedListener(currentEtFoodListTextWatcher)
@@ -114,9 +117,9 @@ class FoodListAdapter(
                 }
 
                 override fun afterTextChanged(s: Editable?) {
-                    foodInfo.foodPrice = s.toString().replace(",", "")
-                    foodInfo.isIncomplete = false
-                    setBackgroundTint(false)
+                    foodInfo.foodPrice.price = s.toString()
+                    foodInfo.foodPrice.isIncomplete = foodInfo.foodPrice.price.isEmpty()
+                    setBackgroundTint(foodInfo.foodPrice.isIncomplete, "foodPrice")
                     onDataChangedListener?.invoke()
                 }
             }
@@ -129,14 +132,24 @@ class FoodListAdapter(
             }
         }
 
-        private fun setBackgroundTint(isIncomplete: Boolean) {
+        private fun setBackgroundTint(isIncomplete: Boolean, tag: String) {
             val color = if (isIncomplete) {
                 R.color.red
             } else {
                 R.color.teal_700
             }
-            binding.etFoodList.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(context, color))
+
+            when (tag) {
+                "foodName" -> {
+                    binding.etFoodList.backgroundTintList =
+                        ColorStateList.valueOf(ContextCompat.getColor(context, color))
+                }
+
+                "foodPrice" -> {
+                    binding.etFoodPrice.backgroundTintList =
+                        ColorStateList.valueOf(ContextCompat.getColor(context, color))
+                }
+            }
         }
 
         private fun handleDelete(position: Int) {

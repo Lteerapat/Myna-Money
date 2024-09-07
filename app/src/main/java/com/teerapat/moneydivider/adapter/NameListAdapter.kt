@@ -82,7 +82,7 @@ class NameListAdapter(
 
                 override fun afterTextChanged(s: Editable?) {
                     nameInfo.name = s.toString()
-                    nameInfo.isIncomplete = nameInfo.name.isBlank()
+                    nameInfo.isIncomplete = nameInfo.name.isEmpty()
                     setBackgroundTint(nameInfo.isIncomplete)
                 }
             }
