@@ -109,27 +109,28 @@ fun Fragment.showTogglePercentageAmountDialog(
         .show()
 }
 
-fun Fragment.showNameSelectionDialog(
+fun showNameSelectionDialog(
+    context: Context,
     names: Array<String>,
     isCheckedArray: BooleanArray,
     ivAddNameList: ImageView,
     onOkClick: (List<NameInfo>) -> Unit,
 ) {
-    val dialog = AlertDialog.Builder(requireContext())
-        .setTitle(getString(R.string.add_name_for_food_list_card_title))
+    val dialog = AlertDialog.Builder(context)
+        .setTitle(R.string.add_name_for_food_list_card_title)
         .setMultiChoiceItems(
             names,
             isCheckedArray
         ) { _, position, isChecked ->
             isCheckedArray[position] = isChecked
         }
-        .setPositiveButton(getString(R.string.ok_btn)) { _, _ ->
-            val updatedNameList = names.mapIndexed { index, name ->
+        .setPositiveButton(R.string.ok_btn) { _, _ ->
+            val selectedNames = names.mapIndexed { index, name ->
                 NameInfo(name, isCheckedArray[index])
-            }
-            onOkClick(updatedNameList)
+            }.filter { it.isChecked }
+            onOkClick(selectedNames)
         }
-        .setNegativeButton(getString(R.string.select_all), null)
+        .setNegativeButton(R.string.select_all, null)
         .setOnDismissListener {
             ivAddNameList.isEnabled = true
         }

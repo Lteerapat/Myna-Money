@@ -2,20 +2,15 @@ package com.teerapat.moneydivider.addfoodlist
 
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.adapter.FoodListAdapter
 import com.teerapat.moneydivider.addnamelist.IncompleteCard
@@ -24,7 +19,6 @@ import com.teerapat.moneydivider.data.FoodNameInfo
 import com.teerapat.moneydivider.data.FoodPriceInfo
 import com.teerapat.moneydivider.data.NameChipInfo
 import com.teerapat.moneydivider.data.NameInfo
-import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
 import com.teerapat.moneydivider.utils.showAlertDuplicateNames
 import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
@@ -44,11 +38,12 @@ class AddFoodListFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var foodListAdapter: FoodListAdapter
 
-    private val nameList = arguments?.getParcelableArrayList<NameInfo>("nameList")?.map {
-        NameInfo(it.name, it.isChecked)
-    }?.toMutableList() ?: mutableListOf()
+    private val nameList: MutableList<NameInfo> by lazy {
+        arguments?.getParcelableArrayList<NameInfo>("nameList")?.map {
+            NameInfo(it.name, it.isChecked)
+        }?.toMutableList() ?: mutableListOf()
+    }
     private val nameStateMap = mutableMapOf<Int, List<NameInfo>>()
-    private var cardIndexCounter = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,20 +69,13 @@ class AddFoodListFragment : Fragment() {
         setUpAmountOfVScDis()
         setUpNextButton()
         loadInitialData()
-        configureViewPool()
     }
 
     private fun observe() {
     }
 
-    private fun configureViewPool() {
-        val viewPool = RecyclerView.RecycledViewPool()
-        viewPool.setMaxRecycledViews(0, MAX_FOOD_CARD)
-        binding.rvFoodList.setRecycledViewPool(viewPool)
-    }
-
     private fun setupFoodListRecyclerView() {
-        foodListAdapter = FoodListAdapter(requireContext())
+        foodListAdapter = FoodListAdapter(requireContext(), nameList)
         binding.rvFoodList.adapter = foodListAdapter
         foodListAdapter.setOnDataChangedListener {
             calculateTotalAmount()
@@ -124,29 +112,6 @@ class AddFoodListFragment : Fragment() {
         if (existingVat.isNotEmpty()) binding.etVatAmount.setText(existingVat)
     }
 
-    private fun addChipListener(foodListCardBinding: FoodListCardBinding) {
-        val tvPersonPerFoodCard = foodListCardBinding.tvPersonPerFoodCard
-
-        foodListCardBinding.nameChipContainer.viewTreeObserver.addOnGlobalLayoutListener(object :
-            ViewTreeObserver.OnGlobalLayoutListener {
-            private var previousChipCount = foodListCardBinding.nameChipContainer.childCount
-
-            override fun onGlobalLayout() {
-                val currentChipCount = foodListCardBinding.nameChipContainer.childCount
-
-                if (currentChipCount > 0) {
-                    tvPersonPerFoodCard.visibility = View.VISIBLE
-                    tvPersonPerFoodCard.text =
-                        getString(R.string.person_count, currentChipCount)
-                } else {
-                    tvPersonPerFoodCard.visibility = View.GONE
-                }
-
-                previousChipCount = currentChipCount
-            }
-        })
-    }
-
     private fun setUpToggleListeners() {
         binding.btnPercentageToggle.setOnClickListener {
             binding.btnPercentageToggle.isEnabled = false
@@ -155,26 +120,27 @@ class AddFoodListFragment : Fragment() {
                 onPercentageSelected = {
                     if (!viewModel.isPercentage) {
                         viewModel.setIsPercentage(true)
-                        updateTextViewOfVScDis()
+                        updateAmountOfVScDis()
                     }
                 },
                 onAmountSelected = {
                     if (viewModel.isPercentage) {
                         viewModel.setIsPercentage(false)
-                        updateTextViewOfVScDis()
+                        updateAmountOfVScDis()
                     }
                 }
             )
         }
     }
 
-    private fun updateTextViewOfVScDis() {
+    private fun updateAmountOfVScDis() {
         setUpVScDisIsPercentage()
 
         binding.etServiceChargeAmount.text?.clear()
         binding.etDiscountAmount.text?.clear()
         binding.etVatAmount.text?.clear()
     }
+
 
     private fun setUpVScDisIsPercentage() {
         val symbol =
@@ -243,17 +209,17 @@ class AddFoodListFragment : Fragment() {
                     totalAmountAfterDiscountAndServiceCharge
                 ))
 
-            viewModel.saveVatScDcBundle(
-                dc = totalAmountBeforeCalculation - totalAmountAfterDiscount,
-                sc = totalAmountAfterDiscount * calculateServiceChargeFraction(
-                    serviceCharge,
-                    totalAmountAfterDiscount
-                ),
-                vat = totalAmountAfterDiscountAndServiceCharge * calculateVatFraction(
-                    vat,
-                    totalAmountAfterDiscountAndServiceCharge
-                )
-            )
+//            viewModel.saveVatScDcBundle(
+//                dc = totalAmountBeforeCalculation - totalAmountAfterDiscount,
+//                sc = totalAmountAfterDiscount * calculateServiceChargeFraction(
+//                    serviceCharge,
+//                    totalAmountAfterDiscount
+//                ),
+//                vat = totalAmountAfterDiscountAndServiceCharge * calculateVatFraction(
+//                    vat,
+//                    totalAmountAfterDiscountAndServiceCharge
+//                )
+//            )
 
             totalAmountBeforeCalculation = totalAmountAfterDiscountAndServiceChargeAndVat
         }
@@ -262,6 +228,7 @@ class AddFoodListFragment : Fragment() {
             thousandSeparator(totalAmountBeforeCalculation)
         viewModel.saveTotalAmount(totalAmountBeforeCalculation)
     }
+
 
     private fun calculateDiscountFraction(
         discount: Double,
@@ -386,46 +353,6 @@ class AddFoodListFragment : Fragment() {
         return names.size != names.toSet().size
     }
 
-    private fun addNameChip(
-        chipGroup: ChipGroup,
-        checkedNameList: List<String>,
-        cardIndex: Int
-    ) {
-        chipGroup.removeAllViews()
-        checkedNameList.forEach { name ->
-            val existingChip = chipGroup.findViewWithTag<Chip>(name)
-
-            if (existingChip == null) {
-                val chip = Chip(context).apply {
-                    text = name
-                    tag = name
-                    isClickable = false
-                    ellipsize = TextUtils.TruncateAt.END
-                    maxWidth = resources.getDimensionPixelSize(R.dimen.space_85dp)
-                    isCloseIconVisible = true
-                    setOnCloseIconClickListener {
-                        chipGroup.removeView(this)
-
-                        nameStateMap[cardIndex]?.find { addNameModal -> addNameModal.name == name }?.isChecked =
-                            false
-                    }
-                }
-                chipGroup.addView(chip)
-            }
-        }
-
-        val horizontalScrollView = chipGroup.parent as? View
-        val foodCardContainer = horizontalScrollView?.parent as? View
-
-        foodCardContainer?.let {
-            val originalDrawable =
-                ContextCompat.getDrawable(requireContext(), R.drawable.rounded_corner_white_bg)
-            if (it.background != originalDrawable) {
-                it.background = originalDrawable
-            }
-        }
-    }
-
     private fun buildBundle(): Bundle {
         val vatScDcBundle = viewModel.vatScDcBundle
         val foodList = viewModel.foodList
@@ -459,6 +386,19 @@ class AddFoodListFragment : Fragment() {
             val foodCardContainer = viewHolder?.binding?.foodCardContainer
 
             when (incompleteField) {
+                ET_FOOD_LIST -> {
+                    etFoodList?.requestFocus()
+                    etFoodList?.postDelayed({
+                        imm?.showSoftInput(etFoodList, InputMethodManager.SHOW_IMPLICIT)
+                    }, 100)
+                    if (isIncompleteCard) {
+                        etFoodList?.text?.clear()
+                        etFoodList?.backgroundTintList = ColorStateList.valueOf(
+                            ContextCompat.getColor(requireContext(), R.color.red)
+                        )
+                    }
+                }
+
                 ET_FOOD_PRICE -> {
                     etFoodPrice?.requestFocus()
                     etFoodPrice?.postDelayed({
@@ -478,20 +418,6 @@ class AddFoodListFragment : Fragment() {
                         R.drawable.incomplete_card_border
                     )
                 }
-
-                else -> {
-                    etFoodList?.requestFocus()
-                    etFoodList?.postDelayed({
-                        imm?.showSoftInput(etFoodList, InputMethodManager.SHOW_IMPLICIT)
-                    }, 100)
-                    if (isIncompleteCard) {
-                        etFoodList?.text?.clear()
-                        etFoodList?.backgroundTintList = ColorStateList.valueOf(
-                            ContextCompat.getColor(requireContext(), R.color.red)
-                        )
-                    }
-                }
-
             }
         }
     }

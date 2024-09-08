@@ -4,18 +4,24 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.text.Editable
+import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.chip.Chip
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.FoodInfo
+import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
+import com.teerapat.moneydivider.utils.showNameSelectionDialog
 
 class FoodListAdapter(
-    private val context: Context
+    private val context: Context,
+    private val nameList: List<NameInfo>
 ) : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
     private val foodInfo = mutableListOf<FoodInfo>()
     private var onDataChangedListener: (() -> Unit)? = null
@@ -80,9 +86,10 @@ class FoodListAdapter(
             binding.etFoodList.setText(foodInfo.foodName.name)
             binding.etFoodPrice.setText(foodInfo.foodPrice.price)
 
-            setBackgroundTint(foodInfo.foodName.isIncomplete, "foodName")
-            setBackgroundTint(foodInfo.foodPrice.isIncomplete, "foodPrice")
+            setBackgroundTint(foodInfo.foodName.isIncomplete, FOOD_NAME)
+            setBackgroundTint(foodInfo.foodPrice.isIncomplete, FOOD_Price)
 
+            updateChips(foodInfo)
             currentEtFoodListTextWatcher = object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
@@ -98,7 +105,7 @@ class FoodListAdapter(
                 override fun afterTextChanged(s: Editable?) {
                     foodInfo.foodName.name = s.toString()
                     foodInfo.foodName.isIncomplete = foodInfo.foodName.name.isEmpty()
-                    setBackgroundTint(foodInfo.foodName.isIncomplete, "foodName")
+                    setBackgroundTint(foodInfo.foodName.isIncomplete, FOOD_NAME)
                 }
             }
             binding.etFoodList.addTextChangedListener(currentEtFoodListTextWatcher)
@@ -119,15 +126,76 @@ class FoodListAdapter(
                 override fun afterTextChanged(s: Editable?) {
                     foodInfo.foodPrice.price = s.toString()
                     foodInfo.foodPrice.isIncomplete = foodInfo.foodPrice.price.isEmpty()
-                    setBackgroundTint(foodInfo.foodPrice.isIncomplete, "foodPrice")
+                    setBackgroundTint(foodInfo.foodPrice.isIncomplete, FOOD_Price)
                     onDataChangedListener?.invoke()
                 }
             }
             binding.etFoodPrice.addTextChangedListener(currentEtFoodPriceTextWatcher)
 
+            binding.ivAddNameList.setOnClickListener {
+                val isCheckedArray = BooleanArray(nameList.size) { index ->
+                    nameList[index].name in foodInfo.name.nameList
+                }
+                showNameSelectionDialog(
+                    context,
+                    nameList.map { it.name }.toTypedArray(),
+                    isCheckedArray,
+                    binding.ivAddNameList
+                ) { selectedNames ->
+                    foodInfo.name.nameList = selectedNames.map { it.name }
+                    updateChips(foodInfo)
+                    nameChipCountUpdate(foodInfo)
+                }
+            }
+
             binding.ivDeleteFoodList.setOnClickListener {
                 if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
                     handleDelete(absoluteAdapterPosition)
+                }
+            }
+        }
+
+        private fun updateChips(foodInfo: FoodInfo) {
+            binding.nameChipContainer.removeAllViews()
+            foodInfo.name.nameList.forEach { name ->
+                addNameChip(name, foodInfo)
+            }
+
+            nameChipCountUpdate(foodInfo)
+        }
+
+        private fun addNameChip(name: String, foodInfo: FoodInfo) {
+            val chip = Chip(context).apply {
+                text = name
+                isCloseIconVisible = true
+                ellipsize = TextUtils.TruncateAt.END
+                maxWidth = resources.getDimensionPixelSize(R.dimen.space_85dp)
+                setOnCloseIconClickListener {
+                    binding.nameChipContainer.removeView(this)
+                    foodInfo.name.nameList = foodInfo.name.nameList.filter { it != name }
+                    nameChipCountUpdate(foodInfo)
+                }
+            }
+            binding.nameChipContainer.addView(chip)
+
+            val foodCardContainer = binding.nameChipContainer.parent.parent as? View
+
+            foodCardContainer?.let {
+                val originalDrawable =
+                    ContextCompat.getDrawable(context, R.drawable.rounded_corner_white_bg)
+                if (it.background != originalDrawable) {
+                    it.background = originalDrawable
+                }
+            }
+        }
+
+        private fun nameChipCountUpdate(foodInfo: FoodInfo) {
+            val nameList = foodInfo.name.nameList
+
+            with(binding.tvPersonPerFoodCard) {
+                visibility = if (nameList.isNotEmpty()) View.VISIBLE else View.GONE
+                if (visibility == View.VISIBLE) {
+                    text = context.getString(R.string.person_count, nameList.size)
                 }
             }
         }
@@ -140,12 +208,12 @@ class FoodListAdapter(
             }
 
             when (tag) {
-                "foodName" -> {
+                FOOD_NAME -> {
                     binding.etFoodList.backgroundTintList =
                         ColorStateList.valueOf(ContextCompat.getColor(context, color))
                 }
 
-                "foodPrice" -> {
+                FOOD_Price -> {
                     binding.etFoodPrice.backgroundTintList =
                         ColorStateList.valueOf(ContextCompat.getColor(context, color))
                 }
@@ -166,5 +234,10 @@ class FoodListAdapter(
                 binding.ivDeleteFoodList.isEnabled = true
             }
         }
+    }
+
+    companion object {
+        private const val FOOD_NAME = "foodName"
+        private const val FOOD_Price = "foodPrice"
     }
 }
