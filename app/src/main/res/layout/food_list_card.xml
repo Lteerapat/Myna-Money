@@ -86,6 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/large_padding"
                 android:fillViewport="true"
+                android:scrollbars="none"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/vSpacing1"
                 app:layout_constraintStart_toEndOf="@id/ivAddNameList"
@@ -97,6 +98,45 @@
                     android:layout_height="wrap_content"
                     app:singleLine="true">
 
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:closeIconVisible="true"
+                        tools:ellipsize="end"
+                        tools:maxWidth="@dimen/space_85dp"
+                        tools:text="name"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:closeIconVisible="true"
+                        tools:ellipsize="end"
+                        tools:maxWidth="@dimen/space_85dp"
+                        tools:text="name"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:closeIconVisible="true"
+                        tools:ellipsize="end"
+                        tools:maxWidth="@dimen/space_85dp"
+                        tools:text="name"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        tools:closeIconVisible="true"
+                        tools:ellipsize="end"
+                        tools:maxWidth="@dimen/space_85dp"
+                        tools:text="name"
+                        tools:visibility="visible" />
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
 
