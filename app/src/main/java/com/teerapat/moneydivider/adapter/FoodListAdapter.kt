@@ -88,8 +88,8 @@ class FoodListAdapter(
 
             setBackgroundTint(foodInfo.foodName.isIncomplete, FOOD_NAME)
             setBackgroundTint(foodInfo.foodPrice.isIncomplete, FOOD_Price)
-
             updateChips(foodInfo)
+
             currentEtFoodListTextWatcher = object : TextWatcher {
                 override fun beforeTextChanged(
                     s: CharSequence?,
@@ -161,6 +161,7 @@ class FoodListAdapter(
                 addNameChip(name, foodInfo)
             }
 
+            setCardBackgroundColor(foodInfo.name.isIncomplete)
             nameChipCountUpdate(foodInfo)
         }
 
@@ -177,16 +178,8 @@ class FoodListAdapter(
                 }
             }
             binding.nameChipContainer.addView(chip)
-
-            val foodCardContainer = binding.nameChipContainer.parent.parent as? View
-
-            foodCardContainer?.let {
-                val originalDrawable =
-                    ContextCompat.getDrawable(context, R.drawable.rounded_corner_white_bg)
-                if (it.background != originalDrawable) {
-                    it.background = originalDrawable
-                }
-            }
+            foodInfo.name.isIncomplete = false
+            setCardBackgroundColor(false)
         }
 
         private fun nameChipCountUpdate(foodInfo: FoodInfo) {
@@ -218,6 +211,17 @@ class FoodListAdapter(
                         ColorStateList.valueOf(ContextCompat.getColor(context, color))
                 }
             }
+        }
+
+        private fun setCardBackgroundColor(isIncomplete: Boolean) {
+            val background = if (isIncomplete) {
+                R.drawable.incomplete_card_border
+            } else {
+                R.drawable.rounded_corner_white_bg
+            }
+
+            binding.foodCardContainer.background =
+                ContextCompat.getDrawable(context, background)
         }
 
         private fun handleDelete(position: Int) {

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -20,6 +19,7 @@ import com.teerapat.moneydivider.data.FoodPriceInfo
 import com.teerapat.moneydivider.data.NameChipInfo
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
+import com.teerapat.moneydivider.utils.openSoftKeyboard
 import com.teerapat.moneydivider.utils.showAlertDuplicateNames
 import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
 import com.teerapat.moneydivider.utils.showAlertOnVScDis
@@ -327,7 +327,6 @@ class AddFoodListFragment : Fragment() {
                             incompleteField = incompleteCard.incompleteField
                         )
                         btnNext.isEnabled = true
-
                     }
                 }
 
@@ -376,7 +375,6 @@ class AddFoodListFragment : Fragment() {
         isIncompleteCard: Boolean = false,
         incompleteField: String
     ) {
-        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
         binding.rvFoodList.scrollToPosition(position)
         binding.rvFoodList.post {
             val viewHolder =
@@ -387,10 +385,9 @@ class AddFoodListFragment : Fragment() {
 
             when (incompleteField) {
                 ET_FOOD_LIST -> {
-                    etFoodList?.requestFocus()
-                    etFoodList?.postDelayed({
-                        imm?.showSoftInput(etFoodList, InputMethodManager.SHOW_IMPLICIT)
-                    }, 100)
+                    etFoodList?.let {
+                        openSoftKeyboard(requireContext(), it)
+                    }
                     if (isIncompleteCard) {
                         etFoodList?.text?.clear()
                         etFoodList?.backgroundTintList = ColorStateList.valueOf(
@@ -400,10 +397,9 @@ class AddFoodListFragment : Fragment() {
                 }
 
                 ET_FOOD_PRICE -> {
-                    etFoodPrice?.requestFocus()
-                    etFoodPrice?.postDelayed({
-                        imm?.showSoftInput(etFoodPrice, InputMethodManager.SHOW_IMPLICIT)
-                    }, 100)
+                    etFoodPrice?.let {
+                        openSoftKeyboard(requireContext(), it)
+                    }
                     if (isIncompleteCard) {
                         etFoodPrice?.text?.clear()
                         etFoodPrice?.backgroundTintList = ColorStateList.valueOf(

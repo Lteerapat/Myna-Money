@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -14,6 +13,7 @@ import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.adapter.NameListAdapter
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddNameListBinding
+import com.teerapat.moneydivider.utils.openSoftKeyboard
 import com.teerapat.moneydivider.utils.showAlertDuplicateNames
 import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
 import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
@@ -180,7 +180,6 @@ class AddNameListFragment : Fragment() {
         isIncompleteCard: Boolean = false,
         incompleteField: String
     ) {
-        val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
         binding.rvNameList.scrollToPosition(position)
         binding.rvNameList.post {
             val viewHolder =
@@ -189,10 +188,9 @@ class AddNameListFragment : Fragment() {
 
             when (incompleteField) {
                 ET_NAME_LIST -> {
-                    etNameList?.requestFocus()
-                    etNameList?.postDelayed({
-                        imm?.showSoftInput(etNameList, InputMethodManager.SHOW_IMPLICIT)
-                    }, 100)
+                    etNameList?.let {
+                        openSoftKeyboard(requireContext(), it)
+                    }
                     if (isIncompleteCard) {
                         etNameList?.text?.clear()
                         etNameList?.backgroundTintList = ColorStateList.valueOf(
