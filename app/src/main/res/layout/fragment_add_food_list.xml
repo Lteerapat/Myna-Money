@@ -21,15 +21,13 @@
         android:id="@+id/addFoodListBtnContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/large_padding"
         app:layout_constraintBottom_toTopOf="@id/vScDis">
 
         <Button
             android:id="@+id/btnAddFoodList"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/large_padding"
-            android:background="@drawable/rounded_corner_white_bg"
+            android:layout_marginHorizontal="@dimen/large_padding"
             android:drawableEnd="@drawable/baseline_add_circle_24"
             android:src="@drawable/baseline_add_circle_24"
             android:text="@string/add_food_list"
@@ -37,10 +35,10 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
+            android:layout_marginEnd="@dimen/large_padding"
             android:id="@+id/btnPercentageToggle"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:background="@drawable/rounded_corner_white_bg"
             android:drawableEnd="@drawable/baseline_arrow_downward_24"
             android:text="@string/percentage_baht_btn"
             app:layout_constraintEnd_toEndOf="parent" />
@@ -192,14 +190,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:padding="@dimen/large_padding"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/btnNext"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/rounded_corner_teal_700_bg"
+            android:layout_marginHorizontal="@dimen/large_padding"
             android:drawableEnd="@drawable/baseline_double_arrow_24"
             android:text="@string/next"
             android:textColor="@color/white"
