@@ -136,8 +136,8 @@ class AddFoodListFragment : Fragment() {
     private fun updateAmountOfVScDis() {
         setUpVScDisIsPercentage()
 
-        binding.etServiceChargeAmount.text?.clear()
         binding.etDiscountAmount.text?.clear()
+        binding.etServiceChargeAmount.text?.clear()
         binding.etVatAmount.text?.clear()
     }
 
@@ -152,9 +152,36 @@ class AddFoodListFragment : Fragment() {
     }
 
     private fun setUpAmountOfVScDis() {
-        binding.etDiscountAmount.addTextChangedListener { calculateTotalAmount() }
-        binding.etServiceChargeAmount.addTextChangedListener { calculateTotalAmount() }
-        binding.etVatAmount.addTextChangedListener { calculateTotalAmount() }
+        binding.etDiscountAmount.addTextChangedListener { discount ->
+            if (viewModel.isPercentage && removeCommasAndReturnDouble(discount.toString()) > 100) {
+                showAlertOnVScDis(
+                    getString(R.string.discount),
+                    getString(R.string.percentage_exceeded_alert_message),
+                )
+                discount?.clear()
+            }
+            calculateTotalAmount()
+        }
+        binding.etServiceChargeAmount.addTextChangedListener { serviceCharge ->
+            if (viewModel.isPercentage && removeCommasAndReturnDouble(serviceCharge.toString()) > 100) {
+                showAlertOnVScDis(
+                    getString(R.string.service_charge),
+                    getString(R.string.percentage_exceeded_alert_message),
+                )
+                serviceCharge?.clear()
+            }
+            calculateTotalAmount()
+        }
+        binding.etVatAmount.addTextChangedListener { vat ->
+            if (viewModel.isPercentage && removeCommasAndReturnDouble(vat.toString()) > 100) {
+                showAlertOnVScDis(
+                    getString(R.string.vat),
+                    getString(R.string.percentage_exceeded_alert_message),
+                )
+                vat?.clear()
+            }
+            calculateTotalAmount()
+        }
     }
 
     private fun calculateTotalAmount() {
@@ -182,8 +209,8 @@ class AddFoodListFragment : Fragment() {
                 showAlertOnVScDis(
                     getString(R.string.discount),
                     getString(R.string.discount_exceeded_alert_message),
-                    discountField = binding.etDiscountAmount
                 )
+                binding.etDiscountAmount.text?.clear()
             } else {
                 totalAmountBeforeCalculation -= discount
             }
@@ -209,17 +236,17 @@ class AddFoodListFragment : Fragment() {
                     totalAmountAfterDiscountAndServiceCharge
                 ))
 
-//            viewModel.saveVatScDcBundle(
-//                dc = totalAmountBeforeCalculation - totalAmountAfterDiscount,
-//                sc = totalAmountAfterDiscount * calculateServiceChargeFraction(
-//                    serviceCharge,
-//                    totalAmountAfterDiscount
-//                ),
-//                vat = totalAmountAfterDiscountAndServiceCharge * calculateVatFraction(
-//                    vat,
-//                    totalAmountAfterDiscountAndServiceCharge
-//                )
-//            )
+            viewModel.saveVatScDcBundle(
+                dc = totalAmountBeforeCalculation - totalAmountAfterDiscount,
+                sc = totalAmountAfterDiscount * calculateServiceChargeFraction(
+                    serviceCharge,
+                    totalAmountAfterDiscount
+                ),
+                vat = totalAmountAfterDiscountAndServiceCharge * calculateVatFraction(
+                    vat,
+                    totalAmountAfterDiscountAndServiceCharge
+                )
+            )
 
             totalAmountBeforeCalculation = totalAmountAfterDiscountAndServiceChargeAndVat
         }
@@ -229,19 +256,12 @@ class AddFoodListFragment : Fragment() {
         viewModel.saveTotalAmount(totalAmountBeforeCalculation)
     }
 
-
     private fun calculateDiscountFraction(
         discount: Double,
         totalAmountBeforeCalculation: Double
     ): Double {
         return if (viewModel.isPercentage) {
             if (discount > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.discount),
-                    getString(R.string.percentage_exceeded_alert_message),
-                    discountField = binding.etDiscountAmount
-                )
-
                 0.0
             } else {
                 discount / 100
@@ -257,12 +277,6 @@ class AddFoodListFragment : Fragment() {
     ): Double {
         return if (viewModel.isPercentage) {
             if (serviceCharge > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.service_charge),
-                    getString(R.string.percentage_exceeded_alert_message),
-                    serviceChargeField = binding.etServiceChargeAmount,
-                )
-
                 0.0
             } else {
                 serviceCharge / 100
@@ -278,12 +292,6 @@ class AddFoodListFragment : Fragment() {
     ): Double {
         return if (viewModel.isPercentage) {
             if (vat > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.vat),
-                    getString(R.string.percentage_exceeded_alert_message),
-                    vatField = binding.etVatAmount,
-                )
-
                 0.0
             } else {
                 vat / 100

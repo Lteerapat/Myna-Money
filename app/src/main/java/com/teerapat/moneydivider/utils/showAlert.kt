@@ -3,7 +3,6 @@ package com.teerapat.moneydivider.utils
 import android.app.AlertDialog
 import android.content.Context
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.teerapat.moneydivider.R
@@ -73,17 +72,8 @@ fun Fragment.showContinueDialog(btnNext: Button, onContinueConfirm: () -> Unit) 
 
 fun Fragment.showAlertOnVScDis(
     title: String,
-    message: String,
-    serviceChargeField: EditText? = null,
-    vatField: EditText? = null,
-    discountField: EditText? = null
+    message: String
 ) {
-    when (title) {
-        getString(R.string.service_charge) -> serviceChargeField?.text?.clear()
-        getString(R.string.vat) -> vatField?.text?.clear()
-        getString(R.string.discount) -> discountField?.text?.clear()
-    }
-
     AlertDialog.Builder(requireContext())
         .setTitle(title)
         .setMessage(message)
