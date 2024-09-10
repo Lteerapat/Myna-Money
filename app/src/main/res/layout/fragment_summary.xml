@@ -30,27 +30,13 @@
             android:textStyle="bold"
             tools:text="@string/total_amount_summary" />
 
-        <TextView
-            android:id="@+id/vat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_20sp"
-            android:textStyle="bold"
-            tools:text="@string/total_amount_summary" />
-
-        <TextView
-            android:id="@+id/sc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_20sp"
-            android:textStyle="bold"
-            tools:text="@string/total_amount_summary" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSummary"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toTopOf="@id/footer"
         app:layout_constraintTop_toBottomOf="@id/summaryHeader"
         tools:itemCount="5"
@@ -61,14 +47,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:padding="@dimen/space_12dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/btnBack"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/rounded_corner_teal_700_bg"
+            android:layout_marginHorizontal="@dimen/large_padding"
             android:text="@string/back"
             android:textColor="@color/white"
             android:textSize="@dimen/text_size_20sp"

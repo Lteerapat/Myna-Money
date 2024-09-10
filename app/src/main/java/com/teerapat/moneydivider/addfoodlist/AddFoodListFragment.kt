@@ -186,6 +186,10 @@ class AddFoodListFragment : Fragment() {
 
     private fun calculateTotalAmount() {
         var totalAmountBeforeCalculation = 0.0
+        var totalAmountAfterDiscount = 0.0
+        val totalAmountAfterDiscountAndServiceCharge: Double
+        val totalAmountAfterDiscountAndServiceChargeAndVat: Double
+
         val discountText = binding.etDiscountAmount.text.toString()
         val discount = removeCommasAndReturnDouble(discountText)
 
@@ -198,7 +202,6 @@ class AddFoodListFragment : Fragment() {
         viewModel.saveDiscount(discount)
         viewModel.saveServiceCharge(serviceCharge)
         viewModel.saveVat(vat)
-        viewModel.saveVatScDcBundle(discount, serviceCharge, vat)
 
         for (food in foodListAdapter.getFoodList()) {
             totalAmountBeforeCalculation += removeCommasAndReturnDouble(food.foodPrice.price)
@@ -212,48 +215,42 @@ class AddFoodListFragment : Fragment() {
                 )
                 binding.etDiscountAmount.text?.clear()
             } else {
-                totalAmountBeforeCalculation -= discount
+                totalAmountAfterDiscount = totalAmountBeforeCalculation - discount
             }
+            totalAmountAfterDiscountAndServiceCharge = totalAmountAfterDiscount + serviceCharge
+            totalAmountAfterDiscountAndServiceChargeAndVat =
+                totalAmountAfterDiscountAndServiceCharge + vat
 
-            totalAmountBeforeCalculation += serviceCharge
-            totalAmountBeforeCalculation += vat
         } else {
-            val totalAmountAfterDiscount =
-                totalAmountBeforeCalculation * (1 - calculateDiscountFraction(
-                    discount,
-                    totalAmountBeforeCalculation
-                ))
-
-            val totalAmountAfterDiscountAndServiceCharge =
-                totalAmountAfterDiscount * (1 + calculateServiceChargeFraction(
-                    serviceCharge,
-                    totalAmountAfterDiscount
-                ))
-
-            val totalAmountAfterDiscountAndServiceChargeAndVat =
-                totalAmountAfterDiscountAndServiceCharge * (1 + calculateVatFraction(
-                    vat,
-                    totalAmountAfterDiscountAndServiceCharge
-                ))
-
-            viewModel.saveVatScDcBundle(
-                dc = totalAmountBeforeCalculation - totalAmountAfterDiscount,
-                sc = totalAmountAfterDiscount * calculateServiceChargeFraction(
-                    serviceCharge,
-                    totalAmountAfterDiscount
-                ),
-                vat = totalAmountAfterDiscountAndServiceCharge * calculateVatFraction(
-                    vat,
-                    totalAmountAfterDiscountAndServiceCharge
-                )
-            )
-
-            totalAmountBeforeCalculation = totalAmountAfterDiscountAndServiceChargeAndVat
+            totalAmountAfterDiscount =
+                totalAmountBeforeCalculation * (1 - (discount / 100))
+            totalAmountAfterDiscountAndServiceCharge =
+                totalAmountAfterDiscount * (1 + (serviceCharge / 100))
+            totalAmountAfterDiscountAndServiceChargeAndVat =
+                totalAmountAfterDiscountAndServiceCharge * (1 + (vat / 100))
         }
 
         binding.tvTotalAmount.text =
-            thousandSeparator(totalAmountBeforeCalculation)
-        viewModel.saveTotalAmount(totalAmountBeforeCalculation)
+            thousandSeparator(totalAmountAfterDiscountAndServiceChargeAndVat)
+
+        viewModel.saveDiscountFractionBundle(
+            calculateDiscountFraction(
+                discount,
+                totalAmountBeforeCalculation
+            )
+        )
+        viewModel.saveVatFractionBundle(
+            calculateVatFraction(
+                vat,
+                totalAmountAfterDiscountAndServiceCharge
+            )
+        )
+        viewModel.saveServiceChargeFractionBundle(
+            calculateServiceChargeFraction(
+                serviceCharge,
+                totalAmountAfterDiscount
+            )
+        )
     }
 
     private fun calculateDiscountFraction(
@@ -261,11 +258,7 @@ class AddFoodListFragment : Fragment() {
         totalAmountBeforeCalculation: Double
     ): Double {
         return if (viewModel.isPercentage) {
-            if (discount > 100) {
-                0.0
-            } else {
-                discount / 100
-            }
+            discount / 100
         } else {
             convertAmountToFraction(discount, totalAmountBeforeCalculation)
         }
@@ -276,11 +269,7 @@ class AddFoodListFragment : Fragment() {
         totalAmountAfterDiscount: Double
     ): Double {
         return if (viewModel.isPercentage) {
-            if (serviceCharge > 100) {
-                0.0
-            } else {
-                serviceCharge / 100
-            }
+            serviceCharge / 100
         } else {
             convertAmountToFraction(serviceCharge, totalAmountAfterDiscount)
         }
@@ -291,11 +280,7 @@ class AddFoodListFragment : Fragment() {
         totalAmountAfterDiscountAndServiceCharge: Double
     ): Double {
         return if (viewModel.isPercentage) {
-            if (vat > 100) {
-                0.0
-            } else {
-                vat / 100
-            }
+            vat / 100
         } else {
             convertAmountToFraction(vat, totalAmountAfterDiscountAndServiceCharge)
         }
@@ -361,7 +346,7 @@ class AddFoodListFragment : Fragment() {
     }
 
     private fun buildBundle(): Bundle {
-        val vatScDcBundle = viewModel.vatScDcBundle
+        val vatScDcBundle = viewModel.vScDcFractionBundle()
         val foodList = viewModel.foodList
 
         return Bundle().apply {
@@ -527,8 +512,8 @@ class AddFoodListFragment : Fragment() {
     companion object {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
         private val NUM_REGEX = Regex("[0-9]*$")
-        private const val DECIMAL_PATTERN = "#,###.##"
-        private const val MAX_FOOD_CARD = 50
+        private const val DECIMAL_PATTERN = "#,##0.00"
+        private const val MAX_FOOD_CARD = 20
         private const val ET_FOOD_LIST = "etFoodList"
         private const val ET_FOOD_PRICE = "etFoodPrice"
         private const val FOOD_CARD_CONTAINER = "foodCardContainer"

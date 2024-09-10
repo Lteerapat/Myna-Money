@@ -9,6 +9,9 @@ class AddFoodListViewModel : ViewModel() {
     var discount: String = ""
     var serviceCharge: String = ""
     var vat: String = ""
+    var discountFraction: Double = 0.0
+    var serviceChargeFraction: Double = 0.0
+    var vatFraction: Double = 0.0
     private var totalAmount: String = ""
     var isPercentage = true
     var vatScDcBundle: VatScDcBundleInfo? = null
@@ -60,11 +63,23 @@ class AddFoodListViewModel : ViewModel() {
         isPercentage = boolean
     }
 
-    fun saveVatScDcBundle(dc: Double, sc: Double, vat: Double) {
-        vatScDcBundle = VatScDcBundleInfo(
-            discount = dc,
-            serviceCharge = sc,
-            vat = vat
+    fun saveVatFractionBundle(vat: Double) {
+        this.vatFraction = vat
+    }
+
+    fun saveDiscountFractionBundle(dc: Double) {
+        this.discountFraction = dc
+    }
+
+    fun saveServiceChargeFractionBundle(sc: Double) {
+        this.serviceChargeFraction = sc
+    }
+
+    fun vScDcFractionBundle(): VatScDcBundleInfo {
+        return VatScDcBundleInfo(
+            discount = discountFraction,
+            serviceCharge = serviceChargeFraction,
+            vat = vatFraction
         )
     }
 }

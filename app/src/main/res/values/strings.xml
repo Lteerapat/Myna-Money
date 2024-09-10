@@ -56,7 +56,8 @@
     <string name="service_charge">Service Charge</string>
     <string name="vat">VAT</string>
     <string name="discount">Discount</string>
-    <string name="total_amount_format">฿%1$.2f</string>
+    <string name="amount_format">฿ %1$s</string>
+    <string name="negative_amount_format">- ฿ %1$s</string>
     <string name="total_amount_summary">฿10,000.00</string>
     <string name="percentage_baht_btn">% / ฿</string>
     <string name="percentage_or_amount_toggle_message">Please choose a percentage or an amount for the calculation</string>

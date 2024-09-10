@@ -5,7 +5,8 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class VatScDcBundleInfo(
-    val discount: Double,
-    val serviceCharge: Double,
-    val vat: Double
+    val discount: Double = 0.0,
+    val serviceCharge: Double = 0.0,
+    val vat: Double = 0.0,
+    val totalAmount: Double = 0.0
 ) : Parcelable

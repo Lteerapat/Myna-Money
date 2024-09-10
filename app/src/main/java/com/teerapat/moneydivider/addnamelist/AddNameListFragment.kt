@@ -220,7 +220,7 @@ class AddNameListFragment : Fragment() {
     companion object {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
         private val NUM_REGEX = Regex("[0-9]*$")
-        private const val MAX_NAME_CARD = 30
+        private const val MAX_NAME_CARD = 20
         private const val ET_NAME_LIST = "etNameList"
     }
 }

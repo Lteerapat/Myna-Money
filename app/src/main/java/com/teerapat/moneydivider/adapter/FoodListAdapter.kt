@@ -23,27 +23,27 @@ class FoodListAdapter(
     private val context: Context,
     private val nameList: List<NameInfo>
 ) : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
-    private val foodInfo = mutableListOf<FoodInfo>()
+    private val foodInfoList = mutableListOf<FoodInfo>()
     private var onDataChangedListener: (() -> Unit)? = null
 
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<FoodInfo>) {
-        foodInfo.clear()
-        foodInfo.addAll(items)
+        foodInfoList.clear()
+        foodInfoList.addAll(items)
         notifyDataSetChanged()
         onDataChangedListener?.invoke()
     }
 
     fun addItem(item: FoodInfo) {
-        foodInfo.add(item)
-        notifyItemInserted(foodInfo.size - 1)
+        foodInfoList.add(item)
+        notifyItemInserted(foodInfoList.size - 1)
         onDataChangedListener?.invoke()
     }
 
     fun removeItem(position: Int) {
-        if (position >= 0 && position < foodInfo.size) {
-            foodInfo.removeAt(position)
+        if (position >= 0 && position < foodInfoList.size) {
+            foodInfoList.removeAt(position)
             notifyItemRemoved(position)
             onDataChangedListener?.invoke()
         }
@@ -54,7 +54,7 @@ class FoodListAdapter(
     }
 
     fun getFoodList(): List<FoodInfo> {
-        return foodInfo
+        return foodInfoList
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoodListViewHolder {
@@ -66,12 +66,12 @@ class FoodListAdapter(
 
     override fun onBindViewHolder(holder: FoodListViewHolder, position: Int) {
         holder.apply {
-            bindView(foodInfo[position])
+            bindView(foodInfoList[position])
         }
     }
 
     override fun getItemCount(): Int {
-        return foodInfo.size
+        return foodInfoList.size
     }
 
     inner class FoodListViewHolder(val binding: FoodListCardBinding) :
@@ -169,6 +169,7 @@ class FoodListAdapter(
             val chip = Chip(context).apply {
                 text = name
                 isCloseIconVisible = true
+                isClickable = false
                 ellipsize = TextUtils.TruncateAt.END
                 maxWidth = resources.getDimensionPixelSize(R.dimen.space_85dp)
                 setOnCloseIconClickListener {

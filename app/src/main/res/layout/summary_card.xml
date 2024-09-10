@@ -16,30 +16,31 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:textSize="@dimen/text_size_16sp"
+        android:textSize="@dimen/text_size_20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/name" />
 
     <TextView
-        android:id="@+id/tvTotalPayAmount"
+        android:id="@+id/tvTotalPayAmountPerPerson"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:textSize="@dimen/text_size_16sp"
+        android:textSize="@dimen/text_size_20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvName"
         tools:text="@string/total_amount_summary" />
 
-    <LinearLayout
-        android:id="@+id/summaryItemsContainer"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPriceSummary"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_12dp"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/tvName">
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/default_padding"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalPayAmountPerPerson"
+        tools:itemCount="3"
+        tools:listitem="@layout/summary_food_item_card" />
 
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

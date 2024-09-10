@@ -17,29 +17,29 @@ import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 class NameListAdapter(
     private val context: Context,
 ) : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
-    private val nameInfo = mutableListOf<NameInfo>()
+    private val nameInfoList = mutableListOf<NameInfo>()
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<NameInfo>) {
-        nameInfo.clear()
-        nameInfo.addAll(items)
+        nameInfoList.clear()
+        nameInfoList.addAll(items)
         notifyDataSetChanged()
     }
 
     fun addItem(item: NameInfo) {
-        nameInfo.add(item)
-        notifyItemInserted(nameInfo.size - 1)
+        nameInfoList.add(item)
+        notifyItemInserted(nameInfoList.size - 1)
     }
 
     fun removeItem(position: Int) {
-        if (position >= 0 && position < nameInfo.size) {
-            nameInfo.removeAt(position)
+        if (position >= 0 && position < nameInfoList.size) {
+            nameInfoList.removeAt(position)
             notifyItemRemoved(position)
         }
     }
 
     fun getNameList(): List<NameInfo> {
-        return nameInfo
+        return nameInfoList
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NameListViewHolder {
@@ -51,12 +51,12 @@ class NameListAdapter(
 
     override fun onBindViewHolder(holder: NameListViewHolder, position: Int) {
         holder.apply {
-            bindView(nameInfo[position])
+            bindView(nameInfoList[position])
         }
     }
 
     override fun getItemCount(): Int {
-        return nameInfo.size
+        return nameInfoList.size
     }
 
     inner class NameListViewHolder(val binding: NameListCardBinding) :
