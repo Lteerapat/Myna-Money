@@ -46,16 +46,14 @@
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
             android:id="@+id/btnBack"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/large_padding"
             android:text="@string/back"
-            android:textColor="@color/white"
             android:textSize="@dimen/text_size_20sp"
             android:textStyle="bold"
             app:icon="@drawable/baseline_arrow_back_24"

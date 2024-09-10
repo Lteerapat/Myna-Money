@@ -23,15 +23,6 @@
             app:destination="@id/summaryFragment" />
     </fragment>
     <fragment
-        android:id="@+id/confirmFragment"
-        android:name="com.teerapat.moneydivider.confirm.ConfirmFragment"
-        android:label="fragment_confirm"
-        tools:layout="@layout/fragment_confirm">
-        <action
-            android:id="@+id/action_confirmFragment_to_summaryFragment"
-            app:destination="@id/summaryFragment" />
-    </fragment>
-    <fragment
         android:id="@+id/summaryFragment"
         android:name="com.teerapat.moneydivider.summary.SummaryFragment"
         android:label="fragment_summary"
