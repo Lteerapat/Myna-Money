@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.teerapat.moneydivider.R
@@ -52,6 +53,7 @@ class SummaryFragment : Fragment() {
         setupSummaryRecyclerView()
         setUpInitialData()
         setUpBackButton()
+        setUpShareButton()
     }
 
     private fun setupSummaryRecyclerView() {
@@ -144,6 +146,38 @@ class SummaryFragment : Fragment() {
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+    }
+
+    private fun setUpShareButton() {
+        binding.ivShareBtn.setOnClickListener {
+            binding.ivShareBtn.isEnabled = false
+            val summaryInfoList = setUpSummaryInfo(foodListBundle)
+            val shareText = generateShareText(summaryInfoList)
+            shareSummary(shareText)
+
+            binding.ivShareBtn.postDelayed({
+                binding.ivShareBtn.isEnabled = true
+            }, 500)
+        }
+    }
+
+    private fun generateShareText(summaryInfoList: List<SummaryInfo>): String {
+        val header = getString(R.string.share_text_header)
+        val body = summaryInfoList.joinToString("\n") { summaryInfo ->
+            "${summaryInfo.name} ${thousandSeparator(summaryInfo.totalAmountPerName)}"
+        }
+
+        return header + body
+    }
+
+    private fun shareSummary(shareText: String) {
+        val shareIntent = ShareCompat.IntentBuilder(requireContext())
+            .setType("text/plain")
+            .setChooserTitle("Share summary with:")
+            .setText(shareText)
+            .createChooserIntent()
+
+        startActivity(shareIntent)
     }
 
     private fun removeCommasAndReturnDouble(amount: String): Double {

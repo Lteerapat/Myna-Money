@@ -357,7 +357,7 @@ class AddFoodListFragment : Fragment() {
 
     private fun convertAmountToFraction(numerator: Double, denominator: Double): Double {
         if (denominator == 0.0) {
-            throw IllegalArgumentException("Denominator cannot be zero")
+            return 0.0
         }
 
         return numerator / denominator

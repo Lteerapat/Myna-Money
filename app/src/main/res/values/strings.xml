@@ -62,4 +62,5 @@
     <string name="percentage_baht_btn">% / ฿</string>
     <string name="percentage_or_amount_toggle_message">Please choose a percentage or an amount for the calculation</string>
     <string name="slash">/</string>
+    <string name="share_text_header">Amount to pay per person:\n</string>
 </resources>

@@ -9,8 +9,10 @@
 
     <TextView
         android:id="@+id/tvSummaryFoodName"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/space_150dp"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textSize="@dimen/text_size_18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
