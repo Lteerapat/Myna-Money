@@ -138,7 +138,7 @@ class FoodListAdapter(
                 }
                 showNameSelectionDialog(
                     context,
-                    nameList.map { it.name }.toTypedArray(),
+                    nameList.map { it.name.trim() }.toTypedArray(),
                     isCheckedArray,
                     binding.ivAddNameList
                 ) { selectedNames ->

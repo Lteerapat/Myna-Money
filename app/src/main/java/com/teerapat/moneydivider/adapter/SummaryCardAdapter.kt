@@ -33,7 +33,7 @@ class SummaryCardAdapter(private val foodItemList: List<SummaryFoodItemInfo>) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bindView(foodItem: SummaryFoodItemInfo) {
-            binding.tvSummaryFoodName.text = foodItem.foodName
+            binding.tvSummaryFoodName.text = foodItem.foodName.trim()
             if (foodItem.foodName == DISCOUNT) {
                 binding.tvSummaryFoodPrice.text = itemView.context.getString(
                     R.string.negative_amount_format,
