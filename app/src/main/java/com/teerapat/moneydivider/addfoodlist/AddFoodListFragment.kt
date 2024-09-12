@@ -43,7 +43,6 @@ class AddFoodListFragment : Fragment() {
             NameInfo(it.name, it.isChecked)
         }?.toMutableList() ?: mutableListOf()
     }
-    private val nameStateMap = mutableMapOf<Int, List<NameInfo>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -357,7 +356,7 @@ class AddFoodListFragment : Fragment() {
 
     private fun convertAmountToFraction(numerator: Double, denominator: Double): Double {
         if (denominator == 0.0) {
-            return 0.0
+            return 1.0
         }
 
         return numerator / denominator

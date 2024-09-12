@@ -100,7 +100,7 @@ class SummaryFragment : Fragment() {
             val totalAmountPerNameAfterDiscountAndServiceCharge =
                 totalAmountPerNameAfterDiscount * (1 + vatScDcBundle.serviceCharge)
 
-            if (vatScDcBundle.serviceCharge > 0) {
+            if (totalAmountPerNameAfterDiscount * vatScDcBundle.serviceCharge > 0) {
                 summaryFoodItemInfoList.add(
                     SummaryFoodItemInfo(
                         foodName = getString(R.string.service_charge),
@@ -109,7 +109,7 @@ class SummaryFragment : Fragment() {
                 )
             }
 
-            if (vatScDcBundle.vat > 0) {
+            if (totalAmountPerNameAfterDiscountAndServiceCharge * vatScDcBundle.vat > 0) {
                 summaryFoodItemInfoList.add(
                     SummaryFoodItemInfo(
                         foodName = getString(R.string.vat),
@@ -162,12 +162,16 @@ class SummaryFragment : Fragment() {
     }
 
     private fun generateShareText(summaryInfoList: List<SummaryInfo>): String {
-        val header = getString(R.string.share_text_header)
-        val body = summaryInfoList.joinToString("\n") { summaryInfo ->
+        val header = getString(
+            R.string.share_text_total,
+            thousandSeparator(summaryInfoList.sumOf { it.totalAmountPerName })
+        )
+        val body = getString(R.string.share_text_price_per_name)
+        val footer = summaryInfoList.joinToString("\n") { summaryInfo ->
             "${summaryInfo.name} ${thousandSeparator(summaryInfo.totalAmountPerName)}"
         }
 
-        return header + body
+        return header + body + footer
     }
 
     private fun shareSummary(shareText: String) {

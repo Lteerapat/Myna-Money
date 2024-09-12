@@ -18,6 +18,8 @@
     <string name="add_name">Add name</string>
     <string name="name">Name</string>
     <string name="person_count">/%d</string>
+    <string name="share_text_total">Total amount for this bill is %1$s\n</string>
+    <string name="share_text_price_per_name">Amount to pay per person:\n</string>
     <string name="select_all">Select All</string>
 
     // alert dialog
@@ -62,5 +64,4 @@
     <string name="percentage_baht_btn">% / ฿</string>
     <string name="percentage_or_amount_toggle_message">Please choose a percentage or an amount for the calculation</string>
     <string name="slash">/</string>
-    <string name="share_text_header">Amount to pay per person:\n</string>
 </resources>
