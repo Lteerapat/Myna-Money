@@ -99,10 +99,10 @@ class AddFoodListFragment : Fragment() {
         val existingVat = viewModel.vat
 
         if (existingFoodList.isNotEmpty()) {
-            val nameListOnly = nameList.map { it.name }
+            val nameOnlyList = nameList.map { it.name }
             val updatedFoodList = existingFoodList.map { foodInfo ->
                 val filteredNameChips = foodInfo.name.nameList.filter { nameChip ->
-                    nameChip in nameListOnly
+                    nameChip in nameOnlyList
                 }
                 foodInfo.copy(name = NameChipInfo(filteredNameChips))
             }
@@ -345,8 +345,8 @@ class AddFoodListFragment : Fragment() {
         }
     }
 
-    private fun hasDuplicateNames(nameList: List<FoodInfo>): Boolean {
-        val names = nameList.map { it.foodName.name.trim() }
+    private fun hasDuplicateNames(foodList: List<FoodInfo>): Boolean {
+        val names = foodList.map { it.foodName.name.trim() }
         return names.size != names.toSet().size
     }
 
