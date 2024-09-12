@@ -9,12 +9,10 @@ class AddFoodListViewModel : ViewModel() {
     var discount: String = ""
     var serviceCharge: String = ""
     var vat: String = ""
-    var discountFraction: Double = 0.0
-    var serviceChargeFraction: Double = 0.0
-    var vatFraction: Double = 0.0
-    private var totalAmount: String = ""
+    private var discountFraction: Double = 0.0
+    private var serviceChargeFraction: Double = 0.0
+    private var vatFraction: Double = 0.0
     var isPercentage = true
-    var vatScDcBundle: VatScDcBundleInfo? = null
 
     fun saveFoodList(list: List<FoodInfo>) {
         foodList.clear()
@@ -48,14 +46,6 @@ class AddFoodListViewModel : ViewModel() {
             vat.toInt().toString()
         } else {
             vat.toString()
-        }
-    }
-
-    fun saveTotalAmount(totalAmount: Double) {
-        this.totalAmount = if (totalAmount % 1 == 0.0) {
-            totalAmount.toInt().toString()
-        } else {
-            totalAmount.toString()
         }
     }
 

@@ -99,7 +99,14 @@ class AddFoodListFragment : Fragment() {
         val existingVat = viewModel.vat
 
         if (existingFoodList.isNotEmpty()) {
-            foodListAdapter.setItems(existingFoodList)
+            val nameListOnly = nameList.map { it.name }
+            val updatedFoodList = existingFoodList.map { foodInfo ->
+                val filteredNameChips = foodInfo.name.nameList.filter { nameChip ->
+                    nameChip in nameListOnly
+                }
+                foodInfo.copy(name = NameChipInfo(filteredNameChips))
+            }
+            foodListAdapter.setItems(updatedFoodList)
         } else {
             foodListAdapter.addItem(FoodInfo(FoodNameInfo(), FoodPriceInfo(), NameChipInfo()))
         }
@@ -139,7 +146,6 @@ class AddFoodListFragment : Fragment() {
         binding.etServiceChargeAmount.text?.clear()
         binding.etVatAmount.text?.clear()
     }
-
 
     private fun setUpVScDisIsPercentage() {
         val symbol =
