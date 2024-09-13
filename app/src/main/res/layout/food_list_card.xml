@@ -46,10 +46,8 @@
                 android:hint="@string/zero_amount"
                 android:inputType="numberDecimal"
                 android:labelFor="@id/etFoodPrice"
-                app:isSeparateByCommas="true"
                 app:layout_constraintEnd_toStartOf="@id/tvPersonPerFoodCard"
                 app:layout_constraintTop_toTopOf="@id/etFoodList"
-                app:noOfDecimals="2"
                 tools:ignore="Autofill,LabelFor" />
 
             <TextView

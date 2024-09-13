@@ -3,9 +3,11 @@ package com.teerapat.moneydivider.utils
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.DigitsKeyListener
+import java.util.Locale
 
-open class MoneyValueFormatter(sign: Boolean, decimal: Boolean, digits: Int) :
-    DigitsKeyListener(sign, decimal) {
+open class MoneyValueFormatter(
+    digits: Int
+) : DigitsKeyListener(Locale.US, false, true) {
     private var digits: Int = 0
 
     init {

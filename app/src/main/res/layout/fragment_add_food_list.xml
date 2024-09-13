@@ -71,10 +71,8 @@
             android:hint="@string/zero_amount"
             android:inputType="numberDecimal"
             android:textSize="@dimen/text_size_20sp"
-            app:isSeparateByCommas="true"
             app:layout_constraintEnd_toStartOf="@id/tvServiceChargePercentage"
             app:layout_constraintTop_toTopOf="parent"
-            app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
         <TextView
@@ -105,10 +103,8 @@
             android:hint="@string/zero_amount"
             android:inputType="numberDecimal"
             android:textSize="@dimen/text_size_20sp"
-            app:isSeparateByCommas="true"
             app:layout_constraintEnd_toStartOf="@id/tvVatPercentage"
             app:layout_constraintTop_toBottomOf="@id/etServiceChargeAmount"
-            app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
         <TextView
@@ -139,10 +135,8 @@
             android:hint="@string/zero_amount"
             android:inputType="numberDecimal"
             android:textSize="@dimen/text_size_20sp"
-            app:isSeparateByCommas="true"
             app:layout_constraintEnd_toStartOf="@id/tvDiscountPercentage"
             app:layout_constraintTop_toBottomOf="@id/etVatAmount"
-            app:noOfDecimals="2"
             tools:ignore="Autofill,LabelFor" />
 
         <TextView
