@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
@@ -24,7 +25,7 @@ class FoodListAdapter(
 ) : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
     private val foodInfoList = mutableListOf<FoodInfo>()
     private var onDataChangedListener: (() -> Unit)? = {}
-    private var onClickButtonDelete: (position: Int) -> Unit = {}
+    private var onClickButtonDelete: (deleteInfo: Pair<ImageView, Int>) -> Unit = {}
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -53,7 +54,7 @@ class FoodListAdapter(
         onDataChangedListener = listener
     }
 
-    fun setOnClickButtonDelete(block: (position: Int) -> Unit) = apply {
+    fun setOnClickButtonDelete(block: (Pair<ImageView, Int>) -> Unit) = apply {
         onClickButtonDelete = block
     }
 
@@ -235,12 +236,12 @@ class FoodListAdapter(
             val foodPriceText = binding.etFoodPrice.text.toString()
 
             if (foodListText.isNotBlank() || foodPriceText.isNotBlank() || binding.nameChipContainer.childCount > 0) {
-                onClickButtonDelete.invoke(position)
-                binding.ivDeleteFoodList.isEnabled = true
+                onClickButtonDelete.invoke(Pair(binding.ivDeleteFoodList, position))
             } else {
                 removeItem(position)
                 binding.ivDeleteFoodList.isEnabled = true
             }
+
         }
     }
 

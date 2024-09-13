@@ -58,7 +58,7 @@ class AddNameListFragment : Fragment() {
         nameListAdapter =
             NameListAdapter(requireContext())
                 .setOnClickButtonDelete {
-                    showDeleteItemConfirmationDialog { nameListAdapter.removeItem(it) }
+                    showDeleteItemConfirmationDialog(it.first) { nameListAdapter.removeItem(it.second) }
                 }
         binding.rvNameList.adapter = nameListAdapter
     }

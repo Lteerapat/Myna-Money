@@ -78,7 +78,7 @@ class AddFoodListFragment : Fragment() {
         foodListAdapter =
             FoodListAdapter(requireContext(), nameList)
                 .setOnClickButtonDelete {
-                    showDeleteItemConfirmationDialog { foodListAdapter.removeItem(it) }
+                    showDeleteItemConfirmationDialog(it.first) { foodListAdapter.removeItem(it.second) }
                 }
                 .setOnDataChangedListener {
                     calculateTotalAmount()
