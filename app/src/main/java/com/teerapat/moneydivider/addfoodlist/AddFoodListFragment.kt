@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.adapter.FoodListAdapter
-import com.teerapat.moneydivider.addnamelist.IncompleteCard
+import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.FoodNameInfo
 import com.teerapat.moneydivider.data.FoodPriceInfo
