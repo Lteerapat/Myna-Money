@@ -24,10 +24,12 @@ class SummaryFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var summaryAdapter: SummaryAdapter
     private val vatScDcBundle: VatScDcBundleInfo by lazy {
-        arguments?.getParcelable("vatScDcBundle") ?: VatScDcBundleInfo()
+        arguments?.getParcelable("vatScDcBundle", VatScDcBundleInfo::class.java)
+            ?: VatScDcBundleInfo()
     }
     private val foodListBundle: MutableList<FoodInfo> by lazy {
-        arguments?.getParcelableArrayList<FoodInfo>("foodList")?.toMutableList() ?: mutableListOf()
+        arguments?.getParcelableArrayList("foodList", FoodInfo::class.java)?.toMutableList()
+            ?: mutableListOf()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -12,10 +12,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.adapter.FoodListAdapter
-import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.FoodNameInfo
 import com.teerapat.moneydivider.data.FoodPriceInfo
+import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.NameChipInfo
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
@@ -39,7 +39,7 @@ class AddFoodListFragment : Fragment() {
     private lateinit var foodListAdapter: FoodListAdapter
 
     private val nameList: MutableList<NameInfo> by lazy {
-        arguments?.getParcelableArrayList<NameInfo>("nameList")?.map {
+        arguments?.getParcelableArrayList("nameList", NameInfo::class.java)?.map {
             NameInfo(it.name, it.isChecked)
         }?.toMutableList() ?: mutableListOf()
     }
