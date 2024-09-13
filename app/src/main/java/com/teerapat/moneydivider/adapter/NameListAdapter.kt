@@ -12,12 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.NameListCardBinding
-import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 
 class NameListAdapter(
     private val context: Context,
 ) : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
     private val nameInfoList = mutableListOf<NameInfo>()
+    private var onClickButtonDelete: (position: Int) -> Unit = {}
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<NameInfo>) {
@@ -40,6 +40,10 @@ class NameListAdapter(
 
     fun getNameList(): List<NameInfo> {
         return nameInfoList
+    }
+
+    fun setOnClickButtonDelete(block: (position: Int) -> Unit) = apply {
+        onClickButtonDelete = block
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NameListViewHolder {
@@ -110,9 +114,8 @@ class NameListAdapter(
             val nameListText = binding.etNameList.text.toString()
 
             if (nameListText.isNotBlank()) {
-                showDeleteItemConfirmationDialog(context, binding.ivDeleteNameList) {
-                    removeItem(position)
-                }
+                onClickButtonDelete.invoke(position)
+                binding.ivDeleteNameList.isEnabled = true
             } else {
                 removeItem(position)
                 binding.ivDeleteNameList.isEnabled = true

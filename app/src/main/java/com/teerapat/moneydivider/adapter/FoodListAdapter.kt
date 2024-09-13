@@ -16,7 +16,6 @@ import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
-import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 import com.teerapat.moneydivider.utils.showNameSelectionDialog
 
 class FoodListAdapter(
@@ -24,7 +23,8 @@ class FoodListAdapter(
     private val nameList: List<NameInfo>
 ) : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
     private val foodInfoList = mutableListOf<FoodInfo>()
-    private var onDataChangedListener: (() -> Unit)? = null
+    private var onDataChangedListener: (() -> Unit)? = {}
+    private var onClickButtonDelete: (position: Int) -> Unit = {}
 
 
     @SuppressLint("NotifyDataSetChanged")
@@ -49,8 +49,12 @@ class FoodListAdapter(
         }
     }
 
-    fun setOnDataChangedListener(listener: () -> Unit) {
+    fun setOnDataChangedListener(listener: () -> Unit) = apply {
         onDataChangedListener = listener
+    }
+
+    fun setOnClickButtonDelete(block: (position: Int) -> Unit) = apply {
+        onClickButtonDelete = block
     }
 
     fun getFoodList(): List<FoodInfo> {
@@ -231,9 +235,8 @@ class FoodListAdapter(
             val foodPriceText = binding.etFoodPrice.text.toString()
 
             if (foodListText.isNotBlank() || foodPriceText.isNotBlank() || binding.nameChipContainer.childCount > 0) {
-                showDeleteItemConfirmationDialog(context, binding.ivDeleteFoodList) {
-                    removeItem(position)
-                }
+                onClickButtonDelete.invoke(position)
+                binding.ivDeleteFoodList.isEnabled = true
             } else {
                 removeItem(position)
                 binding.ivDeleteFoodList.isEnabled = true

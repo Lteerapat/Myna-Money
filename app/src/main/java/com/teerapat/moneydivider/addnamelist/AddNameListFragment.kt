@@ -20,6 +20,7 @@ import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
 import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
 import com.teerapat.moneydivider.utils.showAlertZeroCardList
 import com.teerapat.moneydivider.utils.showContinueDialog
+import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 
 class AddNameListFragment : Fragment() {
     private lateinit var viewModel: AddNameListViewModel
@@ -54,7 +55,11 @@ class AddNameListFragment : Fragment() {
     }
 
     private fun setupNameListRecyclerView() {
-        nameListAdapter = NameListAdapter(requireContext())
+        nameListAdapter =
+            NameListAdapter(requireContext())
+                .setOnClickButtonDelete {
+                    showDeleteItemConfirmationDialog { nameListAdapter.removeItem(it) }
+                }
         binding.rvNameList.adapter = nameListAdapter
     }
 

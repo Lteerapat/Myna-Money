@@ -26,6 +26,7 @@ import com.teerapat.moneydivider.utils.showAlertOnVScDis
 import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
 import com.teerapat.moneydivider.utils.showAlertZeroCardList
 import com.teerapat.moneydivider.utils.showContinueDialog
+import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 import com.teerapat.moneydivider.utils.showTogglePercentageAmountDialog
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -74,11 +75,15 @@ class AddFoodListFragment : Fragment() {
     }
 
     private fun setupFoodListRecyclerView() {
-        foodListAdapter = FoodListAdapter(requireContext(), nameList)
+        foodListAdapter =
+            FoodListAdapter(requireContext(), nameList)
+                .setOnClickButtonDelete {
+                    showDeleteItemConfirmationDialog { foodListAdapter.removeItem(it) }
+                }
+                .setOnDataChangedListener {
+                    calculateTotalAmount()
+                }
         binding.rvFoodList.adapter = foodListAdapter
-        foodListAdapter.setOnDataChangedListener {
-            calculateTotalAmount()
-        }
     }
 
     private fun setUpAddButton() {

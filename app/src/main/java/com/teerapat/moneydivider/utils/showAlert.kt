@@ -8,9 +8,7 @@ import androidx.fragment.app.Fragment
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.NameInfo
 
-fun showDeleteItemConfirmationDialog(
-    context: Context,
-    deleteIcon: ImageView?,
+fun Fragment.showDeleteItemConfirmationDialog(
     onDeleteConfirmed: () -> Unit
 ) {
     AlertDialog.Builder(context)
@@ -20,7 +18,6 @@ fun showDeleteItemConfirmationDialog(
             onDeleteConfirmed()
         }
         .setNegativeButton(R.string.no_btn, null)
-        .setOnDismissListener { deleteIcon?.isEnabled = true }
         .show()
 }
 
