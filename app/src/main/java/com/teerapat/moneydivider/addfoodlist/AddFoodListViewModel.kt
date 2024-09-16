@@ -2,6 +2,7 @@ package com.teerapat.moneydivider.addfoodlist
 
 import androidx.lifecycle.ViewModel
 import com.teerapat.moneydivider.data.FoodInfo
+import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.data.VatScDcBundleInfo
 
 class AddFoodListViewModel : ViewModel() {
@@ -13,6 +14,7 @@ class AddFoodListViewModel : ViewModel() {
     private var serviceChargeFraction: Double = 0.0
     private var vatFraction: Double = 0.0
     var isPercentage = true
+    var nameListBundle: MutableList<NameInfo> = mutableListOf()
 
     fun saveFoodList(list: List<FoodInfo>) {
         foodList.clear()

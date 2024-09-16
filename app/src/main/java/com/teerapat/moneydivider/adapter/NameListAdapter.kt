@@ -118,9 +118,8 @@ class NameListAdapter(
                 onClickButtonDelete.invoke(Pair(binding.ivDeleteNameList, position))
             } else {
                 removeItem(position)
-            binding.ivDeleteNameList.isEnabled = true
+                binding.ivDeleteNameList.isEnabled = true
             }
-
         }
     }
 }

@@ -39,16 +39,11 @@ class AddFoodListFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var foodListAdapter: FoodListAdapter
 
-    private val nameList: MutableList<NameInfo> by lazy {
-        arguments?.getParcelableArrayList("nameList", NameInfo::class.java)?.map {
-            NameInfo(it.name, it.isChecked)
-        }?.toMutableList() ?: mutableListOf()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[AddFoodListViewModel::class.java]
         observe()
+        getArgumentData()
     }
 
     override fun onCreateView(
@@ -74,9 +69,15 @@ class AddFoodListFragment : Fragment() {
     private fun observe() {
     }
 
+    private fun getArgumentData() {
+        arguments?.getParcelableArrayList("nameListBundle", NameInfo::class.java)?.let {
+            viewModel.nameListBundle = it
+        }
+    }
+
     private fun setupFoodListRecyclerView() {
         foodListAdapter =
-            FoodListAdapter(requireContext(), nameList)
+            FoodListAdapter(requireContext(), viewModel.nameListBundle)
                 .setOnClickButtonDelete {
                     showDeleteItemConfirmationDialog(it.first) { foodListAdapter.removeItem(it.second) }
                 }
@@ -104,7 +105,7 @@ class AddFoodListFragment : Fragment() {
         val existingVat = viewModel.vat
 
         if (existingFoodList.isNotEmpty()) {
-            val nameOnlyList = nameList.map { it.name }
+            val nameOnlyList = viewModel.nameListBundle.map { it.name }
             val updatedFoodList = existingFoodList.map { foodInfo ->
                 val filteredNameChips = foodInfo.name.nameList.filter { nameChip ->
                     nameChip in nameOnlyList
@@ -361,7 +362,7 @@ class AddFoodListFragment : Fragment() {
 
         return Bundle().apply {
             putParcelable("vatScDcBundle", vatScDcBundle)
-            putParcelableArrayList("foodList", ArrayList(foodList))
+            putParcelableArrayList("foodListBundle", ArrayList(foodList))
         }
     }
 

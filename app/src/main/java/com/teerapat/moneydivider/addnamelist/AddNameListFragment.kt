@@ -136,7 +136,7 @@ class AddNameListFragment : Fragment() {
     private fun buildBundle(): Bundle {
         val nameList = viewModel.nameList
         return Bundle().apply {
-            putParcelableArrayList("nameList", ArrayList(nameList))
+            putParcelableArrayList("nameListBundle", ArrayList(nameList))
         }
     }
 

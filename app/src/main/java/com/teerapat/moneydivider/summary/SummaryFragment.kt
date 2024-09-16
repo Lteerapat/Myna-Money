@@ -23,22 +23,24 @@ class SummaryFragment : Fragment() {
     private var _binding: FragmentSummaryBinding? = null
     private val binding get() = _binding!!
     private lateinit var summaryAdapter: SummaryAdapter
-    private val vatScDcBundle: VatScDcBundleInfo by lazy {
-        arguments?.getParcelable("vatScDcBundle", VatScDcBundleInfo::class.java)
-            ?: VatScDcBundleInfo()
-    }
-    private val foodListBundle: MutableList<FoodInfo> by lazy {
-        arguments?.getParcelableArrayList("foodList", FoodInfo::class.java)?.toMutableList()
-            ?: mutableListOf()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[SummaryViewModel::class.java]
         observe()
+        getArgumentData()
     }
 
     private fun observe() {
+    }
+
+    private fun getArgumentData() {
+        arguments?.getParcelable("vatScDcBundle", VatScDcBundleInfo::class.java)?.let {
+            viewModel.vatScDcBundleInfo = it
+        }
+        arguments?.getParcelableArrayList("foodListBundle", FoodInfo::class.java)?.let {
+            viewModel.foodListBundle = it
+        }
     }
 
     override fun onCreateView(
@@ -64,7 +66,7 @@ class SummaryFragment : Fragment() {
     }
 
     private fun setUpInitialData() {
-        val summaryInfoList = setUpSummaryInfo(foodListBundle)
+        val summaryInfoList = setUpSummaryInfo(viewModel.foodListBundle)
 
         summaryAdapter.setItems(summaryInfoList)
 
@@ -98,29 +100,29 @@ class SummaryFragment : Fragment() {
             val rawTotalAmountPerName =
                 summaryFoodItemInfoList.sumOf { it.price }
             val totalAmountPerNameAfterDiscount =
-                rawTotalAmountPerName * (1 - vatScDcBundle.discount)
+                rawTotalAmountPerName * (1 - viewModel.vatScDcBundleInfo.discount)
             val totalAmountPerNameAfterDiscountAndServiceCharge =
-                totalAmountPerNameAfterDiscount * (1 + vatScDcBundle.serviceCharge)
+                totalAmountPerNameAfterDiscount * (1 + viewModel.vatScDcBundleInfo.serviceCharge)
 
-            if (totalAmountPerNameAfterDiscount * vatScDcBundle.serviceCharge > 0) {
+            if (totalAmountPerNameAfterDiscount * viewModel.vatScDcBundleInfo.serviceCharge > 0) {
                 summaryFoodItemInfoList.add(
                     SummaryFoodItemInfo(
                         foodName = getString(R.string.service_charge),
-                        price = totalAmountPerNameAfterDiscount * vatScDcBundle.serviceCharge
+                        price = totalAmountPerNameAfterDiscount * viewModel.vatScDcBundleInfo.serviceCharge
                     )
                 )
             }
 
-            if (totalAmountPerNameAfterDiscountAndServiceCharge * vatScDcBundle.vat > 0) {
+            if (totalAmountPerNameAfterDiscountAndServiceCharge * viewModel.vatScDcBundleInfo.vat > 0) {
                 summaryFoodItemInfoList.add(
                     SummaryFoodItemInfo(
                         foodName = getString(R.string.vat),
-                        price = totalAmountPerNameAfterDiscountAndServiceCharge * vatScDcBundle.vat
+                        price = totalAmountPerNameAfterDiscountAndServiceCharge * viewModel.vatScDcBundleInfo.vat
                     )
                 )
             }
 
-            if (vatScDcBundle.discount > 0) {
+            if (viewModel.vatScDcBundleInfo.discount > 0) {
                 summaryFoodItemInfoList.add(
                     SummaryFoodItemInfo(
                         foodName = getString(R.string.discount),
@@ -153,7 +155,7 @@ class SummaryFragment : Fragment() {
     private fun setUpShareButton() {
         binding.ivShareBtn.setOnClickListener {
             binding.ivShareBtn.isEnabled = false
-            val summaryInfoList = setUpSummaryInfo(foodListBundle)
+            val summaryInfoList = setUpSummaryInfo(viewModel.foodListBundle)
             val shareText = generateShareText(summaryInfoList)
             shareSummary(shareText)
 
