@@ -388,9 +388,7 @@ class AddFoodListFragment : Fragment() {
 
             when (incompleteField) {
                 ET_FOOD_LIST -> {
-                    etFoodList?.let {
-                        openSoftKeyboard(requireContext(), it)
-                    }
+                    etFoodList?.openSoftKeyboard()
                     if (isIncompleteCard) {
                         etFoodList?.text?.clear()
                         etFoodList?.backgroundTintList = ColorStateList.valueOf(
@@ -400,9 +398,7 @@ class AddFoodListFragment : Fragment() {
                 }
 
                 ET_FOOD_PRICE -> {
-                    etFoodPrice?.let {
-                        openSoftKeyboard(requireContext(), it)
-                    }
+                    etFoodPrice?.openSoftKeyboard()
                     if (isIncompleteCard) {
                         etFoodPrice?.text?.clear()
                         etFoodPrice?.backgroundTintList = ColorStateList.valueOf(

@@ -193,9 +193,7 @@ class AddNameListFragment : Fragment() {
 
             when (incompleteField) {
                 ET_NAME_LIST -> {
-                    etNameList?.let {
-                        openSoftKeyboard(requireContext(), it)
-                    }
+                    etNameList?.openSoftKeyboard()
                     if (isIncompleteCard) {
                         etNameList?.text?.clear()
                         etNameList?.backgroundTintList = ColorStateList.valueOf(
