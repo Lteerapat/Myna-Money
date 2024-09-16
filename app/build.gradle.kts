@@ -53,9 +53,8 @@ android {
 }
 
 dependencies {
-    implementation ("androidx.core:core-ktx:1.13.1")
-    implementation("com.github.hadilq:live-event:1.3.0")
     implementation("androidx.core:core-ktx:1.13.1")
+    implementation("com.github.hadilq:live-event:1.3.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.activity:activity-compose:1.9.1")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
@@ -71,11 +70,16 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
+    implementation("androidx.test.ext:junit-ktx:1.2.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.6.1")
+    debugImplementation("androidx.fragment:fragment-testing:1.8.3")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
+    androidTestImplementation("org.hamcrest:hamcrest:2.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
 }
