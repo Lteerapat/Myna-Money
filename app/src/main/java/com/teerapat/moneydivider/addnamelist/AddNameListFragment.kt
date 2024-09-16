@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.teerapat.moneydivider.R
-import com.teerapat.moneydivider.adapter.NameListAdapter
 import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddNameListBinding
@@ -56,7 +55,7 @@ class AddNameListFragment : Fragment() {
 
     private fun setupNameListRecyclerView() {
         nameListAdapter =
-            NameListAdapter(requireContext())
+            NameListAdapter()
                 .setOnClickButtonDelete {
                     showDeleteItemConfirmationDialog(it.first) { nameListAdapter.removeItem(it.second) }
                 }

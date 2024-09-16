@@ -1,4 +1,4 @@
-package com.teerapat.moneydivider.adapter
+package com.teerapat.moneydivider.summary
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

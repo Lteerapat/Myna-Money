@@ -8,7 +8,6 @@ import androidx.core.app.ShareCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.teerapat.moneydivider.R
-import com.teerapat.moneydivider.adapter.SummaryAdapter
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.SummaryFoodItemInfo
 import com.teerapat.moneydivider.data.SummaryInfo

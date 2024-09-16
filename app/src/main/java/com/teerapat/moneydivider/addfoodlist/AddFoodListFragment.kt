@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.teerapat.moneydivider.R
-import com.teerapat.moneydivider.adapter.FoodListAdapter
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.FoodNameInfo
 import com.teerapat.moneydivider.data.FoodPriceInfo
@@ -77,7 +76,7 @@ class AddFoodListFragment : Fragment() {
 
     private fun setupFoodListRecyclerView() {
         foodListAdapter =
-            FoodListAdapter(requireContext(), viewModel.nameListBundle)
+            FoodListAdapter(viewModel.nameListBundle)
                 .setOnClickButtonDelete {
                     showDeleteItemConfirmationDialog(it.first) { foodListAdapter.removeItem(it.second) }
                 }

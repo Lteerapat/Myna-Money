@@ -1,7 +1,6 @@
-package com.teerapat.moneydivider.adapter
+package com.teerapat.moneydivider.addfoodlist
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.TextUtils
@@ -20,7 +19,6 @@ import com.teerapat.moneydivider.databinding.FoodListCardBinding
 import com.teerapat.moneydivider.utils.showNameSelectionDialog
 
 class FoodListAdapter(
-    private val context: Context,
     private val nameList: List<NameInfo>
 ) : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
     private val foodInfoList = mutableListOf<FoodInfo>()
@@ -142,7 +140,7 @@ class FoodListAdapter(
                     nameList[index].name in foodInfo.name.nameList
                 }
                 showNameSelectionDialog(
-                    context,
+                    itemView.context,
                     nameList.map { it.name.trim() }.toTypedArray(),
                     isCheckedArray,
                     binding.ivAddNameList
@@ -171,7 +169,7 @@ class FoodListAdapter(
         }
 
         private fun addNameChip(name: String, foodInfo: FoodInfo) {
-            val chip = Chip(context).apply {
+            val chip = Chip(itemView.context).apply {
                 text = name
                 isCloseIconVisible = true
                 isClickable = false
@@ -194,7 +192,7 @@ class FoodListAdapter(
             with(binding.tvPersonPerFoodCard) {
                 visibility = if (nameList.isNotEmpty()) View.VISIBLE else View.GONE
                 if (visibility == View.VISIBLE) {
-                    text = context.getString(R.string.person_count, nameList.size)
+                    text = itemView.context.getString(R.string.person_count, nameList.size)
                 }
             }
         }
@@ -209,12 +207,12 @@ class FoodListAdapter(
             when (tag) {
                 FOOD_NAME -> {
                     binding.etFoodList.backgroundTintList =
-                        ColorStateList.valueOf(ContextCompat.getColor(context, color))
+                        ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
                 }
 
                 FOOD_Price -> {
                     binding.etFoodPrice.backgroundTintList =
-                        ColorStateList.valueOf(ContextCompat.getColor(context, color))
+                        ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
                 }
             }
         }
@@ -227,7 +225,7 @@ class FoodListAdapter(
             }
 
             binding.foodCardContainer.background =
-                ContextCompat.getDrawable(context, background)
+                ContextCompat.getDrawable(itemView.context, background)
         }
 
         private fun handleDelete(position: Int) {

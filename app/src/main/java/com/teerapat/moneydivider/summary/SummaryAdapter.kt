@@ -1,4 +1,4 @@
-package com.teerapat.moneydivider.adapter
+package com.teerapat.moneydivider.summary
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater

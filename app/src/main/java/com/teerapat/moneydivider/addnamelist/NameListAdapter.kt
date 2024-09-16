@@ -1,7 +1,6 @@
-package com.teerapat.moneydivider.adapter
+package com.teerapat.moneydivider.addnamelist
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.res.ColorStateList
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,9 +13,7 @@ import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.NameListCardBinding
 
-class NameListAdapter(
-    private val context: Context,
-) : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
+class NameListAdapter : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
     private val nameInfoList = mutableListOf<NameInfo>()
     private var onClickButtonDelete: (deleteInfo: Pair<ImageView, Int>) -> Unit = {}
 
@@ -107,7 +104,7 @@ class NameListAdapter(
                 R.color.teal_700
             }
             binding.etNameList.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(context, color))
+                ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
         }
 
         private fun handleDelete(position: Int) {
