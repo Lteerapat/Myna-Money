@@ -20,6 +20,9 @@ android {
             useSupportLibrary = true
         }
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 
     buildTypes {
         release {

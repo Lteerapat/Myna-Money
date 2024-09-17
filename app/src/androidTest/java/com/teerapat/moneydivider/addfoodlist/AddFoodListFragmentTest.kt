@@ -1,10 +1,10 @@
 package com.teerapat.moneydivider.addfoodlist
 
-import org.junit.Before
+import androidx.test.ext.junit.rules.ActivityScenarioRule
+import com.teerapat.moneydivider.MainActivity
+import org.junit.Rule
 
 class AddFoodListFragmentTest {
-
-    @Before
-    fun setUp() {
-    }
+    @get: Rule
+    val activityRule = ActivityScenarioRule(MainActivity::class.java)
 }

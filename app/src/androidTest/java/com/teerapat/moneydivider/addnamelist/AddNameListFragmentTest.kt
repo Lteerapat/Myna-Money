@@ -18,8 +18,6 @@ import com.teerapat.moneydivider.MainActivity
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.util.withBackgroundTintColor
 import junit.framework.TestCase.assertEquals
-import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Rule
 import org.junit.Test
 
@@ -57,7 +55,7 @@ class AddNameListFragmentTest {
         onView(withId(R.id.rvNameList)).check { view, _ ->
             val recyclerView = view as RecyclerView
             val newlyAddedEtNameList = recyclerView.findViewHolderForAdapterPosition(1)?.itemView
-            assertThat(newlyAddedEtNameList?.hasFocus(), `is`(true))
+            assertEquals(newlyAddedEtNameList?.hasFocus(), true)
         }
     }
 
