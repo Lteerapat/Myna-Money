@@ -10,9 +10,9 @@ class AddFoodListViewModel : ViewModel() {
     var discount: String = ""
     var serviceCharge: String = ""
     var vat: String = ""
-    private var discountFraction: Double = 0.0
-    private var serviceChargeFraction: Double = 0.0
-    private var vatFraction: Double = 0.0
+    var discountFraction: Double = 0.0
+    var serviceChargeFraction: Double = 0.0
+    var vatFraction: Double = 0.0
     var isPercentage = true
     var nameListBundle: MutableList<NameInfo> = mutableListOf()
 
