@@ -5,6 +5,7 @@ import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
@@ -90,7 +91,7 @@ class AddNameListFragmentTest {
     }
 
     @Test
-    fun `when click next button but no item is filled with empty space from space bar it should trigger showAlertOnIncompleteCard then focus that item and clear the text after click ok then clear red tint if that item is filled`() {
+    fun `when click next button but item is filled with empty space from space bar it should trigger showAlertOnIncompleteCard then focus that item and clear the text after click ok then clear red tint if that item is filled`() {
         onView(withId(R.id.etNameList)).perform(typeText("    "))
         onView(withId(R.id.btnNext)).perform(click())
         onView(withText(R.string.incomplete_empty_card_message_2)).check(matches(isDisplayed()))
@@ -187,11 +188,11 @@ class AddNameListFragmentTest {
         onView(withId(R.id.btnNext)).perform(click())
         onView(withText(R.string.next_btn_alert_title)).check(matches(isDisplayed()))
         onView(withText(R.string.no_btn)).perform(click())
-        onView(withId(R.id.etNameList)).check(matches(isDisplayed()))
+        onView(withText(R.string.next_btn_alert_title)).check(doesNotExist())
     }
 
     @Test
-    fun `if everything is complete and click next button it should trigger showContinueDialog then click yes it should navigate to addFoodListFragment`() {
+    fun `if everything is complete and click next button it should trigger showContinueDialog then click yes it should navigate to AddFoodListFragment`() {
         onView(withId(R.id.etNameList)).perform(typeText(NAME))
         onView(withId(R.id.btnNext)).perform(click())
         onView(withText(R.string.next_btn_alert_title)).check(matches(isDisplayed()))
@@ -200,8 +201,8 @@ class AddNameListFragmentTest {
     }
 
     @Test
-    fun `navigate back from addFoodListFragment should not delete the added items`() {
-        `if everything is complete and click next button it should trigger showContinueDialog then click yes it should navigate to addFoodListFragment`()
+    fun `navigate back from AddFoodListFragment should not delete the added items`() {
+        `if everything is complete and click next button it should trigger showContinueDialog then click yes it should navigate to AddFoodListFragment`()
         pressBack()
         onView(withId(R.id.etNameList)).check(matches(withText(NAME)))
     }
