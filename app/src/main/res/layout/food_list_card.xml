@@ -8,30 +8,40 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/foodCardContainer"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/large_padding"
-        app:cardCornerRadius="@dimen/space_10dp"
+        android:layout_marginStart="@dimen/space_32dp"
+        android:layout_marginTop="@dimen/space_12dp"
+        android:layout_marginEnd="@dimen/space_10dp"
+        android:layout_marginBottom="@dimen/space_06dp"
+        app:cardCornerRadius="@dimen/space_05dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivDeleteFoodList"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/space_13dp">
 
             <EditText
                 android:id="@+id/etFoodList"
                 android:layout_width="@dimen/space_120dp"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/teal_700"
+                android:backgroundTint="@color/colorGreen82B79C"
                 android:ellipsize="end"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
+                android:fontFamily="@font/font_zen_maru_gothic"
                 android:hint="@string/food_name"
                 android:inputType="textVisiblePassword|textNoSuggestions"
                 android:labelFor="@id/etFoodList"
                 android:maxLength="25"
                 android:maxLines="1"
+                android:textColor="@color/colorGreen066E38"
+                android:textColorHint="@color/colorGreen82B79C"
+                android:textSize="@dimen/text_size_18sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="Autofill,LabelFor" />
@@ -40,12 +50,16 @@
                 android:id="@+id/etFoodPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/teal_700"
+                android:backgroundTint="@color/colorGreen82B79C"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
-                android:hint="@string/zero_amount"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:hint="@string/price_text"
                 android:inputType="numberDecimal"
                 android:labelFor="@id/etFoodPrice"
+                android:textColor="@color/colorGreen066E38"
+                android:textColorHint="@color/colorGreen82B79C"
+                android:textSize="@dimen/text_size_18sp"
                 app:layout_constraintEnd_toStartOf="@id/tvPersonPerFoodCard"
                 app:layout_constraintTop_toTopOf="@id/etFoodList"
                 tools:ignore="Autofill,LabelFor" />
@@ -54,26 +68,23 @@
                 android:id="@+id/tvPersonPerFoodCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/space_02dp"
-                android:layout_marginBottom="@dimen/space_01dp"
-                android:textColor="@color/teal_200"
-                android:textSize="@dimen/text_size_16sp"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:textColor="@color/colorGray666565"
+                android:textSize="@dimen/text_size_18sp"
+                android:textStyle="bold"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/etFoodPrice"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/etFoodPrice"
-                tools:text="@string/max_amount_person" />
+                tools:text="@string/max_amount_person"
+                tools:visibility="visible" />
 
             <ImageView
                 android:id="@+id/ivAddNameList"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/large_padding"
                 android:layout_marginVertical="@dimen/large_padding"
-                android:background="@drawable/circle_background"
-                android:elevation="3dp"
-                android:padding="@dimen/space_03dp"
-                android:src="@drawable/baseline_person_add_alt_1_20"
+                android:src="@drawable/add_name_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/etFoodList"
@@ -83,7 +94,7 @@
                 android:id="@+id/nameChipScrollContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/large_padding"
+                android:layout_marginStart="@dimen/space_08dp"
                 android:fillViewport="true"
                 android:scrollbars="none"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -100,40 +111,48 @@
                     <com.google.android.material.chip.Chip
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_zen_maru_gothic"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_16sp"
                         android:visibility="gone"
+                        app:chipBackgroundColor="@color/colorGreen066E38"
+                        app:chipCornerRadius="@dimen/space_05dp"
+                        app:closeIconTint="@color/white"
                         tools:closeIconVisible="true"
                         tools:ellipsize="end"
-                        tools:maxWidth="@dimen/space_85dp"
+                        tools:maxWidth="@dimen/space_100dp"
+                        tools:text="nameee"
+                        tools:visibility="visible" />
+
+                    <com.google.android.material.chip.Chip
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_zen_maru_gothic"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_16sp"
+                        android:visibility="gone"
+                        app:chipBackgroundColor="@color/colorGreen066E38"
+                        app:chipCornerRadius="@dimen/space_05dp"
+                        app:closeIconTint="@color/white"
+                        tools:closeIconVisible="true"
+                        tools:ellipsize="end"
+                        tools:maxWidth="@dimen/space_100dp"
                         tools:text="name"
                         tools:visibility="visible" />
 
                     <com.google.android.material.chip.Chip
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_zen_maru_gothic"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_size_16sp"
                         android:visibility="gone"
+                        app:chipBackgroundColor="@color/colorGreen066E38"
+                        app:chipCornerRadius="@dimen/space_05dp"
+                        app:closeIconTint="@color/white"
                         tools:closeIconVisible="true"
                         tools:ellipsize="end"
-                        tools:maxWidth="@dimen/space_85dp"
-                        tools:text="name"
-                        tools:visibility="visible" />
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:closeIconVisible="true"
-                        tools:ellipsize="end"
-                        tools:maxWidth="@dimen/space_85dp"
-                        tools:text="name"
-                        tools:visibility="visible" />
-
-                    <com.google.android.material.chip.Chip
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        tools:closeIconVisible="true"
-                        tools:ellipsize="end"
-                        tools:maxWidth="@dimen/space_85dp"
+                        tools:maxWidth="@dimen/space_100dp"
                         tools:text="name"
                         tools:visibility="visible" />
                 </com.google.android.material.chip.ChipGroup>
@@ -141,7 +160,7 @@
 
             <View
                 android:id="@+id/vSpacing1"
-                android:layout_width="@dimen/space_12dp"
+                android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:background="@android:color/transparent"
                 app:layout_constraintBottom_toBottomOf="@id/nameChipScrollContainer"
@@ -156,10 +175,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/space_05dp"
         android:layout_marginEnd="@dimen/space_05dp"
-        android:background="@drawable/circle_background"
         android:elevation="3dp"
-        android:src="@drawable/baseline_close_20"
+        android:src="@drawable/icon_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/foodCardContainer"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 

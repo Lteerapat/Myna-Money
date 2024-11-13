@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:background="@drawable/rounded_corner_bg_dialog">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRadioDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/space_15dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:itemCount="5"
+        tools:listitem="@layout/radio_item" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnConfirm"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/space_30dp"
+        android:layout_marginVertical="@dimen/space_15dp"
+        android:background="@drawable/rounded_corner_yellow_button"
+        android:fontFamily="@font/font_zen_maru_gothic"
+        android:text="@string/use"
+        android:textColor="@color/white"
+        android:textSize="@dimen/text_size_15sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rvRadioDialog" />
+
+    <ImageView
+        android:id="@+id/ivMynaIcon"
+        android:layout_width="@dimen/space_140dp"
+        android:layout_height="@dimen/space_140dp"
+        android:layout_marginEnd="-33dp"
+        android:layout_marginBottom="-16dp"
+        android:alpha="0.1"
+        android:src="@drawable/myna_icon"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="ContentDescription" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MoneyDivider" parent="Theme.MaterialComponents.Light.NoActionBar" />
+    <style name="Theme.MoneyDivider" parent="Theme.MaterialComponents.Light" />
+    <style name="Theme.MoneyDivider.noActionBar" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/colorGreen066E38</item>
+    </style>
 </resources>

@@ -1,16 +1,21 @@
 <resources>
     // app name
-    <string name="app_name">Myna Money</string>
+    <string name="app_name">Myna\'s Receipt</string>
+    <string name="app_name_first_part">Myna\'s</string>
+    <string name="app_name_second_part">Receipt</string>
 
     // general
     <string name="zero_amount">0.00</string>
+    <string name="price_text">Price</string>
     <string name="food_name">Food name</string>
     <string name="zero_amount_no_decimal">0</string>
     <string name="max_amount_person">/30</string>
     <string name="add">Add</string>
     <string name="percentage_sign">%</string>
     <string name="next">Next</string>
-    <string name="back">Back</string>
+    <string name="continue_btn_text">Continue</string>
+    <string name="back"><u>Back</u></string>
+    <string name="use">Use</string>
     <string name="ok_btn">OK</string>
     <string name="add_name_title">Please add name 💰</string>
     <string name="add_name_btn">Add name</string>
@@ -34,7 +39,8 @@
     <string name="amount_message">Amount</string>
     <string name="percentage_exceeded_alert_message">Percentage cannot exceed 100%</string>
     <string name="discount_exceeded_alert_message">Discount cannot exceed total food price</string>
-    <string name="next_btn_alert_title">Are you sure you want to continue?</string>
+    <string name="next_btn_alert_title">Next Page</string>
+    <string name="next_btn_alert_message">Are you sure you want to continue?</string>
     <string name="yes_btn">Yes</string>
     <string name="no_btn">No</string>
     <string name="incomplete_card_letter_or_num_message">Please use only letters or numbers for the food name</string>
@@ -45,6 +51,8 @@
     <string name="incomplete_card_at_least_1_message">Please have at least 1 item to continue!</string>
     <string name="confirm_delete_title">Delete Item</string>
     <string name="confirm_delete_message">Are you sure you want to delete this item?</string>
+    <string name="confirm_delete_all_title">Delete All Items</string>
+    <string name="confirm_delete_all_message">Are you sure you want to delete all items?</string>
     <string name="duplicate_name_alert_title">Duplicate Name</string>
     <string name="duplicate_name_alert_message">Please ensure all names are unique before continuing</string>
     <string name="incomplete_empty_card_message_2">Please fill in the name</string>
@@ -61,7 +69,13 @@
     <string name="amount_format">฿ %1$s</string>
     <string name="negative_amount_format">- ฿ %1$s</string>
     <string name="total_amount_summary">฿ 10,000.00</string>
-    <string name="percentage_baht_btn">% / ฿</string>
+    <string name="baht_btn">Calculate as amount</string>
+    <string name="percentage_btn">Calculate as percentage</string>
     <string name="percentage_or_amount_toggle_message">Please choose a percentage or an amount for the calculation</string>
     <string name="slash">/</string>
+
+    <string name="text_name_page_description"><u>Name need to include at least one character and special characters are not allowed.</u></string>
+    <string name="delete_all_button"><u>Delete all</u></string>
+    <string name="select_name_dialog_description"><u>you can select more than 1 item</u></string>
+    <string name="add_item_dialog_description"><u>you can select only 1 item</u></string>
 </resources>

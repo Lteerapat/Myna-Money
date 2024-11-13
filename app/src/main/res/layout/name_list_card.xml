@@ -8,24 +8,32 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvNameContainer"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/large_padding"
+        android:layout_marginStart="@dimen/space_32dp"
+        android:layout_marginTop="@dimen/space_12dp"
+        android:layout_marginEnd="@dimen/space_10dp"
+        android:layout_marginBottom="@dimen/space_06dp"
         app:cardCornerRadius="@dimen/space_10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivDeleteNameList"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
             android:id="@+id/etNameList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal_700"
+            android:backgroundTint="@color/colorGreen82B79C"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:fontFamily="@font/font_zen_maru_gothic"
             android:hint="@string/name"
             android:inputType="textVisiblePassword|textNoSuggestions"
             android:labelFor="@id/etFoodList"
             android:maxLength="15"
+            android:textColor="@color/colorGreen066E38"
+            android:textColorHint="@color/colorGreen82B79C"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="Autofill,LabelFor" />
@@ -36,13 +44,14 @@
         android:id="@+id/ivDeleteNameList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/space_05dp"
-        android:layout_marginEnd="@dimen/space_05dp"
-        android:background="@drawable/circle_background"
+        android:layout_marginEnd="@dimen/space_32dp"
         android:elevation="3dp"
-        android:src="@drawable/baseline_close_20"
+        android:src="@drawable/icon_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cvNameContainer"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

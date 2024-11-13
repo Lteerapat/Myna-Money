@@ -6,24 +6,14 @@
     android:layout_height="match_parent"
     tools:context=".summary.SummaryFragment">
 
-    <ProgressBar
-        android:id="@+id/pbCyclic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minWidth="50dp"
-        android:minHeight="50dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/summaryHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/teal_200"
-        android:padding="@dimen/large_padding"
+        android:layout_marginHorizontal="@dimen/space_25dp"
+        android:layout_marginBottom="@dimen/space_06dp"
+        android:background="@drawable/rounded_corner_green_summary"
+        android:paddingHorizontal="@dimen/large_padding"
         app:layout_constraintBottom_toTopOf="@id/rvSummary"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -31,7 +21,9 @@
             android:id="@+id/tvTotalAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/font_zen_maru_gothic"
             android:text="@string/total_amount"
+            android:textColor="@color/black"
             android:textSize="@dimen/text_size_24sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +33,9 @@
             android:id="@+id/tvSummaryTotalAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_20sp"
+            android:fontFamily="@font/font_zen_maru_gothic"
+            android:textColor="@color/colorGreen066E38"
+            android:textSize="@dimen/text_size_25sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,8 +44,10 @@
 
         <ImageView
             android:id="@+id/ivShareBtn"
-            android:layout_width="@dimen/space_40dp"
-            android:layout_height="@dimen/space_40dp"
+            android:layout_width="@dimen/space_55dp"
+            android:layout_height="@dimen/space_55dp"
+            android:background="@drawable/rounded_corner_green_button"
+            android:padding="@dimen/space_05dp"
             android:src="@drawable/baseline_share_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -76,17 +72,46 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <Button
-            android:id="@+id/btnBack"
+        <View
+            android:id="@+id/separatorSummaryFooter1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/large_padding"
-            android:text="@string/back"
-            android:textSize="@dimen/text_size_20sp"
-            android:textStyle="bold"
-            app:icon="@drawable/baseline_arrow_back_24"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="@dimen/space_01dp"
+            android:layout_marginHorizontal="@dimen/space_25dp"
+            android:background="@color/black"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/separatorSummaryFooter2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/space_08dp"
+            android:layout_marginHorizontal="@dimen/space_25dp"
+            android:layout_marginTop="@dimen/space_03dp"
+            android:background="@color/colorGreen82B79C"
+            app:layout_constraintTop_toBottomOf="@id/separatorSummaryFooter1" />
+
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/space_45dp"
+            android:layout_marginBottom="@dimen/space_30dp"
+            android:fontFamily="@font/font_zen_maru_gothic"
+            android:text="@string/back"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ImageView
+            android:layout_width="@dimen/space_100dp"
+            android:layout_height="@dimen/space_100dp"
+            android:alpha="0.1"
+            android:src="@drawable/myna_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/separatorSummaryFooter2"
+            tools:ignore="ContentDescription,MissingConstraints" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

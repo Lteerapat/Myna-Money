@@ -6,22 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.teerapat.moneydivider.BaseFragment
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddNameListBinding
 import com.teerapat.moneydivider.utils.openSoftKeyboard
-import com.teerapat.moneydivider.utils.showAlertDuplicateNames
-import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
-import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
-import com.teerapat.moneydivider.utils.showAlertZeroCardList
-import com.teerapat.moneydivider.utils.showContinueDialog
-import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
 
-class AddNameListFragment : Fragment() {
+class AddNameListFragment : BaseFragment() {
     private lateinit var viewModel: AddNameListViewModel
     private var _binding: FragmentAddNameListBinding? = null
     private val binding get() = _binding!!
@@ -46,6 +40,8 @@ class AddNameListFragment : Fragment() {
 
         setupNameListRecyclerView()
         setUpAddButton()
+        setUpGroupAddButton()
+        setUpDeleteAllNameButton()
         setUpNextButton()
         loadInitialData()
     }
@@ -56,8 +52,12 @@ class AddNameListFragment : Fragment() {
     private fun setupNameListRecyclerView() {
         nameListAdapter =
             NameListAdapter()
-                .setOnClickButtonDelete {
-                    showDeleteItemConfirmationDialog(it.first) { nameListAdapter.removeItem(it.second) }
+                .setOnClickButtonDelete { pair ->
+                    dialogAble.show(
+                        title = R.string.confirm_delete_title,
+                        description = R.string.confirm_delete_message,
+                        onPositiveButtonClick = { nameListAdapter.removeItem(pair.second) }
+                    )
                 }
         binding.rvNameList.adapter = nameListAdapter
     }
@@ -65,7 +65,12 @@ class AddNameListFragment : Fragment() {
     private fun setUpAddButton() {
         binding.btnAddNameList.setOnClickListener {
             if (nameListAdapter.itemCount >= MAX_NAME_CARD) {
-                showAlertOverLimitItemCard(MAX_NAME_CARD)
+                dialogAble.show(
+                    title = R.string.item_limit_exceeded_title,
+                    description = R.string.item_limit_exceeded_message,
+                    descriptionArg = MAX_NAME_CARD,
+                    isShowPositiveButton = false
+                )
                 return@setOnClickListener
             }
             nameListAdapter.addItem(NameInfo())
@@ -73,51 +78,96 @@ class AddNameListFragment : Fragment() {
         }
     }
 
+    private fun setUpGroupAddButton() {
+        binding.btnGroupAddNameList.setOnClickListener {
+            dialogAble.showSingleItemSelectionDialog {_, selectedOptionPosition ->
+                val itemCountToAdd = when (selectedOptionPosition) {
+                    0 -> 5
+                    1 -> 10
+                    2 -> 15
+                    3 -> 20
+                    else -> 0
+                }
+
+                val itemsToAdd = minOf(itemCountToAdd, MAX_NAME_CARD - nameListAdapter.itemCount)
+
+                repeat(itemsToAdd) {
+                    nameListAdapter.addItem(NameInfo())
+                }
+            }
+        }
+    }
+
+    private fun setUpDeleteAllNameButton() {
+        binding.tvDeleteAllNameList.setOnClickListener {
+            if (nameListAdapter.itemCount > 0) {
+                dialogAble.show(
+                    title = R.string.confirm_delete_all_title,
+                    description = R.string.confirm_delete_all_message,
+                    onPositiveButtonClick = { nameListAdapter.removeAllItem() }
+                )
+            }
+        }
+    }
+
     private fun setUpNextButton() {
         binding.btnNext.setOnClickListener {
-            val btnNext = binding.btnNext
-            btnNext.isEnabled = false
             val nameList = nameListAdapter.getNameList()
             val incompleteCard = findFirstIncompleteCard(nameList)
 
             when {
                 nameList.isEmpty() -> {
-                    showAlertZeroCardList {
-                        nameListAdapter.addItem(NameInfo(isIncomplete = true))
-                        focusOnCard(
-                            position = 0,
-                            isIncompleteCard = true,
-                            incompleteField = ET_NAME_LIST
-                        )
-                        btnNext.isEnabled = true
-                    }
+                    dialogAble.show(
+                        title = R.string.incomplete_item,
+                        description = R.string.incomplete_card_at_least_1_message,
+                        isShowPositiveButton = false,
+                        onDismissListener = {
+                            nameListAdapter.addItem(NameInfo(isIncomplete = true))
+                            focusOnCard(
+                                position = 0,
+                                isIncompleteCard = true,
+                                incompleteField = ET_NAME_LIST
+                            )
+                        }
+                    )
                 }
 
                 incompleteCard != null -> {
-                    showAlertOnIncompleteCard(incompleteCard.message) {
-                        focusOnCard(
-                            incompleteCard.position,
-                            isIncompleteCard = true,
-                            incompleteField = incompleteCard.incompleteField
-                        )
-                        btnNext.isEnabled = true
-                    }
+                    dialogAble.show(
+                        title = R.string.incomplete_item,
+                        description = incompleteCard.message,
+                        isShowPositiveButton = false,
+                        onDismissListener = {
+                            focusOnCard(
+                                incompleteCard.position,
+                                isIncompleteCard = true,
+                                incompleteField = incompleteCard.incompleteField
+                            )
+                        }
+                    )
                 }
 
                 hasDuplicateNames(nameList) -> {
-                    showAlertDuplicateNames {
-                        btnNext.isEnabled = true
-                    }
+                    dialogAble.show(
+                        title = R.string.duplicate_name_alert_title,
+                        description = R.string.duplicate_name_alert_message,
+                        isShowPositiveButton = false
+                    )
                 }
 
                 else -> {
-                    showContinueDialog(binding.btnNext) {
-                        viewModel.saveNameList(nameListAdapter.getNameList())
-                        findNavController().navigate(
-                            R.id.action_addNameListFragment_to_addFoodListFragment,
-                            buildBundle()
-                        )
-                    }
+                    dialogAble.show(
+                        title = R.string.next_btn_alert_title,
+                        description = R.string.next_btn_alert_message,
+                        titleBackground = R.drawable.rounded_top_corner_green_dialog,
+                        onPositiveButtonClick = {
+                            viewModel.saveNameList(nameListAdapter.getNameList())
+                            findNavController().navigate(
+                                R.id.action_addNameListFragment_to_addFoodListFragment,
+                                buildBundle()
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -153,7 +203,7 @@ class AddNameListFragment : Fragment() {
                     nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_empty_card_message_2),
+                        message = R.string.incomplete_empty_card_message_2,
                         incompleteField = ET_NAME_LIST
                     )
                 }
@@ -162,7 +212,7 @@ class AddNameListFragment : Fragment() {
                     nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_letter_or_num_message_2),
+                        message = R.string.incomplete_letter_or_num_message_2,
                         incompleteField = ET_NAME_LIST
                     )
                 }
@@ -171,7 +221,7 @@ class AddNameListFragment : Fragment() {
                     nameList[index].isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_num_only_message_2),
+                        message = R.string.incomplete_card_num_only_message_2,
                         incompleteField = ET_NAME_LIST
                     )
                 }
@@ -195,10 +245,15 @@ class AddNameListFragment : Fragment() {
                 ET_NAME_LIST -> {
                     etNameList?.openSoftKeyboard()
                     if (isIncompleteCard) {
-                        etNameList?.text?.clear()
-                        etNameList?.backgroundTintList = ColorStateList.valueOf(
-                            ContextCompat.getColor(requireContext(), R.color.red)
-                        )
+                        etNameList?.let {
+                            with(it) {
+                                text?.clear()
+                                setHintTextColor(resources.getColor(R.color.red))
+                                backgroundTintList = ColorStateList.valueOf(
+                                    ContextCompat.getColor(requireContext(), R.color.red)
+                                )
+                            }
+                        }
                     }
                 }
             }

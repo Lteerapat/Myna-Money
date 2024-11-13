@@ -10,8 +10,9 @@
         android:id="@+id/summaryCardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/large_padding"
-        app:cardCornerRadius="@dimen/space_10dp"
+        android:layout_marginHorizontal="@dimen/space_25dp"
+        android:layout_marginVertical="@dimen/space_06dp"
+        app:cardCornerRadius="@dimen/space_05dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -24,9 +25,12 @@
                 android:id="@+id/tvName"
                 android:layout_width="@dimen/space_150dp"
                 android:layout_height="wrap_content"
+                android:background="@drawable/rounded_corner_green_name_chip"
                 android:ellipsize="end"
+                android:fontFamily="@font/font_zen_maru_gothic"
                 android:maxLines="1"
-                android:textColor="@color/black"
+                android:padding="@dimen/space_06dp"
+                android:textColor="@color/white"
                 android:textSize="@dimen/text_size_20sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -37,12 +41,22 @@
                 android:id="@+id/tvTotalPayAmountPerPerson"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:textColor="@color/colorGreen066E38"
                 android:textSize="@dimen/text_size_20sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/tvName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tvName"
                 tools:text="@string/total_amount_summary" />
+
+            <View
+                android:id="@+id/separatorSummary1"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/space_01dp"
+                android:layout_marginVertical="@dimen/space_08dp"
+                android:background="@color/black"
+                app:layout_constraintTop_toBottomOf="@id/tvName" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvPriceSummary"
@@ -50,7 +64,7 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="@dimen/default_padding"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toBottomOf="@id/tvTotalPayAmountPerPerson"
+                app:layout_constraintTop_toBottomOf="@id/separatorSummary1"
                 tools:itemCount="3"
                 tools:listitem="@layout/summary_food_item_card" />
         </androidx.constraintlayout.widget.ConstraintLayout>

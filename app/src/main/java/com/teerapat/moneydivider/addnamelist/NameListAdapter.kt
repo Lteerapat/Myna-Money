@@ -13,11 +13,11 @@ import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.NameListCardBinding
 
+@SuppressLint("NotifyDataSetChanged")
 class NameListAdapter : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
     private val nameInfoList = mutableListOf<NameInfo>()
     private var onClickButtonDelete: (deleteInfo: Pair<ImageView, Int>) -> Unit = {}
 
-    @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<NameInfo>) {
         nameInfoList.clear()
         nameInfoList.addAll(items)
@@ -34,6 +34,11 @@ class NameListAdapter : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>
             nameInfoList.removeAt(position)
             notifyItemRemoved(position)
         }
+    }
+
+    fun removeAllItem() {
+        nameInfoList.clear()
+        notifyDataSetChanged()
     }
 
     fun getNameList(): List<NameInfo> {
@@ -101,21 +106,23 @@ class NameListAdapter : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>
             val color = if (isIncomplete) {
                 R.color.red
             } else {
-                R.color.teal_700
+                R.color.colorGreen066E38
             }
-            binding.etNameList.backgroundTintList =
-                ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
+
+            with(binding.etNameList) {
+                setHintTextColor(itemView.context.resources.getColor(color))
+                backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
+            }
         }
 
         private fun handleDelete(position: Int) {
-            binding.ivDeleteNameList.isEnabled = false
             val nameListText = binding.etNameList.text.toString()
 
             if (nameListText.isNotBlank()) {
                 onClickButtonDelete.invoke(Pair(binding.ivDeleteNameList, position))
             } else {
                 removeItem(position)
-                binding.ivDeleteNameList.isEnabled = true
             }
         }
     }

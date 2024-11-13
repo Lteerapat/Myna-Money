@@ -13,7 +13,7 @@ class AddFoodListViewModel : ViewModel() {
     var discountFraction: Double = 0.0
     var serviceChargeFraction: Double = 0.0
     var vatFraction: Double = 0.0
-    var isPercentage = true
+    var isPercentage = false
     var nameListBundle: MutableList<NameInfo> = mutableListOf()
 
     fun saveFoodList(list: List<FoodInfo>) {

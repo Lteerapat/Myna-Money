@@ -7,9 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.teerapat.moneydivider.BaseFragment
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.FoodNameInfo
@@ -19,20 +19,11 @@ import com.teerapat.moneydivider.data.NameChipInfo
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
 import com.teerapat.moneydivider.utils.openSoftKeyboard
-import com.teerapat.moneydivider.utils.showAlertDuplicateNames
-import com.teerapat.moneydivider.utils.showAlertOnIncompleteCard
-import com.teerapat.moneydivider.utils.showAlertOnVScDis
-import com.teerapat.moneydivider.utils.showAlertOverLimitItemCard
-import com.teerapat.moneydivider.utils.showAlertZeroCardList
-import com.teerapat.moneydivider.utils.showContinueDialog
-import com.teerapat.moneydivider.utils.showDeleteItemConfirmationDialog
-import com.teerapat.moneydivider.utils.showTogglePercentageAmountDialog
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.Locale
 
-
-class AddFoodListFragment : Fragment() {
+class AddFoodListFragment : BaseFragment() {
     private lateinit var viewModel: AddFoodListViewModel
     private var _binding: FragmentAddFoodListBinding? = null
     private val binding get() = _binding!!
@@ -58,10 +49,12 @@ class AddFoodListFragment : Fragment() {
 
         setupFoodListRecyclerView()
         setUpAddButton()
+        setUpGroupAddButton()
         setUpVScDisIsPercentage()
         setUpToggleListeners()
         setUpAmountOfVScDis()
         setUpNextButton()
+        setUpBackButton()
         loadInitialData()
     }
 
@@ -74,14 +67,43 @@ class AddFoodListFragment : Fragment() {
         }
     }
 
+    private fun setUpBackButton() {
+        binding.btnBack.setOnClickListener {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
     private fun setupFoodListRecyclerView() {
         foodListAdapter =
-            FoodListAdapter(viewModel.nameListBundle)
-                .setOnClickButtonDelete {
-                    showDeleteItemConfirmationDialog(it.first) { foodListAdapter.removeItem(it.second) }
+            FoodListAdapter()
+                .setOnClickButtonDelete { pair ->
+                    dialogAble.show(
+                        title = R.string.confirm_delete_title,
+                        description = R.string.confirm_delete_message,
+                        onPositiveButtonClick = { foodListAdapter.removeItem(pair.second) }
+                    )
                 }
                 .setOnDataChangedListener {
                     calculateTotalAmount()
+                }
+                .setOnShowCheckboxDialog { foodInfo ->
+                    val isCheckedArray = BooleanArray(viewModel.nameListBundle.size) { index ->
+                        viewModel.nameListBundle[index].name in foodInfo.name.nameList
+                    }
+                    val names = viewModel.nameListBundle.map { it.name.trim() }.toTypedArray()
+
+                    dialogAble.showNameSelectionDialog(
+                        names = names,
+                        isCheckedArray = isCheckedArray,
+                        onPositiveButtonClick = {
+                            foodInfo.name.nameList =
+                                names.filterIndexed { index, _ -> isCheckedArray[index] }
+                            foodListAdapter.updateChips(foodInfo)
+                        },
+                        onNegativeButtonClick = {
+                            isCheckedArray.fill(true)
+                        }
+                    )
                 }
         binding.rvFoodList.adapter = foodListAdapter
     }
@@ -89,11 +111,42 @@ class AddFoodListFragment : Fragment() {
     private fun setUpAddButton() {
         binding.btnAddFoodList.setOnClickListener {
             if (foodListAdapter.itemCount >= MAX_FOOD_CARD) {
-                showAlertOverLimitItemCard(MAX_FOOD_CARD)
+                dialogAble.show(
+                    title = R.string.item_limit_exceeded_title,
+                    description = R.string.item_limit_exceeded_message,
+                    descriptionArg = MAX_FOOD_CARD,
+                    isShowPositiveButton = false
+                )
                 return@setOnClickListener
             }
             foodListAdapter.addItem(FoodInfo(FoodNameInfo(), FoodPriceInfo(), NameChipInfo()))
             focusOnCard(position = foodListAdapter.itemCount - 1, incompleteField = ET_FOOD_LIST)
+        }
+    }
+
+    private fun setUpGroupAddButton() {
+        binding.btnGroupAddFoodList.setOnClickListener {
+            dialogAble.showSingleItemSelectionDialog { _, selectedOptionPosition ->
+                val itemCountToAdd = when (selectedOptionPosition) {
+                    0 -> 5
+                    1 -> 10
+                    2 -> 15
+                    3 -> 20
+                    else -> 0
+                }
+
+                val itemsToAdd = minOf(itemCountToAdd, MAX_FOOD_CARD - foodListAdapter.itemCount)
+
+                repeat(itemsToAdd) {
+                    foodListAdapter.addItem(
+                        FoodInfo(
+                            FoodNameInfo(),
+                            FoodPriceInfo(),
+                            NameChipInfo()
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -125,24 +178,16 @@ class AddFoodListFragment : Fragment() {
 
     private fun setUpToggleListeners() {
         binding.btnPercentageToggle.setOnClickListener {
-            binding.btnPercentageToggle.isEnabled = false
-            showTogglePercentageAmountDialog(
-                binding.btnPercentageToggle,
-                onPercentageSelected = {
-                    if (!viewModel.isPercentage) {
-                        viewModel.setIsPercentage(true)
-                        updateAmountOfVScDis()
-                    }
-                },
-                onAmountSelected = {
-                    if (viewModel.isPercentage) {
-                        viewModel.setIsPercentage(false)
-                        updateAmountOfVScDis()
-                    }
-                }
-            )
+            val toggleOption =
+                if (viewModel.isPercentage) getString(R.string.baht_btn) else getString(R.string.percentage_btn)
+
+            dialogAble.showSingleItemSelectionDialog(arrayOf(toggleOption)) { _, _ ->
+                viewModel.setIsPercentage(!viewModel.isPercentage)
+                updateAmountOfVScDis()
+            }
         }
     }
+
 
     private fun updateAmountOfVScDis() {
         setUpVScDisIsPercentage()
@@ -156,6 +201,13 @@ class AddFoodListFragment : Fragment() {
         val symbol =
             if (viewModel.isPercentage) getString(R.string.percentage_sign) else getString(R.string.baht_sign)
 
+        binding.btnPercentageToggle.text =
+            if (viewModel.isPercentage) {
+                getString(R.string.percentage_btn).uppercase()
+            } else {
+                getString(R.string.baht_btn).uppercase()
+            }
+
         binding.tvServiceChargePercentage.text = symbol
         binding.tvDiscountPercentage.text = symbol
         binding.tvVatPercentage.text = symbol
@@ -164,9 +216,10 @@ class AddFoodListFragment : Fragment() {
     private fun setUpAmountOfVScDis() {
         binding.etDiscountAmount.addTextChangedListener { discount ->
             if (viewModel.isPercentage && removeCommasAndReturnDouble(discount.toString()) > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.discount),
-                    getString(R.string.percentage_exceeded_alert_message),
+                dialogAble.show(
+                    title = R.string.discount,
+                    description = R.string.percentage_exceeded_alert_message,
+                    isShowPositiveButton = false
                 )
                 discount?.clear()
             }
@@ -174,9 +227,10 @@ class AddFoodListFragment : Fragment() {
         }
         binding.etServiceChargeAmount.addTextChangedListener { serviceCharge ->
             if (viewModel.isPercentage && removeCommasAndReturnDouble(serviceCharge.toString()) > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.service_charge),
-                    getString(R.string.percentage_exceeded_alert_message),
+                dialogAble.show(
+                    title = R.string.service_charge,
+                    description = R.string.percentage_exceeded_alert_message,
+                    isShowPositiveButton = false
                 )
                 serviceCharge?.clear()
             }
@@ -184,9 +238,10 @@ class AddFoodListFragment : Fragment() {
         }
         binding.etVatAmount.addTextChangedListener { vat ->
             if (viewModel.isPercentage && removeCommasAndReturnDouble(vat.toString()) > 100) {
-                showAlertOnVScDis(
-                    getString(R.string.vat),
-                    getString(R.string.percentage_exceeded_alert_message),
+                dialogAble.show(
+                    title = R.string.vat,
+                    description = R.string.percentage_exceeded_alert_message,
+                    isShowPositiveButton = false
                 )
                 vat?.clear()
             }
@@ -219,9 +274,10 @@ class AddFoodListFragment : Fragment() {
 
         if (!viewModel.isPercentage) {
             if (discount > totalAmountBeforeCalculation) {
-                showAlertOnVScDis(
-                    getString(R.string.discount),
-                    getString(R.string.discount_exceeded_alert_message),
+                dialogAble.show(
+                    title = R.string.discount,
+                    description = R.string.discount_exceeded_alert_message,
+                    isShowPositiveButton = false
                 )
                 binding.etDiscountAmount.text?.clear()
             } else {
@@ -299,52 +355,68 @@ class AddFoodListFragment : Fragment() {
     private fun setUpNextButton() {
         binding.btnNext.setOnClickListener {
             val btnNext = binding.btnNext
-            btnNext.isEnabled = false
             val foodList = foodListAdapter.getFoodList()
             val incompleteCard = findFirstIncompleteCard(foodList)
 
             when {
                 foodList.isEmpty() -> {
-                    showAlertZeroCardList {
-                        foodListAdapter.addItem(
-                            FoodInfo(
-                                FoodNameInfo(isIncomplete = true),
-                                FoodPriceInfo(),
-                                NameChipInfo()
+                    dialogAble.show(
+                        title = R.string.incomplete_item,
+                        description = R.string.incomplete_card_at_least_1_message,
+                        isShowPositiveButton = false,
+                        onDismissListener = {
+                            foodListAdapter.addItem(
+                                FoodInfo(
+                                    FoodNameInfo(isIncomplete = true),
+                                    FoodPriceInfo(),
+                                    NameChipInfo()
+                                )
                             )
-                        )
-                        focusOnCard(
-                            position = 0,
-                            isIncompleteCard = true,
-                            incompleteField = ET_FOOD_LIST
-                        )
-                        btnNext.isEnabled = true
-                    }
+                            focusOnCard(
+                                position = 0,
+                                isIncompleteCard = true,
+                                incompleteField = ET_FOOD_LIST
+                            )
+                        }
+                    )
                 }
 
                 incompleteCard != null -> {
-                    showAlertOnIncompleteCard(incompleteCard.message) {
-                        focusOnCard(
-                            position = incompleteCard.position,
-                            isIncompleteCard = true,
-                            incompleteField = incompleteCard.incompleteField
-                        )
-                        btnNext.isEnabled = true
-                    }
+                    dialogAble.show(
+                        title = R.string.incomplete_item,
+                        description = incompleteCard.message,
+                        isShowPositiveButton = false,
+                        onDismissListener = {
+                            focusOnCard(
+                                incompleteCard.position,
+                                isIncompleteCard = true,
+                                incompleteField = incompleteCard.incompleteField
+                            )
+                        }
+                    )
                 }
 
                 hasDuplicateNames(foodList) -> {
-                    showAlertDuplicateNames { btnNext.isEnabled = true }
+                    dialogAble.show(
+                        title = R.string.duplicate_name_alert_title,
+                        description = R.string.duplicate_name_alert_message,
+                        isShowPositiveButton = false
+                    )
                 }
 
                 else -> {
-                    showContinueDialog(binding.btnNext) {
-                        viewModel.saveFoodList(foodListAdapter.getFoodList())
-                        findNavController().navigate(
-                            R.id.action_addFoodListFragment_to_summaryFragment,
-                            buildBundle()
-                        )
-                    }
+                    dialogAble.show(
+                        title = R.string.next_btn_alert_title,
+                        description = R.string.next_btn_alert_message,
+                        titleBackground = R.drawable.rounded_top_corner_green_dialog,
+                        onPositiveButtonClick = {
+                            viewModel.saveFoodList(foodListAdapter.getFoodList())
+                            findNavController().navigate(
+                                R.id.action_addFoodListFragment_to_summaryFragment,
+                                buildBundle()
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -390,20 +462,30 @@ class AddFoodListFragment : Fragment() {
                 ET_FOOD_LIST -> {
                     etFoodList?.openSoftKeyboard()
                     if (isIncompleteCard) {
-                        etFoodList?.text?.clear()
-                        etFoodList?.backgroundTintList = ColorStateList.valueOf(
-                            ContextCompat.getColor(requireContext(), R.color.red)
-                        )
+                        etFoodList?.let {
+                            with(it) {
+                                text?.clear()
+                                setHintTextColor(resources.getColor(R.color.red))
+                                backgroundTintList = ColorStateList.valueOf(
+                                    ContextCompat.getColor(requireContext(), R.color.red)
+                                )
+                            }
+                        }
                     }
                 }
 
                 ET_FOOD_PRICE -> {
                     etFoodPrice?.openSoftKeyboard()
                     if (isIncompleteCard) {
-                        etFoodPrice?.text?.clear()
-                        etFoodPrice?.backgroundTintList = ColorStateList.valueOf(
-                            ContextCompat.getColor(requireContext(), R.color.red)
-                        )
+                        etFoodPrice?.let {
+                            with(it) {
+                                text?.clear()
+                                setHintTextColor(resources.getColor(R.color.red))
+                                backgroundTintList = ColorStateList.valueOf(
+                                    ContextCompat.getColor(requireContext(), R.color.red)
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -428,7 +510,7 @@ class AddFoodListFragment : Fragment() {
                     foodList[index].foodName.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_letter_or_num_message),
+                        message = R.string.incomplete_card_letter_or_num_message,
                         incompleteField = ET_FOOD_LIST
                     )
                 }
@@ -437,7 +519,7 @@ class AddFoodListFragment : Fragment() {
                     foodList[index].foodName.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_empty_message),
+                        message = R.string.incomplete_card_empty_message,
                         incompleteField = ET_FOOD_LIST
                     )
                 }
@@ -446,7 +528,7 @@ class AddFoodListFragment : Fragment() {
                     foodList[index].foodPrice.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_empty_message),
+                        message = R.string.incomplete_card_empty_message,
                         incompleteField = ET_FOOD_PRICE
                     )
                 }
@@ -455,7 +537,7 @@ class AddFoodListFragment : Fragment() {
                     foodList[index].foodName.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_num_only_message),
+                        message = R.string.incomplete_card_num_only_message,
                         incompleteField = ET_FOOD_LIST
                     )
                 }
@@ -464,7 +546,7 @@ class AddFoodListFragment : Fragment() {
                     foodList[index].foodPrice.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_zero_message),
+                        message = R.string.incomplete_card_zero_message,
                         incompleteField = ET_FOOD_PRICE
                     )
                 }
@@ -473,7 +555,7 @@ class AddFoodListFragment : Fragment() {
                     foodList[index].name.isIncomplete = true
                     return IncompleteCard(
                         position = index,
-                        message = getString(R.string.incomplete_card_zero_chip_message),
+                        message = R.string.incomplete_card_zero_chip_message,
                         incompleteField = FOOD_CARD_CONTAINER
                     )
                 }

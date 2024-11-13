@@ -2,6 +2,8 @@
 <resources>
     <!-- Text size -->
     <dimen name="text_size_08sp">8sp</dimen>
+    <dimen name="text_size_09sp">9sp</dimen>
+    <dimen name="text_size_09.5sp">9.5sp</dimen>
     <dimen name="text_size_10sp">10sp</dimen>
     <dimen name="text_size_12sp">12sp</dimen>
     <dimen name="text_size_14sp">14sp</dimen>
@@ -12,11 +14,13 @@
     <dimen name="text_size_20sp">20sp</dimen>
     <dimen name="text_size_22sp">22sp</dimen>
     <dimen name="text_size_24sp">24sp</dimen>
+    <dimen name="text_size_25sp">25sp</dimen>
     <dimen name="text_size_26sp">26sp</dimen>
     <dimen name="text_size_28sp">28sp</dimen>
     <dimen name="text_size_30sp">30sp</dimen>
     <dimen name="text_size_32sp">32sp</dimen>
     <dimen name="text_size_36sp">36sp</dimen>
+    <dimen name="text_size_40sp">40sp</dimen>
     <dimen name="text_size_48sp">48sp</dimen>
 
     <!-- Padding -->
@@ -79,6 +83,7 @@
     <dimen name="space_50dp">50dp</dimen>
     <dimen name="space_52dp">52dp</dimen>
     <dimen name="space_54dp">54dp</dimen>
+    <dimen name="space_55dp">55dp</dimen>
     <dimen name="space_56dp">56dp</dimen>
     <dimen name="space_57dp">57dp</dimen>
     <dimen name="space_60dp">60dp</dimen>

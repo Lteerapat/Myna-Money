@@ -7,198 +7,266 @@
     android:layout_height="match_parent"
     tools:context=".addfoodlist.AddFoodListFragment">
 
+
+    <LinearLayout
+        android:id="@+id/btnAddFoodListContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/space_32dp"
+        app:layout_constraintBottom_toTopOf="@id/rvFoodList"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnAddFoodList"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/space_35dp"
+            android:layout_marginEnd="@dimen/space_09dp"
+            android:background="@drawable/rounded_corner_green_button"
+            android:drawableStart="@drawable/icon_fork_spoon"
+            android:fontFamily="@font/font_zen_maru_gothic"
+            android:paddingHorizontal="@dimen/space_06dp"
+            android:text="@string/add_food_list"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_16sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnGroupAddFoodList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_corner_green_button"
+            android:src="@drawable/baseline_keyboard_double_arrow_down_35"
+            tools:ignore="ContentDescription" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvFoodList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toTopOf="@id/addFoodListBtnContainer"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/foodListFooter"
+        app:layout_constraintTop_toBottomOf="@id/btnAddFoodListContainer"
         tools:itemCount="5"
         tools:listitem="@layout/food_list_card" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/addFoodListBtnContainer"
+        android:id="@+id/foodListFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/vScDis">
+        android:background="@color/colorGreenF0F8F8"
+        android:paddingHorizontal="@dimen/space_15dp"
+        android:paddingTop="@dimen/space_07dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rvFoodList">
 
-        <Button
-            android:id="@+id/btnAddFoodList"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/large_padding"
-            android:drawableEnd="@drawable/baseline_add_circle_24"
-            android:src="@drawable/baseline_add_circle_24"
-            android:text="@string/add_food_list"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/btnPercentageToggle"
-            app:layout_constraintStart_toStartOf="parent" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="-25dp"
+            android:layout_marginBottom="-20dp"
+            android:alpha="0.1"
+            android:src="@drawable/myna_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:ignore="ContentDescription" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnPercentageToggle"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/large_padding"
-            android:drawableEnd="@drawable/baseline_arrow_downward_24"
-            android:text="@string/percentage_baht_btn"
+            android:layout_height="@dimen/space_35dp"
+            android:background="@drawable/rounded_corner_green_button"
+            android:drawableEnd="@drawable/baseline_keyboard_double_arrow_down_24"
+            android:fontFamily="@font/font_zen_maru_gothic"
+            android:paddingHorizontal="@dimen/space_08dp"
+            android:text="@string/baht_btn"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_16sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/vScDis"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/large_padding"
-        app:layout_constraintBottom_toTopOf="@id/totalAmountLayout">
-
-        <TextView
-            android:id="@+id/tvServiceCharge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/service_charge"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintBottom_toBottomOf="@+id/etServiceChargeAmount"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/etServiceChargeAmount" />
-
-        <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
-            android:id="@+id/etServiceChargeAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal_700"
-            android:hint="@string/zero_amount"
-            android:inputType="numberDecimal"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintEnd_toStartOf="@id/tvServiceChargePercentage"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="Autofill,LabelFor" />
-
-        <TextView
-            android:id="@+id/tvServiceChargePercentage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/percentage_sign"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintBottom_toBottomOf="@id/etServiceChargeAmount"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/etServiceChargeAmount" />
-
-        <TextView
-            android:id="@+id/tvVat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/vat"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintBottom_toBottomOf="@id/etVatAmount"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/etVatAmount" />
-
-        <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
-            android:id="@+id/etVatAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal_700"
-            android:hint="@string/zero_amount"
-            android:inputType="numberDecimal"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintEnd_toStartOf="@id/tvVatPercentage"
-            app:layout_constraintTop_toBottomOf="@id/etServiceChargeAmount"
-            tools:ignore="Autofill,LabelFor" />
-
-        <TextView
-            android:id="@+id/tvVatPercentage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/percentage_sign"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintBottom_toBottomOf="@id/etVatAmount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/etVatAmount" />
-
-        <TextView
-            android:id="@+id/tvDiscount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/discount"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintBottom_toBottomOf="@id/etDiscountAmount"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/etDiscountAmount" />
-
-        <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
-            android:id="@+id/etDiscountAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/teal_700"
-            android:hint="@string/zero_amount"
-            android:inputType="numberDecimal"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintEnd_toStartOf="@id/tvDiscountPercentage"
-            app:layout_constraintTop_toBottomOf="@id/etVatAmount"
-            tools:ignore="Autofill,LabelFor" />
-
-        <TextView
-            android:id="@+id/tvDiscountPercentage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/percentage_sign"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintBottom_toBottomOf="@id/etDiscountAmount"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/etDiscountAmount" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/totalAmountLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="@dimen/large_padding"
-        app:layout_constraintBottom_toTopOf="@id/footer">
-
-        <TextView
-            android:id="@+id/tvTotalAmountText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/total_amount"
-            android:textSize="@dimen/text_size_20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvTotalAmount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/zero_amount"
-            android:textColor="@color/black"
-            android:textSize="@dimen/text_size_30sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/footer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <Button
-            android:id="@+id/btnNext"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/vScDis"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/large_padding"
-            android:drawableEnd="@drawable/baseline_double_arrow_24"
-            android:text="@string/next"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/btnPercentageToggle">
+
+            <TextView
+                android:id="@+id/tvServiceCharge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:text="@string/service_charge"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/etServiceChargeAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/etServiceChargeAmount" />
+
+            <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
+                android:id="@+id/etServiceChargeAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorGreen066E38"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:hint="@string/zero_amount"
+                android:inputType="numberDecimal"
+                android:textColor="@color/colorGreen066E38"
+                android:textColorHint="@color/colorGreen066E38"
+                android:textSize="@dimen/text_size_14sp"
+                app:layout_constraintEnd_toStartOf="@id/tvServiceChargePercentage"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/tvServiceChargePercentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:text="@string/baht_sign"
+                android:textColor="@color/colorGreen066E38"
+                android:textSize="@dimen/text_size_14sp"
+                app:layout_constraintBottom_toBottomOf="@id/etServiceChargeAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/etServiceChargeAmount" />
+
+            <TextView
+                android:id="@+id/tvVat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:text="@string/vat"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/etVatAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/etVatAmount" />
+
+            <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
+                android:id="@+id/etVatAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorGreen066E38"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:hint="@string/zero_amount"
+                android:inputType="numberDecimal"
+                android:textColor="@color/colorGreen066E38"
+                android:textColorHint="@color/colorGreen066E38"
+                android:textSize="@dimen/text_size_14sp"
+                app:layout_constraintEnd_toStartOf="@id/tvVatPercentage"
+                app:layout_constraintTop_toBottomOf="@id/etServiceChargeAmount"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/tvVatPercentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:text="@string/baht_sign"
+                android:textColor="@color/colorGreen066E38"
+                android:textSize="@dimen/text_size_14sp"
+                app:layout_constraintBottom_toBottomOf="@id/etVatAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/etVatAmount" />
+
+            <TextView
+                android:id="@+id/tvDiscount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:text="@string/discount"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/etDiscountAmount"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/etDiscountAmount" />
+
+            <com.teerapat.moneydivider.widget.ThousandSeparatedEditText
+                android:id="@+id/etDiscountAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/colorGreen066E38"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:hint="@string/zero_amount"
+                android:inputType="numberDecimal"
+                android:textColor="@color/colorGreen066E38"
+                android:textColorHint="@color/colorGreen066E38"
+                android:textSize="@dimen/text_size_14sp"
+                app:layout_constraintEnd_toStartOf="@id/tvDiscountPercentage"
+                app:layout_constraintTop_toBottomOf="@id/etVatAmount"
+                tools:ignore="Autofill,LabelFor" />
+
+            <TextView
+                android:id="@+id/tvDiscountPercentage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:text="@string/baht_sign"
+                android:textColor="@color/colorGreen066E38"
+                android:textSize="@dimen/text_size_14sp"
+                app:layout_constraintBottom_toBottomOf="@id/etDiscountAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/etDiscountAmount" />
+
+            <TextView
+                android:id="@+id/tvTotalAmountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/font_zen_maru_gothic"
+                android:text="@string/total_amount"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size_20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvTotalAmount" />
+
+            <TextView
+                android:id="@+id/tvTotalAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/zero_amount"
+                android:textColor="@color/colorGreen066E38"
+                android:textSize="@dimen/text_size_20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/etDiscountAmount" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/font_zen_maru_gothic"
+            android:text="@string/back"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/btnNext"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/space_35dp"
+            android:layout_marginBottom="@dimen/space_15dp"
+            android:background="@drawable/rounded_corner_yellow_button"
+            android:drawableStart="@drawable/baseline_double_arrow_24"
+            android:fontFamily="@font/font_zen_maru_gothic"
+            android:paddingHorizontal="@dimen/space_06dp"
+            android:text="@string/continue_btn_text"
+            android:textColor="@color/white"
             android:textSize="@dimen/text_size_20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vScDis" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

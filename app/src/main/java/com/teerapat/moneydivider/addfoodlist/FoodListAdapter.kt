@@ -2,29 +2,27 @@ package com.teerapat.moneydivider.addfoodlist
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.graphics.Typeface
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.FoodInfo
-import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FoodListCardBinding
-import com.teerapat.moneydivider.utils.showNameSelectionDialog
 
-class FoodListAdapter(
-    private val nameList: List<NameInfo>
-) : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
+class FoodListAdapter : RecyclerView.Adapter<FoodListAdapter.FoodListViewHolder>() {
     private val foodInfoList = mutableListOf<FoodInfo>()
     private var onDataChangedListener: (() -> Unit)? = {}
     private var onClickButtonDelete: (deleteInfo: Pair<ImageView, Int>) -> Unit = {}
-
+    private var onShowCheckboxDialog: ((FoodInfo) -> Unit)? = {}
 
     @SuppressLint("NotifyDataSetChanged")
     fun setItems(items: List<FoodInfo>) {
@@ -52,6 +50,10 @@ class FoodListAdapter(
         onDataChangedListener = listener
     }
 
+    fun setOnShowCheckboxDialog(listener: (FoodInfo) -> Unit) = apply {
+        onShowCheckboxDialog = listener
+    }
+
     fun setOnClickButtonDelete(block: (Pair<ImageView, Int>) -> Unit) = apply {
         onClickButtonDelete = block
     }
@@ -63,7 +65,6 @@ class FoodListAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FoodListViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = FoodListCardBinding.inflate(layoutInflater, parent, false)
-
         return FoodListViewHolder(binding)
     }
 
@@ -75,6 +76,13 @@ class FoodListAdapter(
 
     override fun getItemCount(): Int {
         return foodInfoList.size
+    }
+
+    fun updateChips(foodInfo: FoodInfo) {
+        val position = foodInfoList.indexOf(foodInfo)
+        if (position != -1) {
+            notifyItemChanged(position)
+        }
     }
 
     inner class FoodListViewHolder(val binding: FoodListCardBinding) :
@@ -136,19 +144,7 @@ class FoodListAdapter(
             binding.etFoodPrice.addTextChangedListener(currentEtFoodPriceTextWatcher)
 
             binding.ivAddNameList.setOnClickListener {
-                val isCheckedArray = BooleanArray(nameList.size) { index ->
-                    nameList[index].name in foodInfo.name.nameList
-                }
-                showNameSelectionDialog(
-                    itemView.context,
-                    nameList.map { it.name.trim() }.toTypedArray(),
-                    isCheckedArray,
-                    binding.ivAddNameList
-                ) { selectedNames ->
-                    foodInfo.name.nameList = selectedNames.map { it.name }
-                    updateChips(foodInfo)
-                    nameChipCountUpdate(foodInfo)
-                }
+                onShowCheckboxDialog?.invoke(foodInfo)
             }
 
             binding.ivDeleteFoodList.setOnClickListener {
@@ -170,11 +166,25 @@ class FoodListAdapter(
 
         private fun addNameChip(name: String, foodInfo: FoodInfo) {
             val chip = Chip(itemView.context).apply {
+                setTextColor(ColorStateList.valueOf(ContextCompat.getColor(context, R.color.white)))
+                chipBackgroundColor = ColorStateList.valueOf(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.colorGreen066E38
+                    )
+                )
                 text = name
+                typeface = Typeface.create(
+                    ResourcesCompat.getFont(context, R.font.font_zen_maru_gothic),
+                    Typeface.NORMAL
+                )
+                textSize = 16f
+                chipCornerRadius = 10f
                 isCloseIconVisible = true
+                setCloseIconTintResource(R.color.white)
                 isClickable = false
                 ellipsize = TextUtils.TruncateAt.END
-                maxWidth = resources.getDimensionPixelSize(R.dimen.space_85dp)
+                maxWidth = resources.getDimensionPixelSize(R.dimen.space_100dp)
                 setOnCloseIconClickListener {
                     binding.nameChipContainer.removeView(this)
                     foodInfo.name.nameList = foodInfo.name.nameList.filter { it != name }
@@ -190,8 +200,8 @@ class FoodListAdapter(
             val nameList = foodInfo.name.nameList
 
             with(binding.tvPersonPerFoodCard) {
-                visibility = if (nameList.isNotEmpty()) View.VISIBLE else View.GONE
-                if (visibility == View.VISIBLE) {
+                isVisible = nameList.isNotEmpty()
+                if (isVisible) {
                     text = itemView.context.getString(R.string.person_count, nameList.size)
                 }
             }
@@ -201,18 +211,24 @@ class FoodListAdapter(
             val color = if (isIncomplete) {
                 R.color.red
             } else {
-                R.color.teal_700
+                R.color.colorGreen066E38
             }
 
             when (tag) {
                 FOOD_NAME -> {
-                    binding.etFoodList.backgroundTintList =
-                        ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
+                    with(binding.etFoodList) {
+                        setHintTextColor(itemView.context.resources.getColor(color))
+                        backgroundTintList =
+                            ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
+                    }
                 }
 
                 FOOD_Price -> {
-                    binding.etFoodPrice.backgroundTintList =
-                        ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
+                    with(binding.etFoodPrice) {
+                        setHintTextColor(itemView.context.resources.getColor(color))
+                        backgroundTintList =
+                            ColorStateList.valueOf(ContextCompat.getColor(itemView.context, color))
+                    }
                 }
             }
         }
@@ -229,7 +245,6 @@ class FoodListAdapter(
         }
 
         private fun handleDelete(position: Int) {
-            binding.ivDeleteFoodList.isEnabled = false
             val foodListText = binding.etFoodList.text.toString()
             val foodPriceText = binding.etFoodPrice.text.toString()
 
@@ -237,7 +252,6 @@ class FoodListAdapter(
                 onClickButtonDelete.invoke(Pair(binding.ivDeleteFoodList, position))
             } else {
                 removeItem(position)
-                binding.ivDeleteFoodList.isEnabled = true
             }
 
         }
