@@ -5,22 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ShareCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.teerapat.moneydivider.BaseViewBinding
 import com.teerapat.moneydivider.R
+import com.teerapat.moneydivider.addfoodlist.AddFoodListFragment.Companion.FOOD_LIST_BUNDLE
+import com.teerapat.moneydivider.addfoodlist.AddFoodListFragment.Companion.VAT_SC_DC_BUNDLE
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.SummaryFoodItemInfo
 import com.teerapat.moneydivider.data.SummaryInfo
 import com.teerapat.moneydivider.data.VatScDcBundleInfo
 import com.teerapat.moneydivider.databinding.FragmentSummaryBinding
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
-class SummaryFragment : Fragment() {
+class SummaryFragment : BaseViewBinding<FragmentSummaryBinding>() {
     private lateinit var viewModel: SummaryViewModel
-    private var _binding: FragmentSummaryBinding? = null
-    private val binding get() = _binding!!
     private lateinit var summaryAdapter: SummaryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,24 +27,23 @@ class SummaryFragment : Fragment() {
         getArgumentData()
     }
 
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSummaryBinding {
+        return FragmentSummaryBinding.inflate(inflater, container, false)
+    }
+
     private fun observe() {
     }
 
     private fun getArgumentData() {
-        arguments?.getParcelable("vatScDcBundle", VatScDcBundleInfo::class.java)?.let {
+        arguments?.getParcelable(VAT_SC_DC_BUNDLE, VatScDcBundleInfo::class.java)?.let {
             viewModel.vatScDcBundleInfo = it
         }
-        arguments?.getParcelableArrayList("foodListBundle", FoodInfo::class.java)?.let {
+        arguments?.getParcelableArrayList(FOOD_LIST_BUNDLE, FoodInfo::class.java)?.let {
             viewModel.foodListBundle = it
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentSummaryBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -147,7 +143,7 @@ class SummaryFragment : Fragment() {
 
     private fun setUpBackButton() {
         binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            onBackPressed()
         }
     }
 
@@ -185,26 +181,5 @@ class SummaryFragment : Fragment() {
             .createChooserIntent()
 
         startActivity(shareIntent)
-    }
-
-    private fun removeCommasAndReturnDouble(amount: String): Double {
-        return if (amount.isBlank()) {
-            0.0
-        } else {
-            amount.replace(",", "").toDoubleOrNull() ?: 0.0
-        }
-    }
-
-    private fun thousandSeparator(amount: Double): String {
-        val decimalFormat = DecimalFormat(
-            DECIMAL_PATTERN, DecimalFormatSymbols(
-                Locale.US
-            )
-        )
-        return decimalFormat.format(amount)
-    }
-
-    companion object {
-        private const val DECIMAL_PATTERN = "#,##0.00"
     }
 }

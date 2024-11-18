@@ -6,11 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.teerapat.moneydivider.BaseFragment
+import com.teerapat.moneydivider.BaseViewBinding
 import com.teerapat.moneydivider.R
+import com.teerapat.moneydivider.addnamelist.AddNameListFragment.Companion.NAME_LIST_BUNDLE
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.FoodNameInfo
 import com.teerapat.moneydivider.data.FoodPriceInfo
@@ -19,14 +20,9 @@ import com.teerapat.moneydivider.data.NameChipInfo
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
 import com.teerapat.moneydivider.utils.openSoftKeyboard
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
-class AddFoodListFragment : BaseFragment() {
+class AddFoodListFragment : BaseViewBinding<FragmentAddFoodListBinding>() {
     private lateinit var viewModel: AddFoodListViewModel
-    private var _binding: FragmentAddFoodListBinding? = null
-    private val binding get() = _binding!!
     private lateinit var foodListAdapter: FoodListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,13 +32,13 @@ class AddFoodListFragment : BaseFragment() {
         getArgumentData()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAddFoodListBinding.inflate(inflater, container, false)
-        return binding.root
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentAddFoodListBinding {
+        return FragmentAddFoodListBinding.inflate(inflater, container, false)
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -62,14 +58,14 @@ class AddFoodListFragment : BaseFragment() {
     }
 
     private fun getArgumentData() {
-        arguments?.getParcelableArrayList("nameListBundle", NameInfo::class.java)?.let {
+        arguments?.getParcelableArrayList(NAME_LIST_BUNDLE, NameInfo::class.java)?.let {
             viewModel.nameListBundle = it
         }
     }
 
     private fun setUpBackButton() {
         binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            onBackPressed()
         }
     }
 
@@ -354,7 +350,6 @@ class AddFoodListFragment : BaseFragment() {
 
     private fun setUpNextButton() {
         binding.btnNext.setOnClickListener {
-            val btnNext = binding.btnNext
             val foodList = foodListAdapter.getFoodList()
             val incompleteCard = findFirstIncompleteCard(foodList)
 
@@ -411,9 +406,12 @@ class AddFoodListFragment : BaseFragment() {
                         titleBackground = R.drawable.rounded_top_corner_green_dialog,
                         onPositiveButtonClick = {
                             viewModel.saveFoodList(foodListAdapter.getFoodList())
-                            findNavController().navigate(
+                            next(
                                 R.id.action_addFoodListFragment_to_summaryFragment,
-                                buildBundle()
+                                bundleOf(
+                                    VAT_SC_DC_BUNDLE to viewModel.vScDcFractionBundle(),
+                                    FOOD_LIST_BUNDLE to viewModel.foodList
+                                )
                             )
                         }
                     )
@@ -425,24 +423,6 @@ class AddFoodListFragment : BaseFragment() {
     private fun hasDuplicateNames(foodList: List<FoodInfo>): Boolean {
         val names = foodList.map { it.foodName.name.trim() }
         return names.size != names.toSet().size
-    }
-
-    private fun buildBundle(): Bundle {
-        val vatScDcBundle = viewModel.vScDcFractionBundle()
-        val foodList = viewModel.foodList
-
-        return Bundle().apply {
-            putParcelable("vatScDcBundle", vatScDcBundle)
-            putParcelableArrayList("foodListBundle", ArrayList(foodList))
-        }
-    }
-
-    private fun convertAmountToFraction(numerator: Double, denominator: Double): Double {
-        if (denominator == 0.0) {
-            return 1.0
-        }
-
-        return numerator / denominator
     }
 
     private fun focusOnCard(
@@ -559,27 +539,10 @@ class AddFoodListFragment : BaseFragment() {
                         incompleteField = FOOD_CARD_CONTAINER
                     )
                 }
-
-                else -> {
-                    getString(R.string.incomplete_item)
-                }
             }
         }
 
         return null
-    }
-
-    private fun thousandSeparator(amount: Double): String {
-        val decimalFormat = DecimalFormat(DECIMAL_PATTERN, DecimalFormatSymbols(Locale.US))
-        return "${decimalFormat.format(amount)} ฿"
-    }
-
-    private fun removeCommasAndReturnDouble(amount: String): Double {
-        return if (amount.isBlank()) {
-            0.0
-        } else {
-            amount.replace(",", "").toDoubleOrNull() ?: 0.0
-        }
     }
 
     override fun onPause() {
@@ -592,18 +555,14 @@ class AddFoodListFragment : BaseFragment() {
         viewModel.saveFoodList(foodListAdapter.getFoodList())
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     companion object {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
         private val NUM_REGEX = Regex("[0-9]*$")
-        private const val DECIMAL_PATTERN = "#,##0.00"
         private const val MAX_FOOD_CARD = 20
         private const val ET_FOOD_LIST = "etFoodList"
         private const val ET_FOOD_PRICE = "etFoodPrice"
         private const val FOOD_CARD_CONTAINER = "foodCardContainer"
+        const val VAT_SC_DC_BUNDLE = "VAT_SC_DC_BUNDLE"
+        const val FOOD_LIST_BUNDLE = "FOOD_LIST_BUNDLE"
     }
 }

@@ -87,4 +87,5 @@ dependencies {
     androidTestImplementation("org.hamcrest:hamcrest:2.2")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.4.0")
+    implementation("com.jakewharton.timber:timber:5.0.1")
 }

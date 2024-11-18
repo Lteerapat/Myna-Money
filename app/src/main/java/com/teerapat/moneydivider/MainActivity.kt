@@ -2,17 +2,13 @@ package com.teerapat.moneydivider
 
 import android.graphics.Rect
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
 import androidx.core.view.isVisible
 import com.teerapat.moneydivider.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-
+class MainActivity : BaseViewBindingActivity<ActivityMainBinding>() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         binding.root.viewTreeObserver.addOnGlobalLayoutListener {
             val rect = Rect()
@@ -25,6 +21,9 @@ class MainActivity : AppCompatActivity() {
             binding.toolBar.isVisible = !isKeyboardVisible
         }
     }
+
+    override fun createBinding(inflater: LayoutInflater): ActivityMainBinding =
+        ActivityMainBinding.inflate(inflater)
 }
 
 

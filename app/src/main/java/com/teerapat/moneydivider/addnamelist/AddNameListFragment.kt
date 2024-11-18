@@ -6,19 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.teerapat.moneydivider.BaseFragment
+import com.teerapat.moneydivider.BaseViewBinding
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddNameListBinding
 import com.teerapat.moneydivider.utils.openSoftKeyboard
 
-class AddNameListFragment : BaseFragment() {
+class AddNameListFragment : BaseViewBinding<FragmentAddNameListBinding>() {
     private lateinit var viewModel: AddNameListViewModel
-    private var _binding: FragmentAddNameListBinding? = null
-    private val binding get() = _binding!!
     private lateinit var nameListAdapter: NameListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,12 +25,11 @@ class AddNameListFragment : BaseFragment() {
         observe()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentAddNameListBinding.inflate(inflater, container, false)
-        return binding.root
+    override fun createBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentAddNameListBinding {
+        return FragmentAddNameListBinding.inflate(inflater, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -80,7 +77,7 @@ class AddNameListFragment : BaseFragment() {
 
     private fun setUpGroupAddButton() {
         binding.btnGroupAddNameList.setOnClickListener {
-            dialogAble.showSingleItemSelectionDialog {_, selectedOptionPosition ->
+            dialogAble.showSingleItemSelectionDialog { _, selectedOptionPosition ->
                 val itemCountToAdd = when (selectedOptionPosition) {
                     0 -> 5
                     1 -> 10
@@ -162,9 +159,9 @@ class AddNameListFragment : BaseFragment() {
                         titleBackground = R.drawable.rounded_top_corner_green_dialog,
                         onPositiveButtonClick = {
                             viewModel.saveNameList(nameListAdapter.getNameList())
-                            findNavController().navigate(
+                            next(
                                 R.id.action_addNameListFragment_to_addFoodListFragment,
-                                buildBundle()
+                                bundleOf(NAME_LIST_BUNDLE to viewModel.nameList)
                             )
                         }
                     )
@@ -179,13 +176,6 @@ class AddNameListFragment : BaseFragment() {
             nameListAdapter.setItems(existingNameList)
         } else {
             nameListAdapter.addItem(NameInfo())
-        }
-    }
-
-    private fun buildBundle(): Bundle {
-        val nameList = viewModel.nameList
-        return Bundle().apply {
-            putParcelableArrayList("nameListBundle", ArrayList(nameList))
         }
     }
 
@@ -270,15 +260,11 @@ class AddNameListFragment : BaseFragment() {
         viewModel.saveNameList(nameListAdapter.getNameList())
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     companion object {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
         private val NUM_REGEX = Regex("[0-9]*$")
         private const val MAX_NAME_CARD = 20
+        const val NAME_LIST_BUNDLE = "NAME_LIST_BUNDLE"
         private const val ET_NAME_LIST = "etNameList"
     }
 }
