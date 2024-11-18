@@ -6,7 +6,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.teerapat.moneydivider.R
@@ -16,7 +15,7 @@ import com.teerapat.moneydivider.databinding.NameListCardBinding
 @SuppressLint("NotifyDataSetChanged")
 class NameListAdapter : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>() {
     private val nameInfoList = mutableListOf<NameInfo>()
-    private var onClickButtonDelete: (deleteInfo: Pair<ImageView, Int>) -> Unit = {}
+    private var onClickButtonDelete: (position: Int) -> Unit = {}
 
     fun setItems(items: List<NameInfo>) {
         nameInfoList.clear()
@@ -45,7 +44,7 @@ class NameListAdapter : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>
         return nameInfoList
     }
 
-    fun setOnClickButtonDelete(block: (Pair<ImageView, Int>) -> Unit) = apply {
+    fun setOnClickButtonDelete(block: (Int) -> Unit) = apply {
         onClickButtonDelete = block
     }
 
@@ -120,7 +119,7 @@ class NameListAdapter : RecyclerView.Adapter<NameListAdapter.NameListViewHolder>
             val nameListText = binding.etNameList.text.toString()
 
             if (nameListText.isNotBlank()) {
-                onClickButtonDelete.invoke(Pair(binding.ivDeleteNameList, position))
+                onClickButtonDelete.invoke(position)
             } else {
                 removeItem(position)
             }

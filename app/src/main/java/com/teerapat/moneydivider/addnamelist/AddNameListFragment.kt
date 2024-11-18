@@ -48,11 +48,11 @@ class AddNameListFragment : BaseViewBinding<FragmentAddNameListBinding>() {
     private fun setupNameListRecyclerView() {
         nameListAdapter =
             NameListAdapter()
-                .setOnClickButtonDelete { pair ->
+                .setOnClickButtonDelete { position ->
                     dialogAble.show(
                         title = R.string.confirm_delete_title,
                         description = R.string.confirm_delete_message,
-                        onPositiveButtonClick = { nameListAdapter.removeItem(pair.second) }
+                        onPositiveButtonClick = { nameListAdapter.removeItem(position) }
                     )
                 }
         binding.rvNameList.adapter = nameListAdapter
