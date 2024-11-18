@@ -2,7 +2,7 @@ package com.teerapat.moneydivider.utils
 
 import java.util.StringTokenizer
 
-fun String.getDecimalFormattedString(value: String): String {
+fun getDecimalFormattedString(value: String): String {
     value.let {
         if (!value.equals("", ignoreCase = true)) {
             val lst = StringTokenizer(value, ".")

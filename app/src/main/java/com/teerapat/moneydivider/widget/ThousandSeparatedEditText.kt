@@ -78,7 +78,7 @@ class ThousandSeparatedEditText constructor(context: Context, attributeSet: Attr
                 )
 
                 if (value.isNotEmpty()) this@ThousandSeparatedEditText.setText(
-                    String().getDecimalFormattedString(
+                    getDecimalFormattedString(
                         str
                     )
                 )

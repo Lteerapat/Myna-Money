@@ -1,6 +1,9 @@
 package com.teerapat.moneydivider
 
+import android.content.Context
 import android.os.Bundle
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -51,6 +54,14 @@ abstract class BaseFragment : Fragment() {
         }
 
         return numerator / denominator
+    }
+
+    protected fun View.openSoftKeyboard() {
+        requestFocus()
+        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        postDelayed({
+            imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+        }, 100)
     }
 
     companion object {

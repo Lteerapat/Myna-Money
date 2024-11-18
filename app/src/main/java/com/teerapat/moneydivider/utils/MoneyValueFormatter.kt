@@ -44,7 +44,7 @@ open class MoneyValueFormatter(
 
         for (i in 0 until dstart) {
             if (dest[i] == '.') {
-                return String().getDecimalFormattedString(
+                return getDecimalFormattedString(
                     if (dLen - (i + 1) + len > digits) "" else SpannableStringBuilder(
                         fSource,
                         fStart,
@@ -60,7 +60,7 @@ open class MoneyValueFormatter(
             }
         }
 
-        return String().getDecimalFormattedString(
+        return getDecimalFormattedString(
             SpannableStringBuilder(
                 fSource,
                 fStart,

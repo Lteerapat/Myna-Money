@@ -1,7 +1,7 @@
 package com.teerapat.moneydivider.dialog
 
 import android.content.DialogInterface
-import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.FragmentActivity
 import com.teerapat.moneydivider.utils.DialogUtil
@@ -15,7 +15,7 @@ open class Dialog constructor(private val fragmentActivity: FragmentActivity) : 
         @StringRes description: Int,
         descriptionArg: Any?,
         isShowPositiveButton: Boolean,
-        @ColorRes titleBackground: Int,
+        @DrawableRes titleBackground: Int,
         onPositiveButtonClick: (dialog: DialogInterface) -> Unit,
         onNegativeButtonClick: (dialog: DialogInterface) -> Unit,
         onDismissListener: () -> Unit

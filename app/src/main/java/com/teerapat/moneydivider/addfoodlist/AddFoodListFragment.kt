@@ -19,7 +19,6 @@ import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.NameChipInfo
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
-import com.teerapat.moneydivider.utils.openSoftKeyboard
 
 class AddFoodListFragment : BaseViewBinding<FragmentAddFoodListBinding>() {
     private lateinit var viewModel: AddFoodListViewModel
