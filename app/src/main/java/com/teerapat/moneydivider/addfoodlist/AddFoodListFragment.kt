@@ -558,9 +558,9 @@ class AddFoodListFragment : BaseViewBinding<FragmentAddFoodListBinding>() {
         private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
         private val NUM_REGEX = Regex("[0-9]*$")
         private const val MAX_FOOD_CARD = 20
-        private const val ET_FOOD_LIST = "etFoodList"
-        private const val ET_FOOD_PRICE = "etFoodPrice"
-        private const val FOOD_CARD_CONTAINER = "foodCardContainer"
+        private const val ET_FOOD_LIST = "ET_FOOD_LIST"
+        private const val ET_FOOD_PRICE = "ET_FOOD_PRICE"
+        private const val FOOD_CARD_CONTAINER = "FOOD_CARD_CONTAINER"
         const val VAT_SC_DC_BUNDLE = "VAT_SC_DC_BUNDLE"
         const val FOOD_LIST_BUNDLE = "FOOD_LIST_BUNDLE"
     }

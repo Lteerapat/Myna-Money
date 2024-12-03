@@ -10,7 +10,6 @@ import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModelProvider
 import com.teerapat.moneydivider.BaseViewBinding
 import com.teerapat.moneydivider.R
-import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddNameListBinding
 
@@ -43,6 +42,59 @@ class AddNameListFragment : BaseViewBinding<FragmentAddNameListBinding>() {
     }
 
     private fun observe() {
+        viewModel.showDialogIncompleteItem.observe(this) { incompleteCard ->
+            dialogAble.show(
+                title = R.string.incomplete_item,
+                description = incompleteCard.message,
+                isShowPositiveButton = false,
+                onDismissListener = {
+                    focusOnCard(
+                        incompleteCard.position,
+                        isIncompleteCard = true,
+                        incompleteField = incompleteCard.incompleteField
+                    )
+                }
+            )
+        }
+
+        viewModel.showDialogEmptyNameList.observe(this) {
+            dialogAble.show(
+                title = R.string.incomplete_item,
+                description = R.string.incomplete_card_at_least_1_message,
+                isShowPositiveButton = false,
+                onDismissListener = {
+                    nameListAdapter.addItem(NameInfo(isIncomplete = true))
+                    focusOnCard(
+                        position = 0,
+                        isIncompleteCard = true,
+                        incompleteField = ET_NAME_LIST
+                    )
+                }
+            )
+        }
+
+        viewModel.showDialogDuplicateName.observe(this) {
+            dialogAble.show(
+                title = R.string.duplicate_name_alert_title,
+                description = R.string.duplicate_name_alert_message,
+                isShowPositiveButton = false
+            )
+        }
+
+        viewModel.showDialogConfirmNavigate.observe(this) {
+            dialogAble.show(
+                title = R.string.next_btn_alert_title,
+                description = R.string.next_btn_alert_message,
+                titleBackground = R.drawable.rounded_top_corner_green_dialog,
+                onPositiveButtonClick = {
+                    viewModel.saveNameList(nameListAdapter.getNameList())
+                    next(
+                        R.id.action_addNameListFragment_to_addFoodListFragment,
+                        bundleOf(NAME_LIST_BUNDLE to viewModel.nameList)
+                    )
+                }
+            )
+        }
     }
 
     private fun setupNameListRecyclerView() {
@@ -108,64 +160,7 @@ class AddNameListFragment : BaseViewBinding<FragmentAddNameListBinding>() {
 
     private fun setUpNextButton() {
         binding.btnNext.setOnClickListener {
-            val nameList = nameListAdapter.getNameList()
-            val incompleteCard = findFirstIncompleteCard(nameList)
-
-            when {
-                nameList.isEmpty() -> {
-                    dialogAble.show(
-                        title = R.string.incomplete_item,
-                        description = R.string.incomplete_card_at_least_1_message,
-                        isShowPositiveButton = false,
-                        onDismissListener = {
-                            nameListAdapter.addItem(NameInfo(isIncomplete = true))
-                            focusOnCard(
-                                position = 0,
-                                isIncompleteCard = true,
-                                incompleteField = ET_NAME_LIST
-                            )
-                        }
-                    )
-                }
-
-                incompleteCard != null -> {
-                    dialogAble.show(
-                        title = R.string.incomplete_item,
-                        description = incompleteCard.message,
-                        isShowPositiveButton = false,
-                        onDismissListener = {
-                            focusOnCard(
-                                incompleteCard.position,
-                                isIncompleteCard = true,
-                                incompleteField = incompleteCard.incompleteField
-                            )
-                        }
-                    )
-                }
-
-                hasDuplicateNames(nameList) -> {
-                    dialogAble.show(
-                        title = R.string.duplicate_name_alert_title,
-                        description = R.string.duplicate_name_alert_message,
-                        isShowPositiveButton = false
-                    )
-                }
-
-                else -> {
-                    dialogAble.show(
-                        title = R.string.next_btn_alert_title,
-                        description = R.string.next_btn_alert_message,
-                        titleBackground = R.drawable.rounded_top_corner_green_dialog,
-                        onPositiveButtonClick = {
-                            viewModel.saveNameList(nameListAdapter.getNameList())
-                            next(
-                                R.id.action_addNameListFragment_to_addFoodListFragment,
-                                bundleOf(NAME_LIST_BUNDLE to viewModel.nameList)
-                            )
-                        }
-                    )
-                }
-            }
+            viewModel.executeNextButton(nameListAdapter.getNameList())
         }
     }
 
@@ -176,47 +171,6 @@ class AddNameListFragment : BaseViewBinding<FragmentAddNameListBinding>() {
         } else {
             nameListAdapter.addItem(NameInfo())
         }
-    }
-
-    private fun hasDuplicateNames(nameList: List<NameInfo>): Boolean {
-        val names = nameList.map { it.name.trim() }
-        return names.size != names.toSet().size
-    }
-
-    private fun findFirstIncompleteCard(nameList: List<NameInfo>): IncompleteCard? {
-        nameList.forEachIndexed { index, nameInfo ->
-            val name = nameInfo.name.trim()
-
-            when {
-                name.isBlank() -> {
-                    nameList[index].isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_empty_card_message_2,
-                        incompleteField = ET_NAME_LIST
-                    )
-                }
-
-                !name.matches(REGEX) -> {
-                    nameList[index].isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_letter_or_num_message_2,
-                        incompleteField = ET_NAME_LIST
-                    )
-                }
-
-                name.matches(NUM_REGEX) -> {
-                    nameList[index].isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_card_num_only_message_2,
-                        incompleteField = ET_NAME_LIST
-                    )
-                }
-            }
-        }
-        return null
     }
 
     private fun focusOnCard(
@@ -260,10 +214,8 @@ class AddNameListFragment : BaseViewBinding<FragmentAddNameListBinding>() {
     }
 
     companion object {
-        private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
-        private val NUM_REGEX = Regex("[0-9]*$")
         private const val MAX_NAME_CARD = 20
         const val NAME_LIST_BUNDLE = "NAME_LIST_BUNDLE"
-        private const val ET_NAME_LIST = "etNameList"
+        private const val ET_NAME_LIST = "ET_NAME_LIST"
     }
 }
