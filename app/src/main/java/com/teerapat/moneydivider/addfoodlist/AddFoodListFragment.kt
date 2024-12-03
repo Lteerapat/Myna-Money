@@ -15,7 +15,6 @@ import com.teerapat.moneydivider.addnamelist.AddNameListFragment.Companion.NAME_
 import com.teerapat.moneydivider.data.FoodInfo
 import com.teerapat.moneydivider.data.FoodNameInfo
 import com.teerapat.moneydivider.data.FoodPriceInfo
-import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.NameChipInfo
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.databinding.FragmentAddFoodListBinding
@@ -54,6 +53,68 @@ class AddFoodListFragment : BaseViewBinding<FragmentAddFoodListBinding>() {
     }
 
     private fun observe() {
+        viewModel.showDialogIncompleteItem.observe(this) { incompleteCard ->
+            dialogAble.show(
+                title = R.string.incomplete_item,
+                description = incompleteCard.message,
+                isShowPositiveButton = false,
+                onDismissListener = {
+                    focusOnCard(
+                        incompleteCard.position,
+                        isIncompleteCard = true,
+                        incompleteField = incompleteCard.incompleteField
+                    )
+                }
+            )
+        }
+
+        viewModel.showDialogEmptyFoodList.observe(this) {
+            dialogAble.show(
+                title = R.string.incomplete_item,
+                description = R.string.incomplete_card_at_least_1_message,
+                isShowPositiveButton = false,
+                onDismissListener = {
+                    foodListAdapter.addItem(
+                        FoodInfo(
+                            FoodNameInfo(isIncomplete = true),
+                            FoodPriceInfo(),
+                            NameChipInfo()
+                        )
+                    )
+                    focusOnCard(
+                        position = 0,
+                        isIncompleteCard = true,
+                        incompleteField = ET_FOOD_LIST
+                    )
+                }
+            )
+        }
+
+        viewModel.showDialogDuplicateFoodName.observe(this) {
+            dialogAble.show(
+                title = R.string.duplicate_name_alert_title,
+                description = R.string.duplicate_name_alert_message,
+                isShowPositiveButton = false
+            )
+        }
+
+        viewModel.showDialogConfirmNavigate.observe(this) {
+            dialogAble.show(
+                title = R.string.next_btn_alert_title,
+                description = R.string.next_btn_alert_message,
+                titleBackground = R.drawable.rounded_top_corner_green_dialog,
+                onPositiveButtonClick = {
+                    viewModel.saveFoodList(foodListAdapter.getFoodList())
+                    next(
+                        R.id.action_addFoodListFragment_to_summaryFragment,
+                        bundleOf(
+                            VAT_SC_DC_BUNDLE to viewModel.vScDcFractionBundle(),
+                            FOOD_LIST_BUNDLE to viewModel.foodList
+                        )
+                    )
+                }
+            )
+        }
     }
 
     private fun getArgumentData() {
@@ -349,79 +410,8 @@ class AddFoodListFragment : BaseViewBinding<FragmentAddFoodListBinding>() {
 
     private fun setUpNextButton() {
         binding.btnNext.setOnClickListener {
-            val foodList = foodListAdapter.getFoodList()
-            val incompleteCard = findFirstIncompleteCard(foodList)
-
-            when {
-                foodList.isEmpty() -> {
-                    dialogAble.show(
-                        title = R.string.incomplete_item,
-                        description = R.string.incomplete_card_at_least_1_message,
-                        isShowPositiveButton = false,
-                        onDismissListener = {
-                            foodListAdapter.addItem(
-                                FoodInfo(
-                                    FoodNameInfo(isIncomplete = true),
-                                    FoodPriceInfo(),
-                                    NameChipInfo()
-                                )
-                            )
-                            focusOnCard(
-                                position = 0,
-                                isIncompleteCard = true,
-                                incompleteField = ET_FOOD_LIST
-                            )
-                        }
-                    )
-                }
-
-                incompleteCard != null -> {
-                    dialogAble.show(
-                        title = R.string.incomplete_item,
-                        description = incompleteCard.message,
-                        isShowPositiveButton = false,
-                        onDismissListener = {
-                            focusOnCard(
-                                incompleteCard.position,
-                                isIncompleteCard = true,
-                                incompleteField = incompleteCard.incompleteField
-                            )
-                        }
-                    )
-                }
-
-                hasDuplicateNames(foodList) -> {
-                    dialogAble.show(
-                        title = R.string.duplicate_name_alert_title,
-                        description = R.string.duplicate_name_alert_message,
-                        isShowPositiveButton = false
-                    )
-                }
-
-                else -> {
-                    dialogAble.show(
-                        title = R.string.next_btn_alert_title,
-                        description = R.string.next_btn_alert_message,
-                        titleBackground = R.drawable.rounded_top_corner_green_dialog,
-                        onPositiveButtonClick = {
-                            viewModel.saveFoodList(foodListAdapter.getFoodList())
-                            next(
-                                R.id.action_addFoodListFragment_to_summaryFragment,
-                                bundleOf(
-                                    VAT_SC_DC_BUNDLE to viewModel.vScDcFractionBundle(),
-                                    FOOD_LIST_BUNDLE to viewModel.foodList
-                                )
-                            )
-                        }
-                    )
-                }
-            }
+            viewModel.executeNextButton(foodListAdapter.getFoodList())
         }
-    }
-
-    private fun hasDuplicateNames(foodList: List<FoodInfo>): Boolean {
-        val names = foodList.map { it.foodName.name.trim() }
-        return names.size != names.toSet().size
     }
 
     private fun focusOnCard(
@@ -478,72 +468,6 @@ class AddFoodListFragment : BaseViewBinding<FragmentAddFoodListBinding>() {
         }
     }
 
-    private fun findFirstIncompleteCard(foodList: List<FoodInfo>): IncompleteCard? {
-        foodList.forEachIndexed { index, foodInfo ->
-            val foodName = foodInfo.foodName.name.trim()
-            val foodPrice = foodInfo.foodPrice.price
-            val name = foodInfo.name.nameList
-
-            when {
-                !foodName.matches(REGEX) -> {
-                    foodList[index].foodName.isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_card_letter_or_num_message,
-                        incompleteField = ET_FOOD_LIST
-                    )
-                }
-
-                foodName.isBlank() -> {
-                    foodList[index].foodName.isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_card_empty_message,
-                        incompleteField = ET_FOOD_LIST
-                    )
-                }
-
-                foodPrice.isBlank() -> {
-                    foodList[index].foodPrice.isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_card_empty_message,
-                        incompleteField = ET_FOOD_PRICE
-                    )
-                }
-
-                foodName.matches(NUM_REGEX) -> {
-                    foodList[index].foodName.isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_card_num_only_message,
-                        incompleteField = ET_FOOD_LIST
-                    )
-                }
-
-                removeCommasAndReturnDouble(foodPrice) == 0.0 -> {
-                    foodList[index].foodPrice.isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_card_zero_message,
-                        incompleteField = ET_FOOD_PRICE
-                    )
-                }
-
-                name.isEmpty() -> {
-                    foodList[index].name.isIncomplete = true
-                    return IncompleteCard(
-                        position = index,
-                        message = R.string.incomplete_card_zero_chip_message,
-                        incompleteField = FOOD_CARD_CONTAINER
-                    )
-                }
-            }
-        }
-
-        return null
-    }
-
     override fun onPause() {
         super.onPause()
         viewModel.saveFoodList(foodListAdapter.getFoodList())
@@ -555,8 +479,6 @@ class AddFoodListFragment : BaseViewBinding<FragmentAddFoodListBinding>() {
     }
 
     companion object {
-        private val REGEX = Regex("^[A-Za-z0-9ก-๏ ]*$")
-        private val NUM_REGEX = Regex("[0-9]*$")
         private const val MAX_FOOD_CARD = 20
         private const val ET_FOOD_LIST = "ET_FOOD_LIST"
         private const val ET_FOOD_PRICE = "ET_FOOD_PRICE"

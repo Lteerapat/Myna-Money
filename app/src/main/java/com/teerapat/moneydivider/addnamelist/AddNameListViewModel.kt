@@ -1,14 +1,14 @@
 package com.teerapat.moneydivider.addnamelist
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
 import com.hadilq.liveevent.LiveEvent
+import com.teerapat.moneydivider.BaseViewModel
 import com.teerapat.moneydivider.R
 import com.teerapat.moneydivider.data.IncompleteCard
 import com.teerapat.moneydivider.data.NameInfo
 import com.teerapat.moneydivider.utils.action
 
-class AddNameListViewModel : ViewModel() {
+class AddNameListViewModel : BaseViewModel() {
     var nameList: MutableList<NameInfo> = mutableListOf()
     private val _showDialogIncompleteItem = LiveEvent<IncompleteCard>()
     val showDialogIncompleteItem: LiveData<IncompleteCard>
